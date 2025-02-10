@@ -1,0 +1,10 @@
+.expo
+android
+dist
+ios
+node_modules
+.DS_Store
+.env*
+expo-env.d.ts
+*.pem
+*.tsbuildinfo
