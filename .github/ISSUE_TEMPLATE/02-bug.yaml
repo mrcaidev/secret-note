@@ -1,0 +1,51 @@
+name: 🐞 Bug
+description: Something is broken or not working as expected.
+labels:
+  - bug
+projects:
+  - mrcaidev/2
+body:
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Platforms
+      description: What platform(s) does it occur on?
+      multiple: true
+      options:
+        - Web
+        - Android
+        - iOS
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How to reproduce it?
+      placeholder: 1. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What is the expected behavior?
+      placeholder: The app should ...
+    validations:
+      required: false
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened instead?
+      placeholder: The app ...
+    validations:
+      required: false
+  - type: textarea
+    id: remark
+    attributes:
+      label: Remark
+      description: What else should be considered?
+      placeholder: Remember to ...
+    validations:
+      required: false

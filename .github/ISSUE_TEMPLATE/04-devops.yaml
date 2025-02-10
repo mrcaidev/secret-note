@@ -1,0 +1,23 @@
+name: 🛠️ DevOps
+description: Developer's tasks, such as infrastructure, CI/CD, monitoring...
+labels:
+  - devops
+projects:
+  - mrcaidev/2
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What should be done?
+      placeholder: We need to ...
+    validations:
+      required: true
+  - type: textarea
+    id: remark
+    attributes:
+      label: Remark
+      description: What else should be considered?
+      placeholder: Remember to ...
+    validations:
+      required: false

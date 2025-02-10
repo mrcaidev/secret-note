@@ -1,0 +1,84 @@
+name: 🛡️ Security
+description: Vulnerability, threat, risk and mitigation.
+labels:
+  - security
+projects:
+  - mrcaidev/2
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What category(-ies) does it belong to?
+      multiple: true
+      options:
+        - Spoofing
+        - Tampering
+        - Repudiation
+        - Information Disclosure
+        - Denial of Service
+        - Elevation of Privilege
+    validations:
+      required: true
+  - type: input
+    id: assets
+    attributes:
+      label: Assets
+      description: What asset is it trying to attack?
+      placeholder: User data, note content, server, ...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Exploit
+      description: How to exploit it?
+      placeholder: 1. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: likelihood
+    attributes:
+      label: Likelihood
+      description: Discoverability + Exploitability + Reproducibility
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      description: Affected Users + Damage Potential
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Mitigation
+      description: How to mitigate the risk?
+      placeholder: We can ...
+    validations:
+      required: true
+  - type: input
+    id: reference
+    attributes:
+      label: Reference
+      description: Is there any document or link to refer to?
+      placeholder: CVE, OWASP, ...
+    validations:
+      required: false
+  - type: textarea
+    id: remark
+    attributes:
+      label: Remark
+      description: What else should be considered?
+      placeholder: Remember to ...
+    validations:
+      required: false

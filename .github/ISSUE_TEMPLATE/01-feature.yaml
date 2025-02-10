@@ -1,0 +1,39 @@
+name: ✨ Feature
+description: Functional requirement to be implemented.
+labels:
+  - feature
+projects:
+  - mrcaidev/2
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is this feature about?
+      placeholder: A user can ...
+    validations:
+      required: true
+  - type: textarea
+    id: basic-flow
+    attributes:
+      label: Basic Flow
+      description: How would a user interact with this feature?
+      placeholder: 1. ...
+    validations:
+      required: true
+  - type: textarea
+    id: alternative-flow
+    attributes:
+      label: Alternative Flow
+      description: What if errors occur in the basic flow?
+      placeholder: 1. ...
+    validations:
+      required: false
+  - type: textarea
+    id: remark
+    attributes:
+      label: Remark
+      description: What else should be considered?
+      placeholder: Remember to ...
+    validations:
+      required: false
