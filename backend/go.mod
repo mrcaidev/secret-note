@@ -4,7 +4,10 @@ go 1.23
 
 require (
 	github.com/gin-gonic/gin v1.10.0
+	github.com/google/uuid v1.6.0
+	github.com/jinzhu/copier v0.4.0
 	gorm.io/driver/mysql v1.5.7
+	gorm.io/gorm v1.25.7
 )
 
 require (
@@ -37,5 +40,4 @@ require (
 	golang.org/x/text v0.15.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/gorm v1.25.7 // indirect
 )

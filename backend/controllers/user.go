@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/common"
 	"backend/models"
 	"backend/services"
 	"github.com/gin-gonic/gin"
@@ -14,9 +15,21 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	newUser := services.CreateUser(user)
-	//c
-	c.JSON(http.StatusOK, gin.H{"data": newUser})
+	newUser, duplicateUser := services.CreateUser(user)
+	if duplicateUser {
+		response := common.Response{
+			Code:    common.ErrCodeEmailExists,
+			Message: "email exists",
+		}
+		c.JSON(http.StatusOK, response)
+	} else {
+		response := common.Response{
+			Code:    common.Success,
+			Message: "success",
+			Data:    newUser,
+		}
+		c.JSON(http.StatusOK, response)
+	}
 }
 
 func GetUser(c *gin.Context) {
