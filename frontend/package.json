@@ -62,6 +62,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/react": "~18.3.12",
+    "eas-cli": "^15.0.10",
     "typescript": "^5.7.3"
   }
 }
