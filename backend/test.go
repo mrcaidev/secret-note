@@ -5,7 +5,7 @@ import (
 	"github.com/resend/resend-go/v2"
 )
 
-func main() {
+func test() {
 	apiKey := "re_123456789"
 
 	client := resend.NewClient(apiKey)

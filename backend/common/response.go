@@ -8,6 +8,8 @@ type Response struct {
 }
 
 const (
-	ErrCodeEmailExists = 1001
-	Success            = 0
+	EmailExists             = 1001
+	WrongOtp                = 1002
+	WrongOtpFlowIdOrExpired = 1003
+	Success                 = 0
 )

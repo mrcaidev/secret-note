@@ -7,6 +7,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/resend/resend-go/v2 v2.15.0
 	github.com/stretchr/testify v1.9.0
 	gorm.io/driver/mysql v1.5.7

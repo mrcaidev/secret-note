@@ -18,7 +18,7 @@ func CreateUser(c *gin.Context) {
 	newUser, duplicateUser := services.CreateUser(user)
 	if duplicateUser {
 		response := common.Response{
-			Code:    common.ErrCodeEmailExists,
+			Code:    common.EmailExists,
 			Message: "email exists",
 		}
 		c.JSON(http.StatusOK, response)
