@@ -5,6 +5,7 @@ export default {
   description: "A modern, neat and secure way to paste and share.",
   slug: "secret-note",
   owner: "mrcaidev",
+  sdkVersion: "52.0.0",
   version: "0.1.0",
   platforms: ["web", "android", "ios"],
   githubUrl: "https://github.com/mrcaidev/secret-note",
