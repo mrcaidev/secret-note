@@ -5,6 +5,7 @@ ios
 node_modules
 .DS_Store
 .env*
+!.env.example
 expo-env.d.ts
 *.pem
 *.tsbuildinfo
