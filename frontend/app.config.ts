@@ -6,12 +6,17 @@ export default {
   slug: "secret-note",
   owner: "mrcaidev",
   version: "0.1.0",
-  platforms: ["ios", "android", "web"],
+  platforms: ["web", "android", "ios"],
   githubUrl: "https://github.com/mrcaidev/secret-note",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   icon: "assets/images/favicon.png",
   scheme: "secret-note",
+  extra: {
+    eas: {
+      projectId: "226c083a-771c-4e3e-b718-d23e5390d947",
+    },
+  },
   plugins: [
     [
       "expo-font",
@@ -31,6 +36,7 @@ export default {
     ],
     "expo-sqlite",
   ],
+  jsEngine: "hermes",
   newArchEnabled: true,
   ios: {
     bundleIdentifier: "dev.mrcai.secretnote",
@@ -60,10 +66,5 @@ export default {
   },
   experiments: {
     typedRoutes: true,
-  },
-  extra: {
-    eas: {
-      projectId: "226c083a-771c-4e3e-b718-d23e5390d947",
-    },
   },
 } satisfies ExpoConfig;
