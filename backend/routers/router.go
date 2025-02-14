@@ -15,6 +15,7 @@ func InitRouter() *gin.Engine {
 		{
 			AuthGroup.POST("/otp/send", controllers.SendOtp)
 			AuthGroup.POST("/otp/verify", controllers.VerifyOtp)
+			AuthGroup.POST("/token", controllers.Sign)
 		}
 		UserGroup := apiV1.Group("/")
 		{

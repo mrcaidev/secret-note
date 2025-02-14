@@ -7,10 +7,20 @@ import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/copier"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 )
 
-func CreateUser(user models.User) (userRes models.UserResponse, existUser bool) {
+func CreateUser(user *models.User) (userRes models.UserResponse, existUser bool) {
+
+	//todo:pwd salt
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return models.UserResponse{}, false
+	}
+	user.Password = string(hashedPassword)
+	fmt.Println("Inserted User: %d", user)
+
 	result := config.DB.Create(&user)
 	if result.Error != nil {
 		log.Println(result.Error)
@@ -24,14 +34,11 @@ func CreateUser(user models.User) (userRes models.UserResponse, existUser bool) 
 		}
 	}
 
-	//todo:pwd salt
-	fmt.Println("Inserted User: %d", user)
 	var ret models.UserResponse
 	if err := copier.Copy(&ret, user); err != nil {
 		return models.UserResponse{}, false
 	}
-	//todo:set token
-	ret.Token = "1"
+	ret.Token = genToken(user.Email)
 	return ret, false
 
 }

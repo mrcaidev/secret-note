@@ -14,6 +14,8 @@ const (
 	WrongOtp                = 1002
 	WrongOtpFlowIdOrExpired = 1003
 	SendMailFailed          = 1004
+	WrongEmail              = 1005
+	WrongPassword           = 1006
 	Success                 = 0
 	Error                   = -1
 )
@@ -32,6 +34,11 @@ func ErrCodeToString(code int) string {
 		return "Success"
 	case Error:
 		return "Error"
+	case WrongEmail:
+		return "WrongEmail"
+	case WrongPassword:
+		return "WrongPassword"
+
 	default:
 		return strconv.Itoa(code)
 	}

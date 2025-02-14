@@ -5,12 +5,14 @@ import (
 	"backend/models"
 	"fmt"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"math/rand"
 	"net/smtp"
 	"time"
 
 	"backend/config"
+	"github.com/golang-jwt/jwt"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -25,7 +27,7 @@ var c = config.Cache
 func SendOtp(toEmail string) (string, error) {
 	//config setup
 	from := "yongwenzhou2022@gmail.com"
-	password := "cpky pwob lkyj vucj"
+	password := config.GmailPassword
 	smtpHost := "smtp.gmail.com"
 	smtpPort := "587"
 
@@ -76,4 +78,32 @@ func VerifyOtp(otpFlow models.OtpFlow) int {
 		fmt.Printf("user %s otpFlow not found or expired\n", otpFlow.Otp)
 		return common.WrongOtpFlowIdOrExpired
 	}
+}
+
+func Signin(request models.LoginRequest) (string, int) {
+	var user models.User
+	//sql inject?
+	err := config.DB.Where("email = ?", request.Email).First(&user).Error
+	if err != nil {
+		log.Println("Failed to get user with email: %s: %v", request.Email, err)
+		return "WrongEmail", common.WrongEmail
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
+		log.Println("wrong password: %v", err)
+		return "WrongPassword", common.WrongPassword
+	}
+	var tokenString = genToken(request.Email)
+	return tokenString, common.Success
+}
+
+func genToken(email string) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(time.Hour * 720).Unix(),
+	})
+	tokenString, err := token.SignedString(config.JwtSecret)
+	if err != nil {
+		return "error"
+	}
+	return tokenString
 }

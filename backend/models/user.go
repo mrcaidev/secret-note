@@ -33,3 +33,8 @@ func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
 	}
 	return
 }
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

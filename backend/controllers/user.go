@@ -8,6 +8,9 @@ import (
 	"net/http"
 )
 
+// todo: slow sql
+// maybe it's because of cheap aws server
+// when using local database, not slow sql
 func CreateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -15,7 +18,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	newUser, duplicateUser := services.CreateUser(user)
+	newUser, duplicateUser := services.CreateUser(&user)
 	if duplicateUser {
 		response := common.Response{
 			Code:    common.EmailExists,

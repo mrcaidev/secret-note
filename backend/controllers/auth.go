@@ -50,3 +50,17 @@ func VerifyOtp(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response)
 }
+
+func Sign(c *gin.Context) {
+	var loginReq models.LoginRequest
+	if err := c.ShouldBindJSON(&loginReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	var token, code = services.Signin(loginReq)
+	response := common.Response{
+		Code:    code,
+		Message: common.ErrCodeToString(code),
+		Data:    token,
+	}
+	c.JSON(http.StatusOK, response)
+}
