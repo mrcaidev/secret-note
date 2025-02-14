@@ -63,6 +63,11 @@ export default {
   web: {
     output: "static",
     favicon: "assets/images/favicon.png",
+    name: "Secret Note",
+    shortName: "Secret Note",
+    lang: "en",
+    description: "A modern, neat and secure way to paste and share.",
+    bundler: "metro",
   },
   experiments: {
     typedRoutes: true,
