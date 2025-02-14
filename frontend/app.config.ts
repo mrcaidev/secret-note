@@ -40,6 +40,15 @@ export default {
     config: {
       usesNonExemptEncryption: false,
     },
+    infoPlist: {
+      CFBundleURLTypes: [
+        {
+          CFBundleURLSchemes: [
+            "com.googleusercontent.apps.1041111204276-a0ae9633f1ltonn0hsdlg0lo4bd99h3q",
+          ],
+        },
+      ],
+    },
   },
   android: {
     package: "dev.mrcai.secretnote",
@@ -50,5 +59,10 @@ export default {
   },
   experiments: {
     typedRoutes: true,
+  },
+  extra: {
+    eas: {
+      projectId: "226c083a-771c-4e3e-b718-d23e5390d947",
+    },
   },
 } satisfies ExpoConfig;

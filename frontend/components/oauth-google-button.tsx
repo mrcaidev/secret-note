@@ -1,11 +1,74 @@
+import { useSignInWithOauth } from "@/apis/auth";
+import * as Google from "expo-auth-session/providers/google";
+import * as Constants from "expo-constants";
+import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { Loader2Icon } from "lucide-react-native";
+import { useEffect } from "react";
+import { Alert, Platform } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { Button } from "./ui/button";
+import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
+WebBrowser.maybeCompleteAuthSession();
+
 export function OauthGoogleButton() {
+  const [, response, promptAsync] = Google.useAuthRequest({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    redirectUri: Platform.select({
+      android: `${Constants.default.expoConfig?.android?.package}:/sign-in`,
+      ios: `${Constants.default.expoConfig?.ios?.bundleIdentifier}:/sign-in`,
+      web: undefined,
+    }),
+  });
+
+  const { mutate, error, isPending } = useSignInWithOauth("google");
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!response) {
+      return;
+    }
+
+    if (response.type !== "success") {
+      Alert.alert("Error", `Google authentication failed: ${response.type}`);
+      return;
+    }
+
+    const accessToken = response.authentication?.accessToken;
+
+    if (!accessToken) {
+      Alert.alert("Error", "Google authentication failed: no access token");
+      return;
+    }
+
+    mutate(
+      { accessToken },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+      },
+    );
+  }, [response, mutate, router]);
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Error", error.message);
+    }
+  }, [error]);
+
   return (
-    <Button variant="secondary">
-      <GoogleIcon />
+    <Button
+      variant="secondary"
+      disabled={isPending}
+      onPress={() => promptAsync()}
+    >
+      {isPending ? <Icon as={Loader2Icon} /> : <GoogleIcon />}
       <Text>Continue with Google</Text>
     </Button>
   );

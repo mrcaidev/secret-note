@@ -76,6 +76,22 @@ export function useSignIn() {
   });
 }
 
+export function useSignInWithOauth(provider: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<User & { token: string }, Error, { accessToken: string }>({
+    mutationFn: async (data) => {
+      return await request.post("/oauth/token", { provider, ...data });
+    },
+    onSuccess: async ({ token, ...me }) => {
+      await tokenStorage.set(token);
+
+      queryClient.cancelQueries({ queryKey: ["me"] });
+      queryClient.setQueryData(["me"], me);
+    },
+  });
+}
+
 export function useSignOut() {
   const queryClient = useQueryClient();
 
