@@ -16,12 +16,12 @@ WebBrowser.maybeCompleteAuthSession();
 export function OauthGoogleButton() {
   const [, response, promptAsync] = Google.useAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     redirectUri: Platform.select({
+      web: undefined,
       android: `${Constants.default.expoConfig?.android?.package}:/sign-in`,
       ios: `${Constants.default.expoConfig?.ios?.bundleIdentifier}:/sign-in`,
-      web: undefined,
     }),
   });
 
