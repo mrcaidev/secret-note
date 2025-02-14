@@ -1,13 +1,19 @@
 import { tokenStorage } from "@/utils/storage";
 
 export class RequestError extends Error {
-  public readonly status: number;
+  public readonly code: number;
 
-  public constructor(status: number, message: string) {
+  public constructor(code: number, message: string) {
     super(message);
-    this.status = status;
+    this.code = code;
   }
 }
+
+type ResponseJson<T> = {
+  code: number;
+  message: string;
+  data: T;
+};
 
 async function wrappedFetch<T>(pathname: string, options: RequestInit) {
   const token = await tokenStorage.get();
@@ -20,16 +26,16 @@ async function wrappedFetch<T>(pathname: string, options: RequestInit) {
     },
   });
 
-  if (res.status === 204) {
-    return null as unknown as T;
-  }
-
   if (!res.ok) {
-    const { error }: { error: string } = await res.json();
-    throw new RequestError(res.status, error);
+    throw new RequestError(res.status, res.statusText);
   }
 
-  const data: T = await res.json();
+  const { code, message, data }: ResponseJson<T> = await res.json();
+
+  if (code !== 0) {
+    throw new RequestError(code, message);
+  }
+
   return data;
 }
 
