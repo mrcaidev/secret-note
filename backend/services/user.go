@@ -13,7 +13,6 @@ import (
 
 func CreateUser(user *models.User) (userRes models.UserResponse, existUser bool) {
 
-	//todo:pwd salt
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return models.UserResponse{}, false
@@ -38,18 +37,22 @@ func CreateUser(user *models.User) (userRes models.UserResponse, existUser bool)
 	if err := copier.Copy(&ret, user); err != nil {
 		return models.UserResponse{}, false
 	}
-	ret.Token = genToken(user.Email)
+	ret.Token = genToken(user.Uid, user.Email)
 	return ret, false
 
 }
 
-func GetUser(uid string) models.User {
+func GetUser(uid string) models.UserResponse {
 	//get user by uid.
 	var user models.User
 	err := config.DB.Where("uid = ?", uid).First(&user).Error
 	if err != nil {
 		log.Printf("Error fetching user with uid: %s: %v", uid, err)
-		return models.User{}
+		return models.UserResponse{}
 	}
-	return user
+	var ret models.UserResponse
+	if err := copier.Copy(&ret, user); err != nil {
+		return models.UserResponse{}
+	}
+	return ret
 }

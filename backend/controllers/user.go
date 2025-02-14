@@ -36,5 +36,30 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"data": services.GetUser("guohezu")})
+	if uid, exist := c.Get("uid"); !exist {
+		response := common.Response{
+			Code:    common.NotExistUser,
+			Message: common.ErrCodeToString(common.NotExistUser),
+		}
+		c.JSON(http.StatusOK, response)
+		return
+	} else {
+		uidStr, ok := uid.(string)
+		if !ok {
+			response := common.Response{
+				Code:    common.InvalidUid, // 假设你定义了这个错误码
+				Message: "invalid uid",
+			}
+			c.JSON(http.StatusOK, response)
+			return
+		}
+		userRes := services.GetUser(uidStr)
+		response := common.Response{
+			Code:    common.Success,
+			Message: "success",
+			Data:    userRes,
+		}
+		c.JSON(http.StatusOK, response)
+		return
+	}
 }

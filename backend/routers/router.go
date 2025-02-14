@@ -1,8 +1,12 @@
 package routers
 
 import (
+	"backend/config"
 	"backend/controllers"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
+	"net/http"
+	"strings"
 )
 
 func InitRouter() *gin.Engine {
@@ -16,12 +20,51 @@ func InitRouter() *gin.Engine {
 			AuthGroup.POST("/otp/send", controllers.SendOtp)
 			AuthGroup.POST("/otp/verify", controllers.VerifyOtp)
 			AuthGroup.POST("/token", controllers.Sign)
+			AuthGroup.DELETE("/token", authMiddleware(), controllers.SignOut)
 		}
 		UserGroup := apiV1.Group("/")
 		{
 			UserGroup.POST("/users", controllers.CreateUser)
-			UserGroup.GET("/me", controllers.GetUser)
+			UserGroup.GET("/me", authMiddleware(), controllers.GetUser)
 		}
 	}
 	return router
+}
+
+// JWT 认证中间件：用于保护需要登录验证的路由
+func authMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 从请求头中获取 token
+		tokenString := c.GetHeader("Authorization")
+		tokenString = strings.TrimSpace(strings.TrimPrefix(tokenString, "Bearer "))
+
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Lack of Authorization Header"})
+			c.Abort()
+			return
+		}
+
+		// 解析 token
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			// 验证签名算法是否正确
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
+			}
+			return config.JwtSecret, nil
+		})
+		var _, invalidToken = config.Cache.Get(config.INVALID_TOKEN + tokenString)
+		if err != nil || !token.Valid || invalidToken {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			c.Abort()
+			return
+		}
+
+		// 如果需要，可以将用户信息写入上下文
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			c.Set("uid", claims["uid"].(string))
+		} else if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		}
+		c.Next()
+	}
 }

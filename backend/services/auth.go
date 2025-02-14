@@ -5,6 +5,7 @@ import (
 	"backend/models"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"math/rand"
@@ -41,9 +42,9 @@ func SendOtp(toEmail string) (string, error) {
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 
 	// 发送邮件
+	// 只负责发送给SMTP服务器，目标邮箱是否合法不是这个代码的负责内容，是SMTP服务器负责的
 	//todo: sending time interval
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{toEmail}, message)
-
 	if err != nil {
 		log.Fatal("send email failed:", err)
 	}
@@ -80,26 +81,32 @@ func VerifyOtp(otpFlow models.OtpFlow) int {
 	}
 }
 
-func Signin(request models.LoginRequest) (string, int) {
+func Signin(request models.LoginRequest) (models.UserResponse, string, int) {
 	var user models.User
 	//sql inject?
 	err := config.DB.Where("email = ?", request.Email).First(&user).Error
+	var userResponse models.UserResponse
+	if err := copier.Copy(&userResponse, user); err != nil {
+		return models.UserResponse{}, "", common.Error
+	}
 	if err != nil {
 		log.Println("Failed to get user with email: %s: %v", request.Email, err)
-		return "WrongEmail", common.WrongEmail
+		return userResponse, "WrongEmail", common.WrongEmail
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
 		log.Println("wrong password: %v", err)
-		return "WrongPassword", common.WrongPassword
+		return userResponse, "WrongPassword", common.WrongPassword
 	}
-	var tokenString = genToken(request.Email)
-	return tokenString, common.Success
+	var tokenString = genToken(user.Uid, request.Email)
+	userResponse.Token = tokenString
+	return userResponse, tokenString, common.Success
 }
 
-func genToken(email string) string {
+func genToken(uid string, email string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"uid":   uid,
 		"email": email,
-		"exp":   time.Now().Add(time.Hour * 720).Unix(),
+		"exp":   time.Now().Add(time.Hour * 72).Unix(),
 	})
 	tokenString, err := token.SignedString(config.JwtSecret)
 	if err != nil {

@@ -2,10 +2,13 @@ package controllers
 
 import (
 	"backend/common"
+	"backend/config"
 	"backend/models"
 	"backend/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
+	"time"
 )
 
 type EmailRequest struct {
@@ -56,11 +59,34 @@ func Sign(c *gin.Context) {
 	if err := c.ShouldBindJSON(&loginReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	var token, code = services.Signin(loginReq)
+	var user, token, code = services.Signin(loginReq)
 	response := common.Response{
 		Code:    code,
 		Message: common.ErrCodeToString(code),
-		Data:    token,
+		Data:    user,
+	}
+	// 将 token 添加到响应头，通常建议加上 Bearer 前缀
+	c.Header("Authorization", "Bearer "+token)
+	c.JSON(http.StatusOK, response)
+}
+
+func SignOut(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		response := common.Response{
+			Code:    common.StatusUnauthorized,
+			Message: common.ErrCodeToString(common.StatusUnauthorized),
+		}
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	// 去掉前面的 "Bearer " 前缀，并去除可能的首尾空格
+	token := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+	config.Cache.Set(config.INVALID_TOKEN+token, "invalid token", time.Hour*72)
+	response := common.Response{
+		Code:    common.Success,
+		Message: common.ErrCodeToString(common.Success),
 	}
 	c.JSON(http.StatusOK, response)
 }

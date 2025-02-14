@@ -17,6 +17,8 @@ var JwtSecret []byte
 var GmailPassword string
 var dsn string
 
+const INVALID_TOKEN = "INVALID_TOKEN"
+
 func connectDatabase() {
 	//change device, missing db.
 	var err error
@@ -40,9 +42,6 @@ func loadEnv() {
 	GmailPassword = os.Getenv("GMAIL_PASSWORD")
 	dsn = os.Getenv("DSN")
 	JwtSecret = []byte(os.Getenv("JWT_SECRET"))
-	log.Println(GmailPassword)
-	log.Println(dsn)
-	log.Println(JwtSecret)
 }
 
 func Init() {

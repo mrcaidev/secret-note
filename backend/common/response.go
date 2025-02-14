@@ -10,14 +10,17 @@ type Response struct {
 }
 
 const (
+	Success                 = 0
+	Error                   = -1
 	EmailExists             = 1001
 	WrongOtp                = 1002
 	WrongOtpFlowIdOrExpired = 1003
 	SendMailFailed          = 1004
 	WrongEmail              = 1005
 	WrongPassword           = 1006
-	Success                 = 0
-	Error                   = -1
+	NotExistUser            = 1007
+	InvalidUid              = 1008
+	StatusUnauthorized      = 1009
 )
 
 func ErrCodeToString(code int) string {
@@ -38,7 +41,12 @@ func ErrCodeToString(code int) string {
 		return "WrongEmail"
 	case WrongPassword:
 		return "WrongPassword"
-
+	case NotExistUser:
+		return "NotExistUser"
+	case InvalidUid:
+		return "InvalidUid"
+	case StatusUnauthorized:
+		return "StatusUnauthorized"
 	default:
 		return strconv.Itoa(code)
 	}
