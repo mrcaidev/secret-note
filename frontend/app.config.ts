@@ -10,13 +10,13 @@ export default {
   githubUrl: "https://github.com/mrcaidev/secret-note",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
-  icon: "./assets/images/icon.png",
+  icon: "assets/images/favicon.png",
   scheme: "secret-note",
   plugins: [
     [
       "expo-font",
       {
-        fonts: ["./assets/fonts/Inter-Regular.ttf"],
+        fonts: ["assets/fonts/Inter-Regular.ttf"],
       },
     ],
     "expo-router",
@@ -24,12 +24,9 @@ export default {
     [
       "expo-splash-screen",
       {
-        backgroundColor: "#ffffff",
-        image: "./assets/images/icon.png",
-        dark: {
-          backgroundColor: "#0c0a09",
-          image: "./assets/images/icon.png",
-        },
+        backgroundColor: "#00a63e",
+        image: "assets/images/splash.png",
+        imageWidth: 200,
       },
     ],
     "expo-sqlite",
@@ -52,10 +49,14 @@ export default {
   },
   android: {
     package: "dev.mrcai.secretnote",
+    adaptiveIcon: {
+      foregroundImage: "assets/images/adaptive-icon.png",
+      backgroundColor: "#00a63e",
+    },
   },
   web: {
     output: "static",
-    favicon: "./assets/images/icon.png",
+    favicon: "assets/images/favicon.png",
   },
   experiments: {
     typedRoutes: true,
