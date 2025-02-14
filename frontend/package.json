@@ -11,7 +11,6 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "@expo/vector-icons": "^14.0.4",
     "@hookform/resolvers": "^3.10.0",
     "@react-navigation/native": "^7.0.14",
     "@rn-primitives/avatar": "^1.1.0",
