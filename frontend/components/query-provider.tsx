@@ -6,7 +6,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        if (error instanceof RequestError && error.code >= 1000) {
+        if (error instanceof RequestError) {
           return false;
         }
         return failureCount < 3;
