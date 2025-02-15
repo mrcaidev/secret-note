@@ -16,6 +16,10 @@ type ResponseJson<T> = {
 };
 
 async function wrappedFetch<T>(pathname: string, options: RequestInit) {
+  if (__DEV__) {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+
   const token = await tokenStorage.get();
 
   const res = await fetch(process.env.EXPO_PUBLIC_API_BASE_URL + pathname, {
