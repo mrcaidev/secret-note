@@ -8,10 +8,11 @@ import { Text } from "@/components/ui/text";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Link } from "expo-router";
-import { Loader2Icon, MailIcon } from "lucide-react-native";
+import { MailIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
+import { Spinner } from "./spinner";
 
 const schema = v.object({
   email: v.pipe(v.string(), v.email("Invalid email")),
@@ -73,11 +74,7 @@ export function SignUpSendOtpScreen() {
         </Alert>
       )}
       <Button onPress={sendOtp} disabled={isPending} className="mb-4">
-        {isPending ? (
-          <Icon as={Loader2Icon} className="animate-spin" />
-        ) : (
-          <Icon as={MailIcon} />
-        )}
+        {isPending ? <Spinner /> : <Icon as={MailIcon} />}
         <Text>Send OTP</Text>
       </Button>
       <Text className="text-sm text-center">

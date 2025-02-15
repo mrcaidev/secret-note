@@ -3,12 +3,11 @@ import * as Google from "expo-auth-session/providers/google";
 import * as Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { Loader2Icon } from "lucide-react-native";
 import { useEffect } from "react";
 import { Alert, Platform } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { Spinner } from "./spinner";
 import { Button } from "./ui/button";
-import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -68,7 +67,7 @@ export function OauthGoogleButton() {
       disabled={isPending}
       onPress={() => promptAsync()}
     >
-      {isPending ? <Icon as={Loader2Icon} /> : <GoogleIcon />}
+      {isPending ? <Spinner /> : <GoogleIcon />}
       <Text>Continue with Google</Text>
     </Button>
   );

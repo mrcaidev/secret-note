@@ -1,4 +1,5 @@
 import { useCreateNote } from "@/apis/note";
+import { Spinner } from "@/components/spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,7 +18,7 @@ import { Text } from "@/components/ui/text";
 import { cn } from "@/components/ui/utils";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { Loader2Icon, Share2Icon, XIcon } from "lucide-react-native";
+import { Share2Icon, XIcon } from "lucide-react-native";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput, View } from "react-native";
@@ -174,11 +175,7 @@ export default function NewNotePage() {
               disabled={isPending || !formState.isValid}
               onPress={createNote}
             >
-              {isPending ? (
-                <Icon as={Loader2Icon} className="animate-spin" />
-              ) : (
-                <Icon as={Share2Icon} />
-              )}
+              {isPending ? <Spinner /> : <Icon as={Share2Icon} />}
               <Text>Share</Text>
             </Button>
           </DialogFooter>

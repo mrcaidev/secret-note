@@ -8,10 +8,11 @@ import { Text } from "@/components/ui/text";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { FlagIcon, Loader2Icon } from "lucide-react-native";
+import { FlagIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
+import { Spinner } from "./spinner";
 
 const schema = v.pipe(
   v.object({
@@ -162,11 +163,7 @@ export function SignUpCompleteScreen() {
         </Alert>
       )}
       <Button onPress={signUp} disabled={isPending}>
-        {isPending ? (
-          <Icon as={Loader2Icon} className="animate-spin" />
-        ) : (
-          <Icon as={FlagIcon} />
-        )}
+        {isPending ? <Spinner /> : <Icon as={FlagIcon} />}
         <Text>Complete</Text>
       </Button>
     </View>

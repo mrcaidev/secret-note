@@ -1,5 +1,6 @@
 import { useSignInMutation } from "@/apis/auth";
 import { OauthGoogleButton } from "@/components/oauth-google-button";
+import { Spinner } from "@/components/spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -9,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Link, useRouter } from "expo-router";
-import { Loader2Icon, LogInIcon } from "lucide-react-native";
+import { LogInIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
@@ -110,11 +111,7 @@ export default function SignInPage() {
         </Alert>
       )}
       <Button onPress={signIn} disabled={isPending} className="mb-4">
-        {isPending ? (
-          <Icon as={Loader2Icon} className="animate-spin" />
-        ) : (
-          <Icon as={LogInIcon} />
-        )}
+        {isPending ? <Spinner /> : <Icon as={LogInIcon} />}
         <Text>Sign in</Text>
       </Button>
       <Text className="text-sm text-center">

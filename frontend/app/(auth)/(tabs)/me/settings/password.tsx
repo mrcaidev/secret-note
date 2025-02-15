@@ -1,5 +1,6 @@
 import { useUpdateMe } from "@/apis/me";
 import { MfaGuard } from "@/components/mfa-guard";
+import { Spinner } from "@/components/spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Text } from "@/components/ui/text";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { Loader2Icon, SaveIcon } from "lucide-react-native";
+import { SaveIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
@@ -115,11 +116,7 @@ export default function PasswordSettingPage() {
           </Alert>
         )}
         <Button onPress={updatePassword} disabled={isPending}>
-          {isPending ? (
-            <Icon as={Loader2Icon} className="animate-spin" />
-          ) : (
-            <Icon as={SaveIcon} />
-          )}
+          {isPending ? <Spinner /> : <Icon as={SaveIcon} />}
           <Text>Update</Text>
         </Button>
       </View>
