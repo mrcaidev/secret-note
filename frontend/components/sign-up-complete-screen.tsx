@@ -12,6 +12,7 @@ import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
 import { ErrorAlert } from "./error-alert";
+import { FormFieldError } from "./form-field-error";
 import { Spinner } from "./spinner";
 
 const schema = v.pipe(
@@ -101,11 +102,7 @@ export function SignUpCompleteScreen() {
               autoComplete="password-new"
               aria-labelledby="password"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -123,11 +120,7 @@ export function SignUpCompleteScreen() {
               autoComplete="off"
               aria-labelledby="confirmPassword"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -144,11 +137,7 @@ export function SignUpCompleteScreen() {
               autoComplete="nickname"
               aria-labelledby="nickname"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />

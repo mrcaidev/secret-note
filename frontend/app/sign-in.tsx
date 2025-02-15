@@ -1,5 +1,6 @@
 import { useSignInWithEmailMutation } from "@/apis/auth";
 import { ErrorAlert } from "@/components/error-alert";
+import { FormFieldError } from "@/components/form-field-error";
 import { OauthGoogleButton } from "@/components/oauth-google-button";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
@@ -75,11 +76,7 @@ export default function SignInPage() {
               autoComplete="email"
               aria-labelledby="email"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -96,11 +93,7 @@ export default function SignInPage() {
               autoComplete="password"
               aria-labelledby="password"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />

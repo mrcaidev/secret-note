@@ -12,6 +12,7 @@ import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
 import { ErrorAlert } from "./error-alert";
+import { FormFieldError } from "./form-field-error";
 import { Spinner } from "./spinner";
 
 const schema = v.object({
@@ -59,11 +60,7 @@ export function SignUpSendOtpScreen() {
               autoComplete="email"
               aria-labelledby="email"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />

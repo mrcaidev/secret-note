@@ -1,5 +1,6 @@
 import { useUpdateMe } from "@/apis/me";
 import { ErrorAlert } from "@/components/error-alert";
+import { FormFieldError } from "@/components/form-field-error";
 import { MfaGuard } from "@/components/mfa-guard";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
@@ -79,11 +80,7 @@ export default function PasswordSettingPage() {
                 autoComplete="password-new"
                 aria-labelledby="password"
               />
-              {fieldState.error && (
-                <Text className="text-destructive text-sm">
-                  {fieldState.error.message}
-                </Text>
-              )}
+              <FormFieldError error={fieldState.error} />
             </View>
           )}
         />
@@ -101,11 +98,7 @@ export default function PasswordSettingPage() {
                 autoComplete="off"
                 aria-labelledby="confirmPassword"
               />
-              {fieldState.error && (
-                <Text className="text-destructive text-sm">
-                  {fieldState.error.message}
-                </Text>
-              )}
+              <FormFieldError error={fieldState.error} />
             </View>
           )}
         />

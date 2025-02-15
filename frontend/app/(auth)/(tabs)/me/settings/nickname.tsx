@@ -1,5 +1,6 @@
 import { useMe, useUpdateMe } from "@/apis/me";
 import { ErrorAlert } from "@/components/error-alert";
+import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -63,11 +64,7 @@ export default function NicknameSettingPage() {
               autoComplete="nickname"
               aria-labelledby="nickname"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />

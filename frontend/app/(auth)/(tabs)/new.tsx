@@ -1,5 +1,6 @@
 import { useCreateNote } from "@/apis/note";
 import { ErrorAlert } from "@/components/error-alert";
+import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { cn } from "@/components/ui/utils";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
 import { Share2Icon, XIcon } from "lucide-react-native";
@@ -74,16 +74,9 @@ export default function NewNotePage() {
               {...field}
               onChangeText={field.onChange}
               placeholder="Title"
-              className={cn(
-                "px-1 py-2 border-b border-input web:focus-visible:border-primary web:focus-visible:outline-none text-foreground text-2xl font-bold font-sans placeholder:text-muted-foreground placeholder:font-sans",
-                fieldState.error && "border-destructive",
-              )}
+              className="px-1 py-2 border-b border-input web:focus-visible:border-primary web:focus-visible:outline-none text-foreground text-2xl font-bold font-sans placeholder:text-muted-foreground placeholder:font-sans"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -100,11 +93,7 @@ export default function NewNotePage() {
               placeholder="Paste and share!"
               className="grow px-1 web:focus-visible:outline-none text-foreground text-base font-sans placeholder:text-muted-foreground placeholder:font-sans"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error?.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
