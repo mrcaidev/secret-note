@@ -1,6 +1,8 @@
 import { useUpdateMe } from "@/apis/me";
+import { FormError } from "@/components/form-error";
+import { FormFieldError } from "@/components/form-field-error";
 import { MfaGuard } from "@/components/mfa-guard";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -8,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Text } from "@/components/ui/text";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { Loader2Icon, SaveIcon } from "lucide-react-native";
+import { SaveIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
@@ -78,11 +80,7 @@ export default function PasswordSettingPage() {
                 autoComplete="password-new"
                 aria-labelledby="password"
               />
-              {fieldState.error && (
-                <Text className="text-destructive text-sm">
-                  {fieldState.error.message}
-                </Text>
-              )}
+              <FormFieldError error={fieldState.error} />
             </View>
           )}
         />
@@ -100,26 +98,13 @@ export default function PasswordSettingPage() {
                 autoComplete="off"
                 aria-labelledby="confirmPassword"
               />
-              {fieldState.error && (
-                <Text className="text-destructive text-sm">
-                  {fieldState.error.message}
-                </Text>
-              )}
+              <FormFieldError error={fieldState.error} />
             </View>
           )}
         />
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
+        <FormError error={error} className="mb-4" />
         <Button onPress={updatePassword} disabled={isPending}>
-          {isPending ? (
-            <Icon as={Loader2Icon} className="animate-spin" />
-          ) : (
-            <Icon as={SaveIcon} />
-          )}
+          {isPending ? <Spinner /> : <Icon as={SaveIcon} />}
           <Text>Update</Text>
         </Button>
       </View>

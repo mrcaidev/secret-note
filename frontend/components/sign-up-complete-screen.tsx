@@ -1,5 +1,4 @@
-import { useSignUp } from "@/apis/auth";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useSignUpMutation } from "@/apis/auth";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -8,10 +7,13 @@ import { Text } from "@/components/ui/text";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { FlagIcon, Loader2Icon } from "lucide-react-native";
+import { FlagIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
+import { FormError } from "./form-error";
+import { FormFieldError } from "./form-field-error";
+import { Spinner } from "./spinner";
 
 const schema = v.pipe(
   v.object({
@@ -52,19 +54,24 @@ export function SignUpCompleteScreen() {
     resolver: valibotResolver(schema),
   });
 
+  const { mutate, error, isPending } = useSignUpMutation();
+
+  const email = useOtpFlow((state) => state.email)!;
+  const resetOtpFlow = useOtpFlow((state) => state.reset);
+
   const router = useRouter();
 
-  const { mutate, error, isPending } = useSignUp();
-
-  const completeSignUp = handleSubmit((data) => {
-    mutate(data, {
-      onSuccess: () => {
-        router.push("/");
+  const signUp = handleSubmit((data) => {
+    mutate(
+      { email, ...data },
+      {
+        onSuccess: () => {
+          resetOtpFlow();
+          router.push("/");
+        },
       },
-    });
+    );
   });
-
-  const email = useOtpFlow((state) => state.email);
 
   return (
     <View className="grow justify-center px-12 bg-background">
@@ -75,7 +82,7 @@ export function SignUpCompleteScreen() {
       <View className="gap-2 mb-4">
         <Label nativeID="email">Email</Label>
         <Input
-          value={email ?? "Unknown email"}
+          value={email}
           editable={false}
           readOnly
           aria-labelledby="email"
@@ -95,11 +102,7 @@ export function SignUpCompleteScreen() {
               autoComplete="password-new"
               aria-labelledby="password"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -117,11 +120,7 @@ export function SignUpCompleteScreen() {
               autoComplete="off"
               aria-labelledby="confirmPassword"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -138,26 +137,13 @@ export function SignUpCompleteScreen() {
               autoComplete="nickname"
               aria-labelledby="nickname"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
-      <Button onPress={completeSignUp} disabled={isPending}>
-        {isPending ? (
-          <Icon as={Loader2Icon} className="animate-spin" />
-        ) : (
-          <Icon as={FlagIcon} />
-        )}
+      <FormError error={error} className="mb-4" />
+      <Button onPress={signUp} disabled={isPending}>
+        {isPending ? <Spinner /> : <Icon as={FlagIcon} />}
         <Text>Complete</Text>
       </Button>
     </View>

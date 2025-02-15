@@ -1,19 +1,13 @@
 import { tokenStorage } from "@/utils/storage";
 import type { User } from "@/utils/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { request, RequestError } from "./request";
+import { request } from "./request";
 
 export function useMe() {
   return useQuery<User>({
     queryKey: ["me"],
     queryFn: async () => {
       return await request.get("/me");
-    },
-    retry: (failureCount, error) => {
-      if (error instanceof RequestError && error.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
     },
   });
 }

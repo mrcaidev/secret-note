@@ -1,14 +1,13 @@
-import { useSignInWithOauth } from "@/apis/auth";
+import { useSignInWithOauthMutation } from "@/apis/auth";
 import * as Google from "expo-auth-session/providers/google";
 import * as Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { Loader2Icon } from "lucide-react-native";
 import { useEffect } from "react";
 import { Alert, Platform } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { Spinner } from "./spinner";
 import { Button } from "./ui/button";
-import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -16,16 +15,16 @@ WebBrowser.maybeCompleteAuthSession();
 export function OauthGoogleButton() {
   const [, response, promptAsync] = Google.useAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     redirectUri: Platform.select({
       android: `${Constants.default.expoConfig?.android?.package}:/sign-in`,
       ios: `${Constants.default.expoConfig?.ios?.bundleIdentifier}:/sign-in`,
-      web: undefined,
+      default: undefined,
     }),
   });
 
-  const { mutate, error, isPending } = useSignInWithOauth("google");
+  const { mutate, error, isPending } = useSignInWithOauthMutation("google");
 
   const router = useRouter();
 
@@ -68,7 +67,7 @@ export function OauthGoogleButton() {
       disabled={isPending}
       onPress={() => promptAsync()}
     >
-      {isPending ? <Icon as={Loader2Icon} /> : <GoogleIcon />}
+      {isPending ? <Spinner /> : <GoogleIcon />}
       <Text>Continue with Google</Text>
     </Button>
   );

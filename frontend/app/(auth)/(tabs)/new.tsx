@@ -1,5 +1,7 @@
 import { useCreateNote } from "@/apis/note";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FormError } from "@/components/form-error";
+import { FormFieldError } from "@/components/form-field-error";
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -14,10 +16,9 @@ import {
 } from "@/components/ui/dialog";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { cn } from "@/components/ui/utils";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { Loader2Icon, Share2Icon, XIcon } from "lucide-react-native";
+import { Share2Icon, XIcon } from "lucide-react-native";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput, View } from "react-native";
@@ -73,16 +74,9 @@ export default function NewNotePage() {
               {...field}
               onChangeText={field.onChange}
               placeholder="Title"
-              className={cn(
-                "px-1 py-2 border-b border-input web:focus-visible:border-primary web:focus-visible:outline-none text-foreground text-2xl font-bold font-sans placeholder:text-muted-foreground placeholder:font-sans",
-                fieldState.error && "border-destructive",
-              )}
+              className="px-1 py-2 border-b border-input web:focus-visible:border-primary web:focus-visible:outline-none text-foreground text-2xl font-bold font-sans placeholder:text-muted-foreground placeholder:font-sans"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -99,20 +93,11 @@ export default function NewNotePage() {
               placeholder="Paste and share!"
               className="grow px-1 web:focus-visible:outline-none text-foreground text-base font-sans placeholder:text-muted-foreground placeholder:font-sans"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error?.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      <FormError error={error} className="mb-4" />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button disabled={!formState.isValid} className="mb-4">
@@ -174,11 +159,7 @@ export default function NewNotePage() {
               disabled={isPending || !formState.isValid}
               onPress={createNote}
             >
-              {isPending ? (
-                <Icon as={Loader2Icon} className="animate-spin" />
-              ) : (
-                <Icon as={Share2Icon} />
-              )}
+              {isPending ? <Spinner /> : <Icon as={Share2Icon} />}
               <Text>Share</Text>
             </Button>
           </DialogFooter>

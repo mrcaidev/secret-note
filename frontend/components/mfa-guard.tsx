@@ -4,20 +4,16 @@ import { MfaVerifyBioScreen } from "./mfa-verify-bio-screen";
 import { MfaVerifyOtpScreen } from "./mfa-verify-otp-screen";
 
 export function MfaGuard({ children }: PropsWithChildren) {
-  const passed = useMfaState((state) => state.passed);
-  const method = useMfaState((state) => state.method);
+  const mfaPassed = useMfaState((state) => state.passed);
+  const mfaMethod = useMfaState((state) => state.method);
 
-  if (passed) {
+  if (mfaPassed) {
     return children;
   }
 
-  if (method === "biometric") {
+  if (mfaMethod === "biometric") {
     return <MfaVerifyBioScreen />;
   }
 
-  if (method === "email") {
-    return <MfaVerifyOtpScreen />;
-  }
-
-  return null;
+  return <MfaVerifyOtpScreen />;
 }

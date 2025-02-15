@@ -1,6 +1,8 @@
-import { useSignIn } from "@/apis/auth";
+import { useSignInWithEmailMutation } from "@/apis/auth";
+import { FormError } from "@/components/form-error";
+import { FormFieldError } from "@/components/form-field-error";
 import { OauthGoogleButton } from "@/components/oauth-google-button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -9,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Link, useRouter } from "expo-router";
-import { Loader2Icon, LogInIcon } from "lucide-react-native";
+import { LogInIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
@@ -34,9 +36,9 @@ export default function SignInPage() {
     resolver: valibotResolver(schema),
   });
 
-  const router = useRouter();
+  const { mutate, error, isPending } = useSignInWithEmailMutation();
 
-  const { mutate, error, isPending } = useSignIn();
+  const router = useRouter();
 
   const signIn = handleSubmit((data) => {
     mutate(data, {
@@ -74,11 +76,7 @@ export default function SignInPage() {
               autoComplete="email"
               aria-labelledby="email"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
@@ -95,26 +93,13 @@ export default function SignInPage() {
               autoComplete="password"
               aria-labelledby="password"
             />
-            {fieldState.error && (
-              <Text className="text-destructive text-sm">
-                {fieldState.error.message}
-              </Text>
-            )}
+            <FormFieldError error={fieldState.error} />
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      <FormError error={error} className="mb-4" />
       <Button onPress={signIn} disabled={isPending} className="mb-4">
-        {isPending ? (
-          <Icon as={Loader2Icon} className="animate-spin" />
-        ) : (
-          <Icon as={LogInIcon} />
-        )}
+        {isPending ? <Spinner /> : <Icon as={LogInIcon} />}
         <Text>Sign in</Text>
       </Button>
       <Text className="text-sm text-center">
