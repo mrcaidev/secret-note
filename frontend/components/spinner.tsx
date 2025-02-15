@@ -1,4 +1,5 @@
-import { Loader2Icon, View, type LucideProps } from "lucide-react-native";
+import { Loader2Icon, type LucideProps } from "lucide-react-native";
+import { View } from "react-native";
 import { Icon } from "./ui/icon";
 
 export function Spinner(props: LucideProps) {
