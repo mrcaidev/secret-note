@@ -4,7 +4,7 @@ import { useMfaState } from "@/hooks/use-mfa-state";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { useEffect } from "react";
 import { View } from "react-native";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { ErrorAlert } from "./error-alert";
 import { OtpInput } from "./ui/otp-input";
 import { Text } from "./ui/text";
 
@@ -69,12 +69,7 @@ export function MfaVerifyOtpScreen() {
         operations.
       </Text>
       <OtpInput disabled={isPending} onFilled={verifyOtp} />
-      {error && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      {error && <ErrorAlert description={error.message} className="mt-4" />}
     </View>
   );
 }

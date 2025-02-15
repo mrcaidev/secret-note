@@ -1,6 +1,6 @@
 import { useUpdateMe } from "@/apis/me";
+import { ErrorAlert } from "@/components/error-alert";
 import { Spinner } from "@/components/spinner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -66,12 +66,7 @@ export default function EmailSettingPage() {
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      {error && <ErrorAlert description={error.message} className="mb-4" />}
       <Button onPress={updateEmail} disabled={isPending}>
         {isPending ? <Spinner /> : <Icon as={SaveIcon} />}
         <Text>Update</Text>

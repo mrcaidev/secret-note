@@ -1,7 +1,7 @@
 import { useSignInMutation } from "@/apis/auth";
+import { ErrorAlert } from "@/components/error-alert";
 import { OauthGoogleButton } from "@/components/oauth-google-button";
 import { Spinner } from "@/components/spinner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -104,12 +104,7 @@ export default function SignInPage() {
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      {error && <ErrorAlert description={error.message} className="mb-4" />}
       <Button onPress={signIn} disabled={isPending} className="mb-4">
         {isPending ? <Spinner /> : <Icon as={LogInIcon} />}
         <Text>Sign in</Text>

@@ -1,5 +1,4 @@
 import { useSendOtpMutation } from "@/apis/auth";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,7 @@ import { MailIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
+import { ErrorAlert } from "./error-alert";
 import { Spinner } from "./spinner";
 
 const schema = v.object({
@@ -67,12 +67,7 @@ export function SignUpSendOtpScreen() {
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      {error && <ErrorAlert description={error.message} className="mb-4" />}
       <Button onPress={sendOtp} disabled={isPending} className="mb-4">
         {isPending ? <Spinner /> : <Icon as={MailIcon} />}
         <Text>Send OTP</Text>

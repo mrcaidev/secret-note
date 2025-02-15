@@ -1,8 +1,8 @@
 import { useVerifyOtpMutation } from "@/apis/auth";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Text } from "@/components/ui/text";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { View } from "react-native";
+import { ErrorAlert } from "./error-alert";
 import { OtpInput } from "./ui/otp-input";
 
 export function SignUpVerifyOtpScreen() {
@@ -32,12 +32,7 @@ export function SignUpVerifyOtpScreen() {
         below.
       </Text>
       <OtpInput onFilled={verifyOtp} disabled={isPending} />
-      {error && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      {error && <ErrorAlert description={error.message} className="mt-4" />}
     </View>
   );
 }

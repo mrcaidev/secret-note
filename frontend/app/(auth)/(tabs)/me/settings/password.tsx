@@ -1,7 +1,7 @@
 import { useUpdateMe } from "@/apis/me";
+import { ErrorAlert } from "@/components/error-alert";
 import { MfaGuard } from "@/components/mfa-guard";
 import { Spinner } from "@/components/spinner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -109,12 +109,7 @@ export default function PasswordSettingPage() {
             </View>
           )}
         />
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
+        {error && <ErrorAlert description={error.message} className="mb-4" />}
         <Button onPress={updatePassword} disabled={isPending}>
           {isPending ? <Spinner /> : <Icon as={SaveIcon} />}
           <Text>Update</Text>

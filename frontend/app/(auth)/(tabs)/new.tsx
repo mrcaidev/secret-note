@@ -1,6 +1,6 @@
 import { useCreateNote } from "@/apis/note";
+import { ErrorAlert } from "@/components/error-alert";
 import { Spinner } from "@/components/spinner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -108,12 +108,7 @@ export default function NewNotePage() {
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      {error && <ErrorAlert description={error.message} className="mb-4" />}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button disabled={!formState.isValid} className="mb-4">

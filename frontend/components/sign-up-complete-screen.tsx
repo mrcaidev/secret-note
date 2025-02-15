@@ -1,5 +1,4 @@
 import { useSignUpMutation } from "@/apis/auth";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,7 @@ import { FlagIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
+import { ErrorAlert } from "./error-alert";
 import { Spinner } from "./spinner";
 
 const schema = v.pipe(
@@ -152,12 +152,7 @@ export function SignUpCompleteScreen() {
           </View>
         )}
       />
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      {error && <ErrorAlert description={error.message} className="mb-4" />}
       <Button onPress={signUp} disabled={isPending}>
         {isPending ? <Spinner /> : <Icon as={FlagIcon} />}
         <Text>Complete</Text>
