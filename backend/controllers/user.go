@@ -24,7 +24,7 @@ func CreateUser(c *gin.Context) {
 			Code:    common.EmailExists,
 			Message: "email exists",
 		}
-		c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusConflict, response)
 	} else {
 		response := common.Response{
 			Code:    common.Success,
@@ -41,7 +41,7 @@ func GetUser(c *gin.Context) {
 			Code:    common.NotExistUser,
 			Message: common.ErrCodeToString(common.NotExistUser),
 		}
-		c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusUnauthorized, response)
 		return
 	} else {
 		uidStr, ok := uid.(string)
@@ -50,7 +50,7 @@ func GetUser(c *gin.Context) {
 				Code:    common.InvalidUid, // 假设你定义了这个错误码
 				Message: "invalid uid",
 			}
-			c.JSON(http.StatusOK, response)
+			c.JSON(http.StatusUnauthorized, response)
 			return
 		}
 		userRes := services.GetUser(uidStr)

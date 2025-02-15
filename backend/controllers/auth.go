@@ -28,7 +28,7 @@ func SendOtp(c *gin.Context) {
 			Code:    common.SendMailFailed,
 			Message: err.Error(),
 		}
-		c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusBadGateway, response)
 	} else {
 		response := common.Response{
 			Code:    common.Success,
