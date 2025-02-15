@@ -13,7 +13,7 @@ export function ErrorAlert({
   ...props
 }: Props) {
   return (
-    <Alert {...props}>
+    <Alert variant={variant} {...props}>
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{description}</AlertDescription>
     </Alert>
