@@ -39,7 +39,7 @@ export function useSignUpMutation() {
   });
 }
 
-export function useSignIn() {
+export function useSignInMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<

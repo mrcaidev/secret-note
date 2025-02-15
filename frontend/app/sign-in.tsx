@@ -1,4 +1,4 @@
-import { useSignIn } from "@/apis/auth";
+import { useSignInMutation } from "@/apis/auth";
 import { OauthGoogleButton } from "@/components/oauth-google-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -34,9 +34,9 @@ export default function SignInPage() {
     resolver: valibotResolver(schema),
   });
 
-  const router = useRouter();
+  const { mutate, error, isPending } = useSignInMutation();
 
-  const { mutate, error, isPending } = useSignIn();
+  const router = useRouter();
 
   const signIn = handleSubmit((data) => {
     mutate(data, {
