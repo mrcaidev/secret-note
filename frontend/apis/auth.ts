@@ -12,7 +12,7 @@ export function useSendOtpMutation() {
 }
 
 export function useVerifyOtpMutation() {
-  return useMutation<0, Error, { otpFlowId: string; otp: string }>({
+  return useMutation<null, Error, { otpFlowId: string; otp: string }>({
     mutationFn: async (data) => {
       return await request.post("/auth/otp/verify", data);
     },
