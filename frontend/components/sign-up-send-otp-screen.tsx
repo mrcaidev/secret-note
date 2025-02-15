@@ -1,10 +1,11 @@
-import { useSendOtp } from "@/apis/auth";
+import { useSendOtpMutation } from "@/apis/auth";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Text } from "@/components/ui/text";
+import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Link } from "expo-router";
 import { Loader2Icon, MailIcon } from "lucide-react-native";
@@ -26,10 +27,16 @@ export function SignUpSendOtpScreen() {
     resolver: valibotResolver(schema),
   });
 
-  const { mutate, error, isPending } = useSendOtp();
+  const { mutate, error, isPending } = useSendOtpMutation();
+
+  const startOtpFlow = useOtpFlow((state) => state.start);
 
   const sendOtp = handleSubmit((data) => {
-    mutate(data);
+    mutate(data, {
+      onSuccess: (otpFlowId, { email }) => {
+        startOtpFlow({ id: otpFlowId, email });
+      },
+    });
   });
 
   return (

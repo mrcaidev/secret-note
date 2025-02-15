@@ -1,4 +1,4 @@
-import { useSendOtp, useVerifyOtp } from "@/apis/auth";
+import { useSendOtpMutation, useVerifyOtpMutation } from "@/apis/auth";
 import { useMe } from "@/apis/me";
 import { useMfaState } from "@/hooks/use-mfa-state";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
@@ -9,38 +9,51 @@ import { OtpInput } from "./ui/otp-input";
 import { Text } from "./ui/text";
 
 export function MfaVerifyOtpScreen() {
-  const passMfa = useMfaState((state) => state.pass);
-
   const { data: me } = useMe();
 
-  const { mutate: sendOtp, error: sendOtpError } = useSendOtp();
+  const otpFlowId = useOtpFlow((state) => state.id);
+  const startOtpFlow = useOtpFlow((state) => state.start);
+  const resetOtpFlow = useOtpFlow((state) => state.reset);
+
+  const passMfa = useMfaState((state) => state.pass);
+
+  const { mutate: sendOtpMutate, error: sendOtpError } = useSendOtpMutation();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only once
   useEffect(() => {
-    sendOtp({ email: me!.email });
+    sendOtpMutate(
+      { email: me!.email },
+      {
+        onSuccess: (otpFlowId, { email }) => {
+          startOtpFlow({ id: otpFlowId, email });
+        },
+      },
+    );
   }, []);
 
   const {
-    mutate: verifyOtp,
+    mutate: verifyOtpMutate,
     error: verifyOtpError,
-    isPending: isVerifyingOtp,
-  } = useVerifyOtp();
+    isPending,
+  } = useVerifyOtpMutation();
 
-  const error = sendOtpError || verifyOtpError;
+  const verifyOtp = (otp: string) => {
+    if (!otpFlowId) {
+      return;
+    }
 
-  const resetOtpFlow = useOtpFlow((state) => state.reset);
-
-  const tryMfa = (otp: string) => {
-    verifyOtp(
-      { otp },
+    verifyOtpMutate(
+      { otpFlowId, otp },
       {
         onSuccess: () => {
-          passMfa();
           resetOtpFlow();
+          passMfa();
         },
       },
     );
   };
+
+  const error = sendOtpError || verifyOtpError;
 
   if (!me) {
     return null;
@@ -55,7 +68,7 @@ export function MfaVerifyOtpScreen() {
         <Text>{me.email}</Text> before continuing to access sensitive data or
         operations.
       </Text>
-      <OtpInput disabled={isVerifyingOtp} onFilled={tryMfa} />
+      <OtpInput disabled={isPending} onFilled={verifyOtp} />
       {error && (
         <Alert variant="destructive" className="mt-4">
           <AlertTitle>Error</AlertTitle>

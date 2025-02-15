@@ -1,4 +1,4 @@
-import { useVerifyOtp } from "@/apis/auth";
+import { useVerifyOtpMutation } from "@/apis/auth";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Text } from "@/components/ui/text";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
@@ -6,13 +6,26 @@ import { View } from "react-native";
 import { OtpInput } from "./ui/otp-input";
 
 export function SignUpVerifyOtpScreen() {
-  const { mutate, error, isPending } = useVerifyOtp();
+  const { mutate, error, isPending } = useVerifyOtpMutation();
+
+  const otpFlowId = useOtpFlow((state) => state.id);
+  const email = useOtpFlow((state) => state.email);
+  const completeOtpFlow = useOtpFlow((state) => state.complete);
 
   const verifyOtp = (otp: string) => {
-    mutate({ otp });
-  };
+    if (!otpFlowId) {
+      return;
+    }
 
-  const email = useOtpFlow((state) => state.email);
+    mutate(
+      { otpFlowId, otp },
+      {
+        onSuccess: () => {
+          completeOtpFlow();
+        },
+      },
+    );
+  };
 
   return (
     <View className="grow justify-center px-12 bg-background">

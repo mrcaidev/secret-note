@@ -1,53 +1,36 @@
-import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { tokenStorage } from "@/utils/storage";
 import type { User } from "@/utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
 
-export function useSendOtp() {
-  const startOtpFlow = useOtpFlow((state) => state.start);
-
-  return useMutation<{ otpFlowId: string }, Error, { email: string }>({
+export function useSendOtpMutation() {
+  return useMutation<string, Error, { email: string }>({
     mutationFn: async (data) => {
       return await request.post("/auth/otp/send", data);
     },
-    onSuccess: ({ otpFlowId }, { email }) => {
-      startOtpFlow({ id: otpFlowId, email });
-    },
   });
 }
 
-export function useVerifyOtp() {
-  const otpFlowId = useOtpFlow((state) => state.id);
-  const completeOtpFlow = useOtpFlow((state) => state.complete);
-
-  return useMutation<null, Error, { otp: string }>({
+export function useVerifyOtpMutation() {
+  return useMutation<0, Error, { otpFlowId: string; otp: string }>({
     mutationFn: async (data) => {
-      return await request.post("/auth/otp/verify", { otpFlowId, ...data });
-    },
-    onSuccess: () => {
-      completeOtpFlow();
+      return await request.post("/auth/otp/verify", data);
     },
   });
 }
 
-export function useSignUp() {
-  const email = useOtpFlow((state) => state.email);
-  const resetOtpFlow = useOtpFlow((state) => state.reset);
-
+export function useSignUpMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<
     User & { token: string },
     Error,
-    { password: string; nickname: string }
+    { email: string; password: string; nickname: string }
   >({
     mutationFn: async (data) => {
-      return await request.post("/users", { email, ...data });
+      return await request.post("/users", data);
     },
     onSuccess: async ({ token, ...me }) => {
-      resetOtpFlow();
-
       await tokenStorage.set(token);
 
       queryClient.cancelQueries({ queryKey: ["me"] });

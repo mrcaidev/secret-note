@@ -1,4 +1,4 @@
-import { useSignUp } from "@/apis/auth";
+import { useSignUpMutation } from "@/apis/auth";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -52,19 +52,28 @@ export function SignUpCompleteScreen() {
     resolver: valibotResolver(schema),
   });
 
-  const router = useRouter();
-
-  const { mutate, error, isPending } = useSignUp();
-
-  const completeSignUp = handleSubmit((data) => {
-    mutate(data, {
-      onSuccess: () => {
-        router.push("/");
-      },
-    });
-  });
+  const { mutate, error, isPending } = useSignUpMutation();
 
   const email = useOtpFlow((state) => state.email);
+  const resetOtpFlow = useOtpFlow((state) => state.reset);
+
+  const router = useRouter();
+
+  const signUp = handleSubmit((data) => {
+    if (!email) {
+      return;
+    }
+
+    mutate(
+      { email, ...data },
+      {
+        onSuccess: () => {
+          resetOtpFlow();
+          router.push("/");
+        },
+      },
+    );
+  });
 
   return (
     <View className="grow justify-center px-12 bg-background">
@@ -152,7 +161,7 @@ export function SignUpCompleteScreen() {
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
-      <Button onPress={completeSignUp} disabled={isPending}>
+      <Button onPress={signUp} disabled={isPending}>
         {isPending ? (
           <Icon as={Loader2Icon} className="animate-spin" />
         ) : (
