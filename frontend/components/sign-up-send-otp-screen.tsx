@@ -11,7 +11,7 @@ import { MailIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import * as v from "valibot";
-import { ErrorAlert } from "./error-alert";
+import { FormError } from "./form-error";
 import { FormFieldError } from "./form-field-error";
 import { Spinner } from "./spinner";
 
@@ -64,7 +64,7 @@ export function SignUpSendOtpScreen() {
           </View>
         )}
       />
-      {error && <ErrorAlert description={error.message} className="mb-4" />}
+      <FormError error={error} className="mb-4" />
       <Button onPress={sendOtp} disabled={isPending} className="mb-4">
         {isPending ? <Spinner /> : <Icon as={MailIcon} />}
         <Text>Send OTP</Text>

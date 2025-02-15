@@ -1,5 +1,5 @@
 import { useUpdateMe } from "@/apis/me";
-import { ErrorAlert } from "@/components/error-alert";
+import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,7 @@ export default function EmailSettingPage() {
           </View>
         )}
       />
-      {error && <ErrorAlert description={error.message} className="mb-4" />}
+      <FormError error={error} className="mb-4" />
       <Button onPress={updateEmail} disabled={isPending}>
         {isPending ? <Spinner /> : <Icon as={SaveIcon} />}
         <Text>Update</Text>

@@ -1,5 +1,5 @@
 import { useCreateNote } from "@/apis/note";
-import { ErrorAlert } from "@/components/error-alert";
+import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
@@ -97,7 +97,7 @@ export default function NewNotePage() {
           </View>
         )}
       />
-      {error && <ErrorAlert description={error.message} className="mb-4" />}
+      <FormError error={error} className="mb-4" />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button disabled={!formState.isValid} className="mb-4">

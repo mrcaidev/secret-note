@@ -1,5 +1,5 @@
 import { useSignInWithEmailMutation } from "@/apis/auth";
-import { ErrorAlert } from "@/components/error-alert";
+import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { OauthGoogleButton } from "@/components/oauth-google-button";
 import { Spinner } from "@/components/spinner";
@@ -97,7 +97,7 @@ export default function SignInPage() {
           </View>
         )}
       />
-      {error && <ErrorAlert description={error.message} className="mb-4" />}
+      <FormError error={error} className="mb-4" />
       <Button onPress={signIn} disabled={isPending} className="mb-4">
         {isPending ? <Spinner /> : <Icon as={LogInIcon} />}
         <Text>Sign in</Text>
