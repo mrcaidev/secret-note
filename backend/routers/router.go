@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"backend/common"
 	"backend/config"
 	"backend/controllers"
 	"github.com/gin-gonic/gin"
@@ -38,8 +39,13 @@ func authMiddleware() gin.HandlerFunc {
 		tokenString := c.GetHeader("Authorization")
 		tokenString = strings.TrimSpace(strings.TrimPrefix(tokenString, "Bearer "))
 
+		response := common.Response{
+			Code:    common.StatusUnauthorized,
+			Message: common.ErrCodeToString(common.StatusUnauthorized),
+		}
+
 		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Lack of Authorization Header"})
+			c.JSON(http.StatusUnauthorized, response)
 			c.Abort()
 			return
 		}
@@ -54,7 +60,7 @@ func authMiddleware() gin.HandlerFunc {
 		})
 		var _, invalidToken = config.Cache.Get(config.INVALID_TOKEN + tokenString)
 		if err != nil || !token.Valid || invalidToken {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			c.JSON(http.StatusUnauthorized, response)
 			c.Abort()
 			return
 		}
@@ -63,7 +69,7 @@ func authMiddleware() gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			c.Set("uid", claims["uid"].(string))
 		} else if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			c.JSON(http.StatusUnauthorized, response)
 		}
 		c.Next()
 	}
