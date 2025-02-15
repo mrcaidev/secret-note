@@ -2,9 +2,9 @@ import type { PublicNote } from "@/utils/types";
 import { Link } from "expo-router";
 import { ClockIcon } from "lucide-react-native";
 import { View } from "react-native";
+import { Avatar } from "./avatar";
 import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
-import { Avatar } from "./avatar";
 
 type Props = {
   note: Omit<PublicNote, "content">;
@@ -37,7 +37,8 @@ export function NoteCard({ note }: Props) {
   );
 }
 
-function daysAgo(timestamp: number) {
+function daysAgo(iso: string) {
+  const timestamp = new Date(iso).getTime();
   const days = (Date.now() - timestamp) / (24 * 60 * 60 * 1000);
 
   if (days < 1) {

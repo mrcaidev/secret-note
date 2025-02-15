@@ -48,7 +48,9 @@ export default function NotePage() {
       ))}
       <View className="flex-row items-center gap-2 mt-6">
         <Icon as={PenLineIcon} className="text-muted-foreground" />
-        <Muted>Created on {dateTimeFormat.format(note.createdAt)}</Muted>
+        <Muted>
+          Created on {dateTimeFormat.format(new Date(note.createdAt))}
+        </Muted>
       </View>
     </View>
   );

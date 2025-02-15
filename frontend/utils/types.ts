@@ -15,12 +15,12 @@ export type Note = {
   content: string;
   author: PublicUser;
   link: string;
-  password: string | null;
+  password: string;
   burn: boolean;
-  ttl: number | null;
-  receivers: { email: string }[] | null;
-  createdAt: number;
-  deletedAt: number | null;
+  ttl: number;
+  receivers: string[] | null;
+  createdAt: string;
+  deletedAt: string | null;
 };
 
 export type PublicNote = Pick<
