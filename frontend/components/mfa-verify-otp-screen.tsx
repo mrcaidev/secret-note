@@ -10,6 +10,7 @@ import { Text } from "./ui/text";
 
 export function MfaVerifyOtpScreen() {
   const { data: me } = useMe();
+  const email = me!.email;
 
   const otpFlowId = useOtpFlow((state) => state.id);
   const startOtpFlow = useOtpFlow((state) => state.start);
@@ -17,24 +18,27 @@ export function MfaVerifyOtpScreen() {
 
   const passMfa = useMfaState((state) => state.pass);
 
-  const { mutate: sendOtpMutate, error: sendOtpError } = useSendOtpMutation();
+  const {
+    mutate: sendOtpMutate,
+    error: sendOtpError,
+    isPending: isSendOtpPending,
+  } = useSendOtpMutation();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only once
   useEffect(() => {
     sendOtpMutate(
-      { email: me!.email },
+      { email },
       {
         onSuccess: (otpFlowId, { email }) => {
           startOtpFlow({ id: otpFlowId, email });
         },
       },
     );
-  }, []);
+  }, [email, sendOtpMutate, startOtpFlow]);
 
   const {
     mutate: verifyOtpMutate,
     error: verifyOtpError,
-    isPending,
+    isPending: isVerifyOtpPending,
   } = useVerifyOtpMutation();
 
   const verifyOtp = (otp: string) => {
@@ -54,21 +58,18 @@ export function MfaVerifyOtpScreen() {
   };
 
   const error = sendOtpError || verifyOtpError;
-
-  if (!me) {
-    return null;
-  }
+  const isPending = isSendOtpPending || isVerifyOtpPending;
 
   return (
-    <View className="grow justify-center px-12">
+    <View className="grow justify-center px-12 bg-background">
       <Text className="mb-3 text-3xl font-bold">OTP Verification</Text>
       <Text className="mb-6 text-muted-foreground">
         Multi-Factor Authentication (MFA) is enabled for your account. Please
         enter below the 6-digit One-Time Password (OTP) sent to&nbsp;
-        <Text>{me.email}</Text> before continuing to access sensitive data or
+        <Text>{email}</Text>&nbsp;before continuing to access sensitive data or
         operations.
       </Text>
-      <OtpInput disabled={isPending} onFilled={verifyOtp} />
+      <OtpInput onFilled={verifyOtp} disabled={isPending} />
       <FormError error={error} className="mt-4" />
     </View>
   );
