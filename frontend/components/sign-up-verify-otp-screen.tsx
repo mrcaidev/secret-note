@@ -8,15 +8,11 @@ import { OtpInput } from "./ui/otp-input";
 export function SignUpVerifyOtpScreen() {
   const { mutate, error, isPending } = useVerifyOtpMutation();
 
-  const otpFlowId = useOtpFlow((state) => state.id);
-  const email = useOtpFlow((state) => state.email);
+  const otpFlowId = useOtpFlow((state) => state.id)!;
+  const email = useOtpFlow((state) => state.email)!;
   const completeOtpFlow = useOtpFlow((state) => state.complete);
 
   const verifyOtp = (otp: string) => {
-    if (!otpFlowId) {
-      return;
-    }
-
     mutate(
       { otpFlowId, otp },
       {
@@ -32,10 +28,10 @@ export function SignUpVerifyOtpScreen() {
       <Text className="mb-3 text-3xl font-bold">OTP Verification</Text>
       <Text className="mb-6 text-muted-foreground">
         We have sent a 6-digit One-Time Password to&nbsp;
-        <Text>{email ?? "your email"}</Text>&nbsp;to verify your identity.
-        Please enter it below.
+        <Text>{email}</Text>&nbsp;to verify your identity. Please enter it
+        below.
       </Text>
-      <OtpInput disabled={isPending} onFilled={verifyOtp} />
+      <OtpInput onFilled={verifyOtp} disabled={isPending} />
       {error && (
         <Alert variant="destructive" className="mt-4">
           <AlertTitle>Error</AlertTitle>

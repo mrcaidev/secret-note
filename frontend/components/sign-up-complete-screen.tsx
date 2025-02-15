@@ -55,16 +55,12 @@ export function SignUpCompleteScreen() {
 
   const { mutate, error, isPending } = useSignUpMutation();
 
-  const email = useOtpFlow((state) => state.email);
+  const email = useOtpFlow((state) => state.email)!;
   const resetOtpFlow = useOtpFlow((state) => state.reset);
 
   const router = useRouter();
 
   const signUp = handleSubmit((data) => {
-    if (!email) {
-      return;
-    }
-
     mutate(
       { email, ...data },
       {
@@ -85,7 +81,7 @@ export function SignUpCompleteScreen() {
       <View className="gap-2 mb-4">
         <Label nativeID="email">Email</Label>
         <Input
-          value={email ?? "Unknown email"}
+          value={email}
           editable={false}
           readOnly
           aria-labelledby="email"
