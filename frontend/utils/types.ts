@@ -2,9 +2,9 @@ export type User = {
   id: string;
   email: string;
   nickname: string;
-  avatarUrl: string | null;
-  createdAt: number;
-  deletedAt: number | null;
+  avatarUrl: string;
+  createdAt: string;
+  deletedAt: string | null;
 };
 
 export type PublicUser = Pick<User, "id" | "nickname" | "avatarUrl">;
