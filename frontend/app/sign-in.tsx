@@ -1,4 +1,4 @@
-import { useSignInMutation } from "@/apis/auth";
+import { useSignInWithEmailMutation } from "@/apis/auth";
 import { ErrorAlert } from "@/components/error-alert";
 import { OauthGoogleButton } from "@/components/oauth-google-button";
 import { Spinner } from "@/components/spinner";
@@ -35,7 +35,7 @@ export default function SignInPage() {
     resolver: valibotResolver(schema),
   });
 
-  const { mutate, error, isPending } = useSignInMutation();
+  const { mutate, error, isPending } = useSignInWithEmailMutation();
 
   const router = useRouter();
 

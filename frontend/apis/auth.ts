@@ -39,7 +39,7 @@ export function useSignUpMutation() {
   });
 }
 
-export function useSignInMutation() {
+export function useSignInWithEmailMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -59,7 +59,7 @@ export function useSignInMutation() {
   });
 }
 
-export function useSignInWithOauth(provider: string) {
+export function useSignInWithOauthMutation(provider: string) {
   const queryClient = useQueryClient();
 
   return useMutation<User & { token: string }, Error, { accessToken: string }>({
@@ -75,7 +75,7 @@ export function useSignInWithOauth(provider: string) {
   });
 }
 
-export function useSignOut() {
+export function useSignOutMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({

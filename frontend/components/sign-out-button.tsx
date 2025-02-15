@@ -1,4 +1,4 @@
-import { useSignOut } from "@/apis/auth";
+import { useSignOutMutation } from "@/apis/auth";
 import { useRouter } from "expo-router";
 import { LogOutIcon } from "lucide-react-native";
 import { Pressable } from "react-native";
@@ -6,7 +6,7 @@ import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 export function SignOutButton() {
-  const { mutate } = useSignOut();
+  const { mutate } = useSignOutMutation();
 
   const router = useRouter();
 

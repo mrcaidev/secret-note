@@ -1,4 +1,4 @@
-import { useSignInWithOauth } from "@/apis/auth";
+import { useSignInWithOauthMutation } from "@/apis/auth";
 import * as Google from "expo-auth-session/providers/google";
 import * as Constants from "expo-constants";
 import { useRouter } from "expo-router";
@@ -24,7 +24,7 @@ export function OauthGoogleButton() {
     }),
   });
 
-  const { mutate, error, isPending } = useSignInWithOauth("google");
+  const { mutate, error, isPending } = useSignInWithOauthMutation("google");
 
   const router = useRouter();
 
