@@ -439,8 +439,12 @@ function TtlInput() {
               {...field}
               value={field.value === 0 ? "" : String(field.value)}
               onChangeText={(text) => {
+                if (Number.isNaN(Number(text))) {
+                  return;
+                }
                 field.onChange(Number(text));
               }}
+              onChange={undefined}
               editable={ttlEnabled}
               keyboardType="numeric"
               className="w-16 web:w-16"
