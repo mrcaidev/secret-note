@@ -361,22 +361,8 @@ function BurnCheckbox() {
 }
 
 function TtlInput() {
-  const { control, formState, watch, getFieldState, setValue, resetField } =
-    useFormContext<Schema>();
+  const { control, formState, watch } = useFormContext<Schema>();
   const ttlEnabled = watch("ttlEnabled");
-
-  useEffect(() => {
-    if (!ttlEnabled) {
-      resetField("ttl");
-      return;
-    }
-
-    if (getFieldState("ttl").isDirty) {
-      return;
-    }
-
-    setValue("ttl", 7, { shouldValidate: true });
-  }, [ttlEnabled, getFieldState, setValue, resetField]);
 
   return (
     <View className="gap-2">
