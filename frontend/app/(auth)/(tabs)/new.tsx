@@ -315,6 +315,7 @@ function PasswordInput() {
                 onPress={() => {
                   field.onChange(generatePassword());
                 }}
+                disabled={!passwordEnabled}
                 aria-label="Regenerate a random password"
               >
                 <Icon as={RefreshCwIcon} />
