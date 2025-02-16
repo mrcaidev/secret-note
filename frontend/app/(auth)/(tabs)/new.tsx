@@ -125,16 +125,20 @@ export default function NewNotePage() {
   const [formError, setFormError] = useState<Error | null>(null);
 
   return (
-    <FormProvider {...form}>
-      <View className="grow px-6 pt-16 bg-background">
+    <View className="grow px-6 pt-16 bg-background">
+      <FormProvider {...form}>
         <ContentTextarea />
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <View className="gap-2 my-4">
+      </FormProvider>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <View className="gap-2 my-4">
+          <FormProvider {...form}>
             <CopyFromClipboardButton />
             <ClearButton />
             <DialogOpener />
-          </View>
-          <DialogContent className="min-w-80">
+          </FormProvider>
+        </View>
+        <DialogContent className="min-w-80">
+          <FormProvider {...form}>
             <DialogHeader>
               <DialogTitle>Settings</DialogTitle>
               <DialogDescription>
@@ -163,10 +167,10 @@ export default function NewNotePage() {
               </View>
               <FormError error={formError} />
             </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </View>
-    </FormProvider>
+          </FormProvider>
+        </DialogContent>
+      </Dialog>
+    </View>
   );
 }
 
