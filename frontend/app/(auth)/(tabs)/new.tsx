@@ -1,4 +1,5 @@
 import { useCreateNote } from "@/apis/note";
+import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
@@ -117,21 +118,8 @@ export default function NewNotePage() {
     resolver: valibotResolver(schema),
   });
 
-  const { mutate, error, isPending } = useCreateNote();
-
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const router = useRouter();
-
-  const createNote = form.handleSubmit((data) => {
-    // mutate(data, {
-    //   onSuccess: (note) => {
-    //     setDialogOpen(false);
-    //     router.push(`/notes/${note.id}`);
-    //   },
-    // });
-    console.log(data);
-  });
+  const [formError, setFormError] = useState<Error | null>(null);
 
   return (
     <FormProvider {...form}>
@@ -153,20 +141,20 @@ export default function NewNotePage() {
               <TtlInput />
               <ReceiversInput />
             </View>
-            <DialogFooter className="flex-row justify-end gap-2 mt-2">
-              <DialogClose asChild>
-                <Button variant="secondary">
-                  <Icon as={XIcon} />
-                  <Text>Cancel</Text>
-                </Button>
-              </DialogClose>
-              <Button
-                disabled={isPending || !form.formState.isValid}
-                onPress={createNote}
-              >
-                {isPending ? <Spinner /> : <Icon as={Share2Icon} />}
-                <Text>Share</Text>
-              </Button>
+            <DialogFooter>
+              <View className="flex-row justify-end gap-2 mt-2">
+                <DialogClose asChild>
+                  <Button variant="secondary">
+                    <Icon as={XIcon} />
+                    <Text>Cancel</Text>
+                  </Button>
+                </DialogClose>
+                <CreateNoteButton
+                  closeDialog={() => setDialogOpen(false)}
+                  setFormError={setFormError}
+                />
+              </View>
+              <FormError error={formError} />
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -548,5 +536,57 @@ function ReceiverInput() {
       </View>
       <FormFieldError error={formState.errors.email} />
     </View>
+  );
+}
+
+type CreateNoteButtonProps = {
+  closeDialog: () => void;
+  setFormError: (error: Error | null) => void;
+};
+
+function CreateNoteButton({
+  closeDialog,
+  setFormError,
+}: CreateNoteButtonProps) {
+  const { handleSubmit, formState, reset } = useFormContext<Schema>();
+
+  const { mutate, isPending } = useCreateNote();
+
+  const router = useRouter();
+
+  const createNote = handleSubmit(
+    ({
+      password,
+      passwordEnabled,
+      receivers,
+      receiversEnabled,
+      ttl,
+      ttlEnabled,
+      ...rest
+    }) => {
+      const data = {
+        ...rest,
+        password: passwordEnabled ? password : "",
+        receivers: receiversEnabled ? receivers : [],
+        ttl: ttlEnabled ? ttl : 0,
+      };
+
+      mutate(data, {
+        onSuccess: (note) => {
+          reset();
+          setFormError(null);
+          closeDialog();
+          router.push(`/notes/${note.id}`);
+        },
+        onError: setFormError,
+      });
+    },
+  );
+
+  return (
+    <Button disabled={!formState.isValid || isPending} onPress={createNote}>
+      {isPending ? <Spinner /> : <Icon as={Share2Icon} />}
+      <Text>Share</Text>
+    </Button>
   );
 }
