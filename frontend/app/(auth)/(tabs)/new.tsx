@@ -252,22 +252,20 @@ function generatePassword() {
 }
 
 function PasswordInput() {
-  const { control, formState, watch, getFieldState, setValue, resetField } =
+  const { control, formState, watch, getFieldState, setValue } =
     useFormContext<Schema>();
   const passwordEnabled = watch("passwordEnabled");
 
   useEffect(() => {
-    if (!passwordEnabled) {
-      resetField("password");
+    if (!passwordEnabled || getFieldState("password").isDirty) {
       return;
     }
 
-    if (getFieldState("password").isDirty) {
-      return;
-    }
-
-    setValue("password", generatePassword(), { shouldValidate: true });
-  }, [passwordEnabled, getFieldState, setValue, resetField]);
+    setValue("password", generatePassword(), {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  }, [passwordEnabled, getFieldState, setValue]);
 
   return (
     <View className="gap-2">
