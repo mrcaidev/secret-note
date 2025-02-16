@@ -1,10 +1,10 @@
-import { useNotes } from "@/apis/note";
+import { useNotesInfiniteQuery } from "@/apis/note";
 import { FlatList, View } from "react-native";
 import { NoteCard } from "./note-card";
 import { Text } from "./ui/text";
 
 export function NoteCardList() {
-  const { data: notes, error, isPending } = useNotes();
+  const { data, error, isPending } = useNotesInfiniteQuery();
 
   if (isPending) {
     return (
@@ -28,7 +28,7 @@ export function NoteCardList() {
 
   return (
     <FlatList
-      data={notes}
+      data={data.pages.flatMap(({ notes }) => notes)}
       renderItem={({ item }) => <NoteCard note={item} />}
       contentContainerClassName="divide-y divide-border"
     />

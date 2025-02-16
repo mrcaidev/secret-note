@@ -1,13 +1,27 @@
 import type { Note, PublicNote } from "@/utils/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
 import { request } from "./request";
 
-export function useNotes() {
-  return useQuery<Omit<PublicNote, "content">[]>({
+export function useNotesInfiniteQuery() {
+  type Data = {
+    notes: Omit<PublicNote, "content">[];
+    nextCursor: string;
+  };
+
+  return useInfiniteQuery<Data, Error, InfiniteData<Data>, string[], string>({
     queryKey: ["notes"],
-    queryFn: async () => {
-      return await request.get("/notes?limit=10");
+    queryFn: async ({ pageParam: cursor }) => {
+      const searchParams = new URLSearchParams({ limit: "10", cursor });
+      return await request.get(`/notes?${searchParams}`);
     },
+    initialPageParam: "",
+    getNextPageParam: (lastPage) => lastPage.nextCursor || null,
   });
 }
 
