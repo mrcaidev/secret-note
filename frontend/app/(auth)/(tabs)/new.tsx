@@ -150,7 +150,7 @@ export default function NewNotePage() {
               <TtlInput />
               <ReceiversInput />
             </View>
-            <DialogFooter className="flex-row justify-end gap-2">
+            <DialogFooter className="flex-row justify-end gap-2 mt-2">
               <DialogClose asChild>
                 <Button variant="secondary">
                   <Icon as={XIcon} />
