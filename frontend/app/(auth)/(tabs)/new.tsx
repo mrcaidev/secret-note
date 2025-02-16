@@ -24,6 +24,7 @@ import * as Clipboard from "expo-clipboard";
 import { useRouter } from "expo-router";
 import {
   ClipboardIcon,
+  EraserIcon,
   PlusIcon,
   RefreshCwIcon,
   Share2Icon,
@@ -130,6 +131,7 @@ export default function NewNotePage() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <View className="gap-2 my-4">
             <CopyFromClipboardButton />
+            <ClearButton />
             <DialogOpener />
           </View>
           <DialogContent className="min-w-80">
@@ -224,6 +226,26 @@ function CopyFromClipboardButton() {
     <Button variant="secondary" onPress={copyFromClipboard}>
       <Icon as={ClipboardIcon} />
       <Text>Copy from Clipboard</Text>
+    </Button>
+  );
+}
+
+function ClearButton() {
+  const { watch, resetField } = useFormContext<Schema>();
+  const content = watch("content");
+
+  const clearContent = () => {
+    resetField("content");
+  };
+
+  if (!content) {
+    return null;
+  }
+
+  return (
+    <Button variant="secondary" onPress={clearContent}>
+      <Icon as={EraserIcon} />
+      <Text>Clear</Text>
     </Button>
   );
 }
