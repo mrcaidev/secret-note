@@ -574,6 +574,7 @@ function ReceiverInput() {
               placeholder="someone@example.com"
               keyboardType="email-address"
               aria-label="new receiver email"
+              className="grow"
             />
           )}
         />
