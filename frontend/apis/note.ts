@@ -20,14 +20,19 @@ export function useNote(id: string) {
   });
 }
 
-export function useCreateNote() {
+export function useCreateNoteMutation() {
   const queryClient = useQueryClient();
 
-  return useMutation<Note, Error, Pick<Note, "title" | "content">>({
+  return useMutation<
+    Note,
+    Error,
+    Pick<Note, "title" | "content" | "password" | "burn" | "ttl" | "receivers">
+  >({
     mutationFn: async (data) => {
       return await request.post("/notes", data);
     },
     onSuccess: (note) => {
+      queryClient.setQueryData<Note>(["note", note.id], note);
       queryClient.setQueryData<Omit<Note, "content">[]>(["notes"], (old) =>
         old ? [note, ...old] : [note],
       );

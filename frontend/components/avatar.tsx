@@ -10,7 +10,7 @@ type Props = Partial<ComponentProps<typeof BaseAvatar>> & {
 export function Avatar({ user, alt = "Avatar", ...props }: Props) {
   return (
     <BaseAvatar alt={alt} {...props}>
-      <AvatarImage source={{ uri: user.avatarUrl ?? undefined }} />
+      <AvatarImage source={{ uri: user.avatarUrl }} />
       <AvatarFallback>
         <Text>{user.nickname[0]}</Text>
       </AvatarFallback>
