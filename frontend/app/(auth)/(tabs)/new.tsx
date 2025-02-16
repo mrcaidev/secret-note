@@ -89,7 +89,7 @@ const schema = v.pipe(
   v.forward(
     v.check(
       ({ receivers, receiversEnabled }) =>
-        !receiversEnabled || receivers?.length !== 0,
+        !receiversEnabled || (receivers !== null && receivers.length > 0),
       "Receivers are required",
     ),
     ["receivers"],
@@ -438,7 +438,7 @@ function ReceiversInput() {
 
   useEffect(() => {
     if (!receiversEnabled) {
-      resetField("receivers");
+      setValue("receivers", null, { shouldValidate: true });
       return;
     }
 
@@ -446,8 +446,8 @@ function ReceiversInput() {
       return;
     }
 
-    setValue("receivers", null, { shouldValidate: true });
-  }, [receiversEnabled, getFieldState, setValue, resetField]);
+    setValue("receivers", [], { shouldValidate: true });
+  }, [receiversEnabled, getFieldState, setValue]);
 
   return (
     <View className="gap-2">
@@ -474,7 +474,7 @@ function ReceiversInput() {
           </View>
         )}
       />
-      <FormFieldError error={formState.errors.password} />
+      <FormFieldError error={formState.errors.receivers} />
     </View>
   );
 }
