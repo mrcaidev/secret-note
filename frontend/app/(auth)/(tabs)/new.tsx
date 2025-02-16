@@ -292,7 +292,7 @@ function PasswordInput() {
                 }}
                 className={cn(field.value || "text-muted-foreground")}
               >
-                Protect with password
+                Password
               </Label>
             </Fragment>
           )}
@@ -301,25 +301,27 @@ function PasswordInput() {
           control={control}
           name="password"
           render={({ field }) => (
-            <Input
-              {...field}
-              onChangeText={field.onChange}
-              maxLength={4}
-              editable={passwordEnabled}
-              className="uppercase"
-            />
+            <View className="flex-row items-center gap-1">
+              <Input
+                {...field}
+                onChangeText={field.onChange}
+                maxLength={4}
+                editable={passwordEnabled}
+                className="w-20 web:w-20 uppercase"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onPress={() => {
+                  field.onChange(generatePassword());
+                }}
+                aria-label="Regenerate a random password"
+              >
+                <Icon as={RefreshCwIcon} />
+              </Button>
+            </View>
           )}
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          onPress={() => {
-            setValue("password", generatePassword());
-          }}
-          aria-label="Regenerate a random password"
-        >
-          <Icon as={RefreshCwIcon} />
-        </Button>
       </View>
       <FormFieldError error={formState.errors.password} />
     </View>
@@ -398,7 +400,7 @@ function TtlInput() {
                 }}
                 className={cn(field.value || "text-muted-foreground")}
               >
-                Automatically expires in
+                Expires in
               </Label>
             </Fragment>
           )}
@@ -415,6 +417,7 @@ function TtlInput() {
               }}
               editable={ttlEnabled}
               keyboardType="numeric"
+              className="w-16 web:w-16"
             />
           )}
         />
