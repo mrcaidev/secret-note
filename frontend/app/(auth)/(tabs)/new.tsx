@@ -20,7 +20,7 @@ import { Text } from "@/components/ui/text";
 import { cn } from "@/components/ui/utils";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { Share2Icon, XIcon } from "lucide-react-native";
+import { RefreshCwIcon, Share2Icon, XIcon } from "lucide-react-native";
 import { Fragment, useEffect, useState } from "react";
 import {
   Controller,
@@ -310,6 +310,16 @@ function PasswordInput() {
             />
           )}
         />
+        <Button
+          variant="ghost"
+          size="icon"
+          onPress={() => {
+            setValue("password", generatePassword());
+          }}
+          aria-label="Regenerate a random password"
+        >
+          <Icon as={RefreshCwIcon} />
+        </Button>
       </View>
       <FormFieldError error={formState.errors.password} />
     </View>
