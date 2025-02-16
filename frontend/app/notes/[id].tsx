@@ -50,7 +50,7 @@ export default function NotePage() {
     <View className="px-8 pt-16 bg-background">
       <View className="flex-row justify-between items-center">
         <HomeLink />
-        <ShareButton link={note.link} />
+        <SharePopover link={note.link} />
       </View>
       <H1 className="mb-6">{note.title}</H1>
       <View className="flex-row items-center gap-3 mb-6">
@@ -119,18 +119,11 @@ function HomeLink() {
   );
 }
 
-type ShareButtonProps = {
+type HasLinkProps = {
   link: string;
 };
 
-function ShareButton({ link }: ShareButtonProps) {
-  const [success, setSuccess] = useState<boolean | null>(null);
-
-  const copyToClipboard = async () => {
-    const success = await Clipboard.setStringAsync(link);
-    setSuccess(success);
-  };
-
+function SharePopover({ link }: HasLinkProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -140,30 +133,43 @@ function ShareButton({ link }: ShareButtonProps) {
       </PopoverTrigger>
       <PopoverContent align="end">
         <Text className="mb-2 font-medium">Share this note</Text>
-        <View className="flex-row items-center">
-          <Input
-            value={link}
-            editable={false}
-            readOnly
-            className="rounded-r-none"
-          />
-          <Button
-            variant="outline"
-            size="icon"
-            onPress={copyToClipboard}
-            aria-label="Copy link to clipboard"
-            className="rounded-l-none"
-          >
-            {success === null ? (
-              <Icon as={ClipboardIcon} />
-            ) : success ? (
-              <Icon as={CheckIcon} />
-            ) : (
-              <Icon as={RotateCwIcon} />
-            )}
-          </Button>
-        </View>
+        <CopyLinkButton link={link} />
       </PopoverContent>
     </Popover>
+  );
+}
+
+function CopyLinkButton({ link }: HasLinkProps) {
+  const [success, setSuccess] = useState<boolean | null>(null);
+
+  const copyToClipboard = async () => {
+    const success = await Clipboard.setStringAsync(link);
+    setSuccess(success);
+  };
+
+  return (
+    <View className="flex-row items-center">
+      <Input
+        value={link}
+        editable={false}
+        readOnly
+        className="rounded-r-none"
+      />
+      <Button
+        variant="outline"
+        size="icon"
+        onPress={copyToClipboard}
+        aria-label="Copy link to clipboard"
+        className="rounded-l-none"
+      >
+        {success === null ? (
+          <Icon as={ClipboardIcon} />
+        ) : success ? (
+          <Icon as={CheckIcon} />
+        ) : (
+          <Icon as={RotateCwIcon} />
+        )}
+      </Button>
+    </View>
   );
 }
