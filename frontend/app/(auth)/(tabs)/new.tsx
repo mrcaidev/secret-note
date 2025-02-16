@@ -20,8 +20,10 @@ import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/components/ui/utils";
 import { valibotResolver } from "@hookform/resolvers/valibot";
+import * as Clipboard from "expo-clipboard";
 import { useRouter } from "expo-router";
 import {
+  ClipboardIcon,
   PlusIcon,
   RefreshCwIcon,
   Share2Icon,
@@ -126,7 +128,10 @@ export default function NewNotePage() {
       <View className="grow px-6 pt-16 bg-background">
         <ContentTextarea />
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogOpener />
+          <View className="gap-2 my-4">
+            <CopyFromClipboardButton />
+            <DialogOpener />
+          </View>
           <DialogContent className="min-w-80">
             <DialogHeader>
               <DialogTitle>Settings</DialogTitle>
@@ -194,11 +199,32 @@ function DialogOpener() {
 
   return (
     <DialogTrigger asChild>
-      <Button disabled={content === ""} className="my-4">
+      <Button disabled={content === ""}>
         <Icon as={Share2Icon} />
         <Text>Share</Text>
       </Button>
     </DialogTrigger>
+  );
+}
+
+function CopyFromClipboardButton() {
+  const { watch, setValue } = useFormContext<Schema>();
+  const content = watch("content");
+
+  const copyFromClipboard = async () => {
+    const content = await Clipboard.getStringAsync();
+    setValue("content", content);
+  };
+
+  if (content) {
+    return null;
+  }
+
+  return (
+    <Button variant="secondary" onPress={copyFromClipboard}>
+      <Icon as={ClipboardIcon} />
+      <Text>Copy from Clipboard</Text>
+    </Button>
   );
 }
 

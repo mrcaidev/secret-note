@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "expo": "~52.0.33",
     "expo-auth-session": "~6.0.3",
+    "expo-clipboard": "~7.0.1",
     "expo-constants": "~17.0.5",
     "expo-crypto": "~14.0.2",
     "expo-dev-client": "~5.0.12",
