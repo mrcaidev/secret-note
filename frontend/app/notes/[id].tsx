@@ -2,11 +2,27 @@ import { useNoteQuery } from "@/apis/note";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { H1, Muted, P } from "@/components/ui/typography";
+import * as Clipboard from "expo-clipboard";
 import { Link, useLocalSearchParams } from "expo-router";
-import { ArrowLeftIcon, HouseIcon, PenLineIcon } from "lucide-react-native";
+import {
+  ArrowLeftIcon,
+  CheckIcon,
+  ClipboardIcon,
+  HouseIcon,
+  PenLineIcon,
+  RotateCwIcon,
+  Share2Icon,
+} from "lucide-react-native";
+import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 const dateTimeFormat = new Intl.DateTimeFormat("en", {
@@ -32,7 +48,10 @@ export default function NotePage() {
 
   return (
     <View className="px-8 pt-16 bg-background">
-      <HomeLink />
+      <View className="flex-row justify-between items-center">
+        <HomeLink />
+        <ShareButton link={note.link} />
+      </View>
       <H1 className="mb-6">{note.title}</H1>
       <View className="flex-row items-center gap-3 mb-6">
         <Avatar user={note.author} className="size-8" />
@@ -92,10 +111,59 @@ function NotFoundScreen() {
 function HomeLink() {
   return (
     <Link href="/" asChild>
-      <Pressable className="flex-row items-center gap-2 w-fit py-5">
+      <Pressable className="flex-row items-center gap-2 py-5">
         <Icon as={ArrowLeftIcon} className="text-muted-foreground" />
         <Text className="text-muted-foreground">Home</Text>
       </Pressable>
     </Link>
+  );
+}
+
+type ShareButtonProps = {
+  link: string;
+};
+
+function ShareButton({ link }: ShareButtonProps) {
+  const [success, setSuccess] = useState<boolean | null>(null);
+
+  const copyToClipboard = async () => {
+    const success = await Clipboard.setStringAsync(link);
+    setSuccess(success);
+  };
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="Share note">
+          <Icon as={Share2Icon} />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end">
+        <Text className="mb-2 font-medium">Share this note</Text>
+        <View className="flex-row items-center">
+          <Input
+            value={link}
+            editable={false}
+            readOnly
+            className="rounded-r-none"
+          />
+          <Button
+            variant="outline"
+            size="icon"
+            onPress={copyToClipboard}
+            aria-label="Copy link to clipboard"
+            className="rounded-l-none"
+          >
+            {success === null ? (
+              <Icon as={ClipboardIcon} />
+            ) : success ? (
+              <Icon as={CheckIcon} />
+            ) : (
+              <Icon as={RotateCwIcon} />
+            )}
+          </Button>
+        </View>
+      </PopoverContent>
+    </Popover>
   );
 }
