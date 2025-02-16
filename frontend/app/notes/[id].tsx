@@ -1,5 +1,6 @@
 import { useNoteQuery } from "@/apis/note";
 import { Avatar } from "@/components/avatar";
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
@@ -23,7 +24,7 @@ import {
   Share2Icon,
 } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
 const dateTimeFormat = new Intl.DateTimeFormat("en", {
   dateStyle: "medium",
@@ -48,7 +49,7 @@ export default function NotePage() {
 
   return (
     <View className="px-8 pt-16 bg-background">
-      <View className="flex-row justify-between items-center">
+      <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <SharePopover link={note.link} />
       </View>
@@ -78,7 +79,13 @@ export default function NotePage() {
 function LoadingScreen() {
   return (
     <View className="grow px-8 pt-16 bg-background">
-      <HomeLink />
+      <View className="flex-row justify-between items-center mb-6">
+        <HomeLink />
+        <Button disabled>
+          <Spinner />
+          <Text>Share</Text>
+        </Button>
+      </View>
       <Skeleton className="h-10 mb-6" />
       <View className="flex-row items-center gap-3 mb-6">
         <Skeleton className="size-8 rounded-full" />
@@ -111,10 +118,10 @@ function NotFoundScreen() {
 function HomeLink() {
   return (
     <Link href="/" asChild>
-      <Pressable className="flex-row items-center gap-2 py-5">
-        <Icon as={ArrowLeftIcon} className="text-muted-foreground" />
-        <Text className="text-muted-foreground">Home</Text>
-      </Pressable>
+      <Button variant="outline">
+        <Icon as={ArrowLeftIcon} />
+        <Text>Home</Text>
+      </Button>
     </Link>
   );
 }
@@ -127,8 +134,9 @@ function SharePopover({ link }: HasLinkProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Share note">
+        <Button>
           <Icon as={Share2Icon} />
+          <Text>Share</Text>
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end">
