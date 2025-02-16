@@ -20,7 +20,12 @@ import { Text } from "@/components/ui/text";
 import { cn } from "@/components/ui/utils";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useRouter } from "expo-router";
-import { RefreshCwIcon, Share2Icon, XIcon } from "lucide-react-native";
+import {
+  PlusIcon,
+  RefreshCwIcon,
+  Share2Icon,
+  XIcon,
+} from "lucide-react-native";
 import { Fragment, useEffect, useState } from "react";
 import {
   Controller,
@@ -28,7 +33,7 @@ import {
   useForm,
   useFormContext,
 } from "react-hook-form";
-import { TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 import * as v from "valibot";
 
 const schema = v.pipe(
@@ -414,7 +419,8 @@ function TtlInput() {
 }
 
 function ReceiversInput() {
-  const { control, formState } = useFormContext<Schema>();
+  const { control, formState, watch } = useFormContext<Schema>();
+  const receiversEnabled = watch("receiversEnabled");
 
   return (
     <View className="gap-2">
@@ -447,6 +453,100 @@ function ReceiversInput() {
           return Array.isArray(error) ? error[0] : error;
         })()}
       />
+      {receiversEnabled && (
+        <Controller
+          control={control}
+          name="receivers"
+          render={({ field }) => (
+            <Fragment>
+              <View className="flex-row items-center gap-1 flex-wrap">
+                {field.value.map((email) => (
+                  <Receiver key={email} email={email} />
+                ))}
+              </View>
+              <ReceiverInput />
+            </Fragment>
+          )}
+        />
+      )}
+    </View>
+  );
+}
+
+type ReceiverProps = {
+  email: string;
+};
+
+function Receiver({ email }: ReceiverProps) {
+  const { getValues, setValue } = useFormContext<Schema>();
+
+  const removeReceiver = () => {
+    setValue(
+      "receivers",
+      getValues("receivers").filter((r) => r !== email),
+      { shouldValidate: true },
+    );
+  };
+
+  return (
+    <View className="flex-row items-center gap-1.5 px-2.5 py-1 rounded-md bg-card">
+      <Text className="text-card-foreground text-sm">{email}</Text>
+      <Pressable onPress={removeReceiver} aria-label="remove receiver">
+        <Icon as={XIcon} className="text-card-foreground" />
+      </Pressable>
+    </View>
+  );
+}
+
+const emailSchema = v.object({
+  email: v.pipe(v.string(), v.email("Invalid email")),
+});
+
+type EmailSchema = v.InferOutput<typeof emailSchema>;
+
+function ReceiverInput() {
+  const { control, handleSubmit, formState, reset } = useForm<EmailSchema>({
+    defaultValues: {
+      email: "",
+    },
+    resolver: valibotResolver(emailSchema),
+  });
+
+  const { getValues, setValue } = useFormContext<Schema>();
+
+  const addReceiver = handleSubmit(({ email }) => {
+    setValue("receivers", [...getValues("receivers"), email], {
+      shouldValidate: true,
+    });
+    reset();
+  });
+
+  return (
+    <View className="gap-2">
+      <View className="flex-row items-center gap-2">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field }) => (
+            <Input
+              {...field}
+              onChangeText={field.onChange}
+              placeholder="someone@example.com"
+              keyboardType="email-address"
+              aria-label="new receiver email"
+            />
+          )}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          onPress={addReceiver}
+          aria-label="add receiver"
+        >
+          <Icon as={PlusIcon} />
+        </Button>
+      </View>
+      <FormFieldError error={formState.errors.email} />
     </View>
   );
 }
