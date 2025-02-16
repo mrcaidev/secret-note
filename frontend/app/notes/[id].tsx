@@ -15,9 +15,12 @@ const dateTimeFormat = new Intl.DateTimeFormat("en", {
 });
 
 export default function NotePage() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, password } = useLocalSearchParams<{
+    id: string;
+    password?: string;
+  }>();
 
-  const { data: note, error, isPending } = useNoteQuery(id);
+  const { data: note, error, isPending } = useNoteQuery(id, password);
 
   if (isPending) {
     return <LoadingScreen />;

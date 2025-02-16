@@ -11,11 +11,13 @@ export function useNotes() {
   });
 }
 
-export function useNoteQuery(id: string) {
+export function useNoteQuery(id: string, password?: string) {
   return useQuery<PublicNote>({
     queryKey: ["note", id],
     queryFn: async () => {
-      return await request.get(`/notes/${id}`);
+      return await request.get(
+        `/notes/${id}${password ? `?password=${password}` : ""}`,
+      );
     },
   });
 }
