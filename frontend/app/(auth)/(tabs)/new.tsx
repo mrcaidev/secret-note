@@ -68,9 +68,7 @@ const schema = v.pipe(
       ),
     ]),
     receiversEnabled: v.boolean(),
-    receivers: v.nullable(
-      v.array(v.pipe(v.string(), v.email("Invalid email"))),
-    ),
+    receivers: v.array(v.pipe(v.string(), v.email("Invalid email"))),
   }),
   v.forward(
     v.check(
@@ -89,7 +87,7 @@ const schema = v.pipe(
   v.forward(
     v.check(
       ({ receivers, receiversEnabled }) =>
-        !receiversEnabled || (receivers !== null && receivers.length > 0),
+        !receiversEnabled || receivers.length > 0,
       "Receivers are required",
     ),
     ["receivers"],
@@ -109,7 +107,7 @@ export default function NewNotePage() {
       ttlEnabled: false,
       ttl: 0,
       receiversEnabled: false,
-      receivers: null,
+      receivers: [],
     },
     resolver: valibotResolver(schema),
   });
@@ -432,22 +430,7 @@ function TtlInput() {
 }
 
 function ReceiversInput() {
-  const { control, formState, watch, getFieldState, setValue, resetField } =
-    useFormContext<Schema>();
-  const receiversEnabled = watch("receiversEnabled");
-
-  useEffect(() => {
-    if (!receiversEnabled) {
-      setValue("receivers", null, { shouldValidate: true });
-      return;
-    }
-
-    if (getFieldState("receivers").isDirty) {
-      return;
-    }
-
-    setValue("receivers", [], { shouldValidate: true });
-  }, [receiversEnabled, getFieldState, setValue]);
+  const { control, formState } = useFormContext<Schema>();
 
   return (
     <View className="gap-2">
@@ -474,7 +457,12 @@ function ReceiversInput() {
           </View>
         )}
       />
-      <FormFieldError error={formState.errors.receivers} />
+      <FormFieldError
+        error={(() => {
+          const error = formState.errors.receivers;
+          return Array.isArray(error) ? error[0] : error;
+        })()}
+      />
     </View>
   );
 }
