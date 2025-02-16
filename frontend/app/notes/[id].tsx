@@ -1,4 +1,4 @@
-import { useNote } from "@/apis/note";
+import { useNoteQuery } from "@/apis/note";
 import { Avatar } from "@/components/avatar";
 import { FullscreenLoading } from "@/components/fullscreen-loading";
 import { Icon } from "@/components/ui/icon";
@@ -16,7 +16,7 @@ const dateTimeFormat = new Intl.DateTimeFormat("en", {
 export default function NotePage() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const { data: note, error, isPending } = useNote(id);
+  const { data: note, error, isPending } = useNoteQuery(id);
 
   if (isPending) {
     return <FullscreenLoading />;

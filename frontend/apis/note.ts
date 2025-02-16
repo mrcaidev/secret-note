@@ -11,7 +11,7 @@ export function useNotes() {
   });
 }
 
-export function useNote(id: string) {
+export function useNoteQuery(id: string) {
   return useQuery<PublicNote>({
     queryKey: ["note", id],
     queryFn: async () => {
