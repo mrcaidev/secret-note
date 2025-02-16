@@ -1,4 +1,4 @@
-import { useCreateNote } from "@/apis/note";
+import { useCreateNoteMutation } from "@/apis/note";
 import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
@@ -598,7 +598,7 @@ function CreateNoteButton({
 }: CreateNoteButtonProps) {
   const { handleSubmit, formState, reset } = useFormContext<Schema>();
 
-  const { mutate, isPending } = useCreateNote();
+  const { mutate, isPending } = useCreateNoteMutation();
 
   const router = useRouter();
 

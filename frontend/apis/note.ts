@@ -20,7 +20,7 @@ export function useNote(id: string) {
   });
 }
 
-export function useCreateNote() {
+export function useCreateNoteMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<
