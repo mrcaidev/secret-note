@@ -20,6 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/components/ui/utils";
 import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useRootContext } from "@rn-primitives/dialog";
 import * as Clipboard from "expo-clipboard";
 import { useRouter } from "expo-router";
 import {
@@ -160,10 +161,7 @@ export default function NewNotePage() {
                     <Text>Cancel</Text>
                   </Button>
                 </DialogClose>
-                <CreateNoteButton
-                  closeDialog={() => setDialogOpen(false)}
-                  setFormError={setFormError}
-                />
+                <CreateNoteButton setFormError={setFormError} />
               </View>
               <FormError error={formError} />
             </DialogFooter>
@@ -593,17 +591,15 @@ function ReceiverInput() {
 }
 
 type CreateNoteButtonProps = {
-  closeDialog: () => void;
   setFormError: (error: Error | null) => void;
 };
 
-function CreateNoteButton({
-  closeDialog,
-  setFormError,
-}: CreateNoteButtonProps) {
+function CreateNoteButton({ setFormError }: CreateNoteButtonProps) {
   const { handleSubmit, formState, reset } = useFormContext<Schema>();
 
   const { mutate, isPending } = useCreateNoteMutation();
+
+  const { onOpenChange } = useRootContext();
 
   const router = useRouter();
 
@@ -628,7 +624,7 @@ function CreateNoteButton({
         onSuccess: (note) => {
           reset();
           setFormError(null);
-          closeDialog();
+          onOpenChange(false);
           router.push(`/notes/${note.id}`);
         },
         onError: setFormError,
