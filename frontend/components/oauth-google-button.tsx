@@ -64,7 +64,7 @@ export function OauthGoogleButton() {
   return (
     <Button
       variant="secondary"
-      disabled={isPending}
+      disabled={isPending || !request}
       onPress={() => promptAsync()}
     >
       {isPending ? <Spinner /> : <GoogleIcon />}
