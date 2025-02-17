@@ -1,7 +1,9 @@
 import { useNotesInfiniteQuery } from "@/apis/note";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Link } from "expo-router";
 import { CloudAlertIcon } from "lucide-react-native";
-import { FlatList, View } from "react-native";
+import { Fragment, useRef } from "react";
+import { FlatList, Platform, View } from "react-native";
 import { NoteCard } from "./note-card";
 import { Button } from "./ui/button";
 import { Icon } from "./ui/icon";
@@ -10,8 +12,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Text } from "./ui/text";
 
 export function NoteCardList() {
-  const { data, error, isPending, hasNextPage, fetchNextPage } =
-    useNotesInfiniteQuery();
+  const { data, error, isPending } = useNotesInfiniteQuery();
 
   if (isPending) {
     return (
@@ -57,6 +58,41 @@ export function NoteCardList() {
       </View>
     );
   }
+
+  return Platform.OS === "web" ? <WebList /> : <NativeList />;
+}
+
+function WebList() {
+  const { data, hasNextPage, fetchNextPage } = useNotesInfiniteQuery();
+
+  const notes = data?.pages.flatMap(({ notes }) => notes) ?? [];
+
+  const bottomRef = useRef<HTMLElement>(null);
+  useInfiniteScroll(bottomRef, () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  });
+
+  return (
+    <View className="h-[calc(100vh-108px)] px-4 pt-1 pb-16 overflow-y-auto">
+      {notes.map((note, index) => (
+        <Fragment key={note.id}>
+          {index === 0 || <Separator className="my-1" />}
+          <NoteCard note={note} />
+        </Fragment>
+      ))}
+      <Text className="my-2 text-muted-foreground text-xs text-center">
+        {hasNextPage ? "Loading more for you..." : "- That's all, for now -"}
+      </Text>
+    </View>
+  );
+}
+
+function NativeList() {
+  const { data, hasNextPage, fetchNextPage } = useNotesInfiniteQuery();
+
+  const notes = data?.pages.flatMap(({ notes }) => notes) ?? [];
 
   return (
     <FlatList
