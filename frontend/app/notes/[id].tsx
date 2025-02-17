@@ -48,7 +48,7 @@ export default function NotePage() {
   }
 
   return (
-    <View className="px-8 pt-16 bg-background">
+    <View className="grow px-8 pt-16 bg-background">
       <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <SharePopover link={note.link} />
