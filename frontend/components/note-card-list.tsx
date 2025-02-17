@@ -1,8 +1,9 @@
 import { useNotesInfiniteQuery } from "@/apis/note";
+import { Link } from "expo-router";
 import { CloudAlertIcon } from "lucide-react-native";
-import { Fragment } from "react";
 import { FlatList, View } from "react-native";
 import { NoteCard } from "./note-card";
+import { Button } from "./ui/button";
 import { Icon } from "./ui/icon";
 import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
@@ -40,32 +41,40 @@ export function NoteCardList() {
     );
   }
 
+  const notes = data.pages.flatMap(({ notes }) => notes);
+
+  if (notes.length === 0) {
+    return (
+      <View className="grow justify-center items-center">
+        <Text className="text-muted-foreground text-sm text-center">
+          You don&apos;t have any notes yet.
+        </Text>
+        <Link href="/new" asChild>
+          <Button variant="link">
+            <Text>Create a note</Text>
+          </Button>
+        </Link>
+      </View>
+    );
+  }
+
   return (
-    <Fragment>
-      <FlatList
-        data={data.pages.flatMap(({ notes }) => notes)}
-        renderItem={({ item }) => <NoteCard note={item} />}
-        keyExtractor={(item) => item.id}
-        onEndReached={() => {
-          if (hasNextPage) {
-            fetchNextPage();
-          }
-        }}
-        contentContainerClassName="px-4 pt-1"
-        ListEmptyComponent={
-          <Text className="my-2 text-muted-foreground text-xs text-center">
-            There&apos;s nothing here yet
-          </Text>
+    <FlatList
+      data={notes}
+      renderItem={({ item }) => <NoteCard note={item} />}
+      keyExtractor={(item) => item.id}
+      onEndReached={() => {
+        if (hasNextPage) {
+          fetchNextPage();
         }
-        ItemSeparatorComponent={() => <Separator className="my-1" />}
-        ListFooterComponent={
-          <Text className="my-2 text-muted-foreground text-xs text-center">
-            {hasNextPage
-              ? "Loading more for you..."
-              : "- That's all, for now -"}
-          </Text>
-        }
-      />
-    </Fragment>
+      }}
+      contentContainerClassName="px-4 pt-1"
+      ItemSeparatorComponent={() => <Separator className="my-1" />}
+      ListFooterComponent={
+        <Text className="my-2 text-muted-foreground text-xs text-center">
+          {hasNextPage ? "Loading more for you..." : "- That's all, for now -"}
+        </Text>
+      }
+    />
   );
 }
