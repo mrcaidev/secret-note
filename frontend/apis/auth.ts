@@ -62,7 +62,7 @@ export function useSignInWithEmailMutation() {
 export function useSignInWithOauthMutation(provider: string) {
   const queryClient = useQueryClient();
 
-  return useMutation<User & { token: string }, Error, { accessToken: string }>({
+  return useMutation<User & { token: string }, Error, { idToken: string }>({
     mutationFn: async (data) => {
       return await request.post(`/oauth/${provider}/token`, data);
     },

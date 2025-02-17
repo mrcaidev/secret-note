@@ -1,11 +1,12 @@
 import { useSignInWithOauthMutation } from "@/apis/auth";
+import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
-import * as Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
-import { Alert, Platform } from "react-native";
+import { Platform, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { FormError } from "./form-error";
 import { Spinner } from "./spinner";
 import { Button } from "./ui/button";
 import { Text } from "./ui/text";
@@ -13,15 +14,17 @@ import { Text } from "./ui/text";
 WebBrowser.maybeCompleteAuthSession();
 
 export function OauthGoogleButton() {
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    redirectUri: Platform.select({
-      android: `${Constants.default.expoConfig?.android?.package}:/sign-in`,
-      ios: `${Constants.default.expoConfig?.ios?.bundleIdentifier}:/sign-in`,
-      default: undefined,
-    }),
+    redirectUri:
+      Platform.OS === "android"
+        ? AuthSession.makeRedirectUri({
+            scheme: "dev.mrcai.secretnote",
+            path: "/sign-in",
+          })
+        : undefined,
   });
 
   const { mutate, error, isPending } = useSignInWithOauthMutation("google");
@@ -29,24 +32,18 @@ export function OauthGoogleButton() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!response) {
+    if (response?.type !== "success") {
       return;
     }
 
-    if (response.type !== "success") {
-      Alert.alert("Error", `Google authentication failed: ${response.type}`);
-      return;
-    }
+    const idToken = response.params.id_token;
 
-    const accessToken = response.authentication?.accessToken;
-
-    if (!accessToken) {
-      Alert.alert("Error", "Google authentication failed: no access token");
+    if (!idToken) {
       return;
     }
 
     mutate(
-      { accessToken },
+      { idToken },
       {
         onSuccess: () => {
           router.push("/");
@@ -55,21 +52,18 @@ export function OauthGoogleButton() {
     );
   }, [response, mutate, router]);
 
-  useEffect(() => {
-    if (error) {
-      Alert.alert("Error", error.message);
-    }
-  }, [error]);
-
   return (
-    <Button
-      variant="secondary"
-      disabled={isPending || !request}
-      onPress={() => promptAsync()}
-    >
-      {isPending ? <Spinner /> : <GoogleIcon />}
-      <Text>Continue with Google</Text>
-    </Button>
+    <View className="gap-4">
+      <Button
+        variant="secondary"
+        disabled={isPending || !request}
+        onPress={() => promptAsync()}
+      >
+        {isPending ? <Spinner /> : <GoogleIcon />}
+        <Text>Continue with Google</Text>
+      </Button>
+      <FormError error={error} />
+    </View>
   );
 }
 
