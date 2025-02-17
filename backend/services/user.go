@@ -56,3 +56,12 @@ func GetUser(uid string) models.UserResponse {
 	}
 	return ret
 }
+
+func DeleteMe(uid string) {
+	var user models.User
+	config.DB.First(&user, "uid = ?", uid)
+	config.DB.Delete(&user)
+	//不同于ThreadLocal，c的上下文必须显式传递
+	tokenString, _ := c.Get("token")
+	config.SetInvalidToken(tokenString.(string))
+}
