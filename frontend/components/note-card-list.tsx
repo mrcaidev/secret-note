@@ -68,7 +68,7 @@ export function NoteCardList() {
           fetchNextPage();
         }
       }}
-      contentContainerClassName="px-4 pt-1"
+      contentContainerClassName="px-4 pt-1 pb-32"
       ItemSeparatorComponent={() => <Separator className="my-1" />}
       ListFooterComponent={
         <Text className="my-2 text-muted-foreground text-xs text-center">
