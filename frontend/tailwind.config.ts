@@ -1,3 +1,4 @@
+import scrollbar from "tailwind-scrollbar";
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
@@ -51,5 +52,8 @@ export default {
       },
     },
   },
-  plugins: [animate],
+  plugins: [
+    animate,
+    scrollbar({ nocompatible: true, preferredStrategy: "pseudoelements" }),
+  ],
 } satisfies Config;

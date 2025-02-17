@@ -75,7 +75,7 @@ function WebList() {
   });
 
   return (
-    <View className="h-[calc(100vh-108px)] px-4 pt-1 pb-16 overflow-y-auto">
+    <View className="h-[calc(100vh-108px)] px-4 pt-1 pb-16 overflow-y-auto scrollbar-thin scrollbar-thumb-accent">
       {notes.map((note, index) => (
         <Fragment key={note.id}>
           {index === 0 || <Separator className="my-1" />}
