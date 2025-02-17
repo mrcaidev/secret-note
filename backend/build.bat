@@ -1,4 +1,4 @@
 @echo off
 set GOOS=linux
 set GOARCH=amd64
-go build -o secret-note
+go build -o app

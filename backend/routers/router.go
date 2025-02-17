@@ -27,6 +27,7 @@ func InitRouter() *gin.Engine {
 		{
 			UserGroup.POST("/users", controllers.CreateUser)
 			UserGroup.GET("/me", authMiddleware(), controllers.GetUser)
+			UserGroup.DELETE("/me", authMiddleware(), controllers.DeleteMe)
 		}
 	}
 	return router
@@ -58,7 +59,7 @@ func authMiddleware() gin.HandlerFunc {
 			}
 			return config.JwtSecret, nil
 		})
-		var _, invalidToken = config.Cache.Get(config.INVALID_TOKEN + tokenString)
+		var invalidToken = config.JudgeTokenInvalid(tokenString)
 		if err != nil || !token.Valid || invalidToken {
 			c.JSON(http.StatusUnauthorized, response)
 			c.Abort()
@@ -68,6 +69,7 @@ func authMiddleware() gin.HandlerFunc {
 		// 如果需要，可以将用户信息写入上下文
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			c.Set("uid", claims["uid"].(string))
+			c.Set("token", tokenString)
 		} else if !ok {
 			c.JSON(http.StatusUnauthorized, response)
 		}

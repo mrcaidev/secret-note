@@ -38,10 +38,17 @@ func loadEnv() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
 	GmailPassword = os.Getenv("GMAIL_PASSWORD")
 	dsn = os.Getenv("DSN")
 	JwtSecret = []byte(os.Getenv("JWT_SECRET"))
+}
+
+func SetInvalidToken(token string) {
+	Cache.Set(INVALID_TOKEN+token, "invalid token", time.Hour*72)
+}
+func JudgeTokenInvalid(tokenString string) bool {
+	var _, invalidToken = Cache.Get(INVALID_TOKEN + tokenString)
+	return invalidToken
 }
 
 func Init() {
