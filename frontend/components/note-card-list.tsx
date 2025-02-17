@@ -90,7 +90,8 @@ function WebList() {
 }
 
 function NativeList() {
-  const { data, hasNextPage, fetchNextPage } = useNotesInfiniteQuery();
+  const { data, hasNextPage, fetchNextPage, refetch, isRefetching } =
+    useNotesInfiniteQuery();
 
   const notes = data?.pages.flatMap(({ notes }) => notes) ?? [];
 
@@ -111,6 +112,8 @@ function NativeList() {
           {hasNextPage ? "Loading more for you..." : "- That's all, for now -"}
         </Text>
       }
+      onRefresh={refetch}
+      refreshing={isRefetching}
     />
   );
 }
