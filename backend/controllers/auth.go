@@ -67,6 +67,10 @@ func Sign(c *gin.Context) {
 	}
 	// 将 token 添加到响应头，通常建议加上 Bearer 前缀
 	c.Header("Authorization", "Bearer "+token)
+	if code != common.Success {
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
 	c.JSON(http.StatusOK, response)
 }
 
