@@ -102,6 +102,15 @@ func Signin(request models.LoginRequest) (models.UserResponse, string, int) {
 	return userResponse, tokenString, common.Success
 }
 
+func SignByOauth(accessToken string, name string) models.OauthResp {
+	provider, err := models.ProviderFactory(name)
+	if err == nil {
+		OauthResp := provider.Authenticate(accessToken)
+		return OauthResp
+	}
+	return models.OauthResp{}
+}
+
 func genToken(uid string, email string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"uid":   uid,

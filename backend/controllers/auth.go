@@ -19,7 +19,7 @@ func SendOtp(c *gin.Context) {
 
 	var email EmailRequest
 	if err := c.ShouldBindJSON(&email); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, common.BadRequest())
 		return
 	}
 	otpFlowId, err := services.SendOtp(email.Email)
@@ -42,7 +42,7 @@ func SendOtp(c *gin.Context) {
 func VerifyOtp(c *gin.Context) {
 	var otpFlow models.OtpFlow
 	if err := c.ShouldBindJSON(&otpFlow); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, common.BadRequest())
 		return
 	}
 	ret := services.VerifyOtp(otpFlow)
@@ -57,7 +57,7 @@ func VerifyOtp(c *gin.Context) {
 func Sign(c *gin.Context) {
 	var loginReq models.LoginRequest
 	if err := c.ShouldBindJSON(&loginReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, common.BadRequest())
 	}
 	var user, token, code = services.Signin(loginReq)
 	response := common.Response{
@@ -68,6 +68,16 @@ func Sign(c *gin.Context) {
 	// 将 token 添加到响应头，通常建议加上 Bearer 前缀
 	c.Header("Authorization", "Bearer "+token)
 	c.JSON(http.StatusOK, response)
+}
+
+func SignByOauth(c *gin.Context) {
+	provider := c.Param("provider")
+	var OauthReq models.OauthReq
+	if err := c.ShouldBindJSON(&OauthReq); err != nil {
+		c.JSON(http.StatusBadRequest, common.BadRequest())
+	}
+	resp := services.SignByOauth(OauthReq.AccessToken, provider)
+	c.JSON(http.StatusOK, resp)
 }
 
 func SignOut(c *gin.Context) {

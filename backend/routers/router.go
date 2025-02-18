@@ -16,6 +16,8 @@ func InitRouter() *gin.Engine {
 
 	apiV1 := router.Group("api/v1")
 	{
+
+		// /oauth/{provider}/token
 		AuthGroup := apiV1.Group("/auth")
 		{
 			AuthGroup.POST("/otp/send", controllers.SendOtp)
@@ -27,6 +29,10 @@ func InitRouter() *gin.Engine {
 		{
 			UserGroup.POST("/users", controllers.CreateUser)
 			UserGroup.GET("/me", authMiddleware(), controllers.GetUser)
+		}
+		OauthGroup := apiV1.Group("/oauth")
+		{
+			OauthGroup.POST("/:provider/token", controllers.SignByOauth)
 		}
 	}
 	return router

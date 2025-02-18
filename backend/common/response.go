@@ -21,7 +21,16 @@ const (
 	NotExistUser            = 1007
 	InvalidUid              = 1008
 	StatusUnauthorized      = 1009
+	BadReq                  = 1010
 )
+
+func BadRequest() Response {
+	return Response{
+		Code:    BadReq,
+		Message: "Bad Request",
+		Data:    nil,
+	}
+}
 
 func ErrCodeToString(code int) string {
 	switch code {
