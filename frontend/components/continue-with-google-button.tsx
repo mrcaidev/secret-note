@@ -26,8 +26,6 @@ export function ContinueWithGoogleButton() {
           })
         : undefined,
   });
-  console.log("request:", request);
-  console.log("response:", response);
 
   const { mutate, error, isPending } = useSignInWithOauthMutation("google");
 
