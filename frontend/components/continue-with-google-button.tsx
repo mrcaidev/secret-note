@@ -13,7 +13,7 @@ import { Text } from "./ui/text";
 WebBrowser.maybeCompleteAuthSession();
 
 export function ContinueWithGoogleButton() {
-  const [, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
@@ -64,7 +64,7 @@ export function ContinueWithGoogleButton() {
   return (
     <Button
       variant="secondary"
-      disabled={isPending}
+      disabled={!request || isPending}
       onPress={() => promptAsync()}
     >
       {isPending ? <Spinner /> : <GoogleIcon />}
