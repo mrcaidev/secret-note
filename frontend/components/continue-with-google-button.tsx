@@ -1,6 +1,6 @@
 import { useSignInWithOauthMutation } from "@/apis/auth";
+import * as AuthSession from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
-import * as Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
@@ -18,12 +18,16 @@ export function ContinueWithGoogleButton() {
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    redirectUri: Platform.select({
-      android: `${Constants.default.expoConfig?.android?.package}:/sign-in`,
-      ios: `${Constants.default.expoConfig?.ios?.bundleIdentifier}:/sign-in`,
-      default: undefined,
-    }),
+    redirectUri:
+      Platform.OS === "android"
+        ? AuthSession.makeRedirectUri({
+            scheme: "dev.mrcai.secretnote",
+            path: "/sign-in",
+          })
+        : undefined,
   });
+  console.log("request:", request);
+  console.log("response:", response);
 
   const { mutate, error, isPending } = useSignInWithOauthMutation("google");
 
