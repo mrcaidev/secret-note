@@ -3,10 +3,12 @@ package services
 import (
 	"backend/common"
 	"backend/models"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"log"
 	"math/rand"
 	"net/smtp"
@@ -102,13 +104,49 @@ func Signin(request models.LoginRequest) (models.UserResponse, string, int) {
 	return userResponse, tokenString, common.Success
 }
 
-func SignByOauth(accessToken string, name string) models.OauthResp {
+func RequestProvider(accessToken string, name string) models.GoogleProviderResp {
 	provider, err := models.ProviderFactory(name)
 	if err == nil {
 		OauthResp := provider.Authenticate(accessToken)
 		return OauthResp
 	}
-	return models.OauthResp{}
+	return models.GoogleProviderResp{}
+}
+
+func SignByOauth(accessToken string, providerName string) (models.UserResponse, int) {
+
+	providerResp := RequestProvider(accessToken, providerName)
+	if &providerResp == nil {
+		return models.UserResponse{}, common.FailedToRequestFromProvider
+	}
+	var user models.User
+	//sql inject?
+	err := config.DB.Where("email = ?", providerResp.Email).First(&user).Error
+	var userResponse models.UserResponse
+	if err := copier.Copy(&userResponse, user); err != nil {
+		return models.UserResponse{}, common.Error
+	}
+
+	var existUser bool
+
+	//error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return models.UserResponse{}, common.Error
+	}
+
+	// not found, then create
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		user = models.TransferFromGoogleRespToUser(providerResp)
+		userResponse, existUser = CreateUser(&user)
+		if existUser {
+			return models.UserResponse{}, common.Error
+		}
+	}
+
+	//found or create user
+	var tokenString = genToken(user.Uid, providerResp.Email)
+	userResponse.Token = tokenString
+	return userResponse, common.Success
 }
 
 func genToken(uid string, email string) string {

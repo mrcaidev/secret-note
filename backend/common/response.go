@@ -10,18 +10,19 @@ type Response struct {
 }
 
 const (
-	Success                 = 0
-	Error                   = -1
-	EmailExists             = 1001
-	WrongOtp                = 1002
-	WrongOtpFlowIdOrExpired = 1003
-	SendMailFailed          = 1004
-	WrongEmail              = 1005
-	WrongPassword           = 1006
-	NotExistUser            = 1007
-	InvalidUid              = 1008
-	StatusUnauthorized      = 1009
-	BadReq                  = 1010
+	Success                     = 0
+	Error                       = -1
+	EmailExists                 = 1001
+	WrongOtp                    = 1002
+	WrongOtpFlowIdOrExpired     = 1003
+	SendMailFailed              = 1004
+	WrongEmail                  = 1005
+	WrongPassword               = 1006
+	NotExistUser                = 1007
+	InvalidUid                  = 1008
+	StatusUnauthorized          = 1009
+	BadReq                      = 1010
+	FailedToRequestFromProvider = 1011
 )
 
 func BadRequest() Response {
@@ -56,6 +57,11 @@ func ErrCodeToString(code int) string {
 		return "InvalidUid"
 	case StatusUnauthorized:
 		return "StatusUnauthorized"
+	case BadReq:
+		return "BadReq"
+	case FailedToRequestFromProvider:
+		return "FailedToRequestFromProvider"
+
 	default:
 		return strconv.Itoa(code)
 	}

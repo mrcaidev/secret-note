@@ -13,7 +13,7 @@ type OauthReq struct {
 	AccessToken string `json:"accessToken"`
 }
 
-type OauthResp struct {
+type GoogleProviderResp struct {
 	FamilyName    string `json:"family_name"`
 	Name          string `json:"name"`
 	Picture       string `json:"picture"`
@@ -21,6 +21,9 @@ type OauthResp struct {
 	GivenName     string `json:"given_name"`
 	ID            string `json:"id"`
 	VerifiedEmail bool   `json:"verified_email"`
+}
+
+type OauthResp struct {
 }
 
 func GetProviderUrl(provider string) string {
@@ -31,13 +34,13 @@ func GetProviderUrl(provider string) string {
 }
 
 type Provider interface {
-	Authenticate(token string) OauthResp
+	Authenticate(token string) GoogleProviderResp
 }
 
 // GoogleProvider implements the Provider interface for Google.
 type GoogleProvider struct{}
 
-func (g *GoogleProvider) Authenticate(token string) OauthResp {
+func (g *GoogleProvider) Authenticate(token string) GoogleProviderResp {
 	// Google-specific authentication logic.
 	fmt.Println("Authenticating using Google Provider")
 	req, err := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
@@ -57,7 +60,7 @@ func (g *GoogleProvider) Authenticate(token string) OauthResp {
 		log.Fatalf("Failed to get user info from Google provider: %v, %v", resp.StatusCode, string(bodyBytes))
 	}
 
-	var OauthResp OauthResp
+	var OauthResp GoogleProviderResp
 	if err := json.NewDecoder(resp.Body).Decode(&OauthResp); err != nil {
 		log.Fatalf("Failed to decode response: %v", err)
 	}

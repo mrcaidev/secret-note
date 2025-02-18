@@ -27,6 +27,15 @@ type UserResponse struct {
 	Token     string         `json:"token" gorm:"-"`
 }
 
+func TransferFromGoogleRespToUser(resp GoogleProviderResp) User {
+	user := User{
+		Email:     resp.Email,
+		Nickname:  resp.Name,
+		AvatarUrl: resp.Picture,
+	}
+	return user
+}
+
 func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
 	if u.Uid == "" {
 		u.Uid = uuid.New().String()

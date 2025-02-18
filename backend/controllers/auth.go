@@ -76,7 +76,14 @@ func SignByOauth(c *gin.Context) {
 	if err := c.ShouldBindJSON(&OauthReq); err != nil {
 		c.JSON(http.StatusBadRequest, common.BadRequest())
 	}
-	resp := services.SignByOauth(OauthReq.AccessToken, provider)
+	resp, code := services.SignByOauth(OauthReq.AccessToken, provider)
+	if code == common.FailedToRequestFromProvider {
+		c.JSON(http.StatusBadGateway, common.Response{
+			Code:    code,
+			Message: common.ErrCodeToString(code),
+		})
+		return
+	}
 	c.JSON(http.StatusOK, resp)
 }
 
