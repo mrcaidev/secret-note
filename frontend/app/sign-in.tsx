@@ -1,7 +1,7 @@
 import { useSignInWithEmailMutation } from "@/apis/auth";
+import { ContinueWithGoogleButton } from "@/components/continue-with-google-button";
 import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
-import { OauthGoogleButton } from "@/components/oauth-google-button";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -55,7 +55,7 @@ export default function SignInPage() {
         Welcome back to Secret Note 👋
       </Text>
       <View className="mb-6">
-        <OauthGoogleButton />
+        <ContinueWithGoogleButton />
       </View>
       <View className="relative mb-6">
         <Separator />

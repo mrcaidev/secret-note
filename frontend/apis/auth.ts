@@ -64,7 +64,7 @@ export function useSignInWithOauthMutation(provider: string) {
 
   return useMutation<User & { token: string }, Error, { accessToken: string }>({
     mutationFn: async (data) => {
-      return await request.post("/oauth/token", { provider, ...data });
+      return await request.post(`/oauth/${provider}/token`, data);
     },
     onSuccess: async ({ token, ...me }) => {
       await tokenStorage.set(token);
