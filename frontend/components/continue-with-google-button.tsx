@@ -12,7 +12,7 @@ import { Text } from "./ui/text";
 
 WebBrowser.maybeCompleteAuthSession();
 
-export function OauthGoogleButton() {
+export function ContinueWithGoogleButton() {
   const [, response, promptAsync] = Google.useAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
