@@ -84,7 +84,11 @@ func SignByOauth(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, common.Response{
+		Code:    code,
+		Message: common.ErrCodeToString(code),
+		Data:    resp,
+	})
 }
 
 func SignOut(c *gin.Context) {

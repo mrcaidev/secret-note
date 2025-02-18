@@ -104,19 +104,19 @@ func Signin(request models.LoginRequest) (models.UserResponse, string, int) {
 	return userResponse, tokenString, common.Success
 }
 
-func RequestProvider(accessToken string, name string) models.GoogleProviderResp {
+func RequestProvider(accessToken string, name string) (providerResp models.GoogleProviderResp, isSuccess bool) {
 	provider, err := models.ProviderFactory(name)
 	if err == nil {
-		OauthResp := provider.Authenticate(accessToken)
-		return OauthResp
+		OauthResp, success := provider.Authenticate(accessToken)
+		return OauthResp, success
 	}
-	return models.GoogleProviderResp{}
+	return models.GoogleProviderResp{}, false
 }
 
 func SignByOauth(accessToken string, providerName string) (models.UserResponse, int) {
 
-	providerResp := RequestProvider(accessToken, providerName)
-	if &providerResp == nil {
+	providerResp, success := RequestProvider(accessToken, providerName)
+	if !success {
 		return models.UserResponse{}, common.FailedToRequestFromProvider
 	}
 	var user models.User

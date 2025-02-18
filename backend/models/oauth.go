@@ -34,38 +34,43 @@ func GetProviderUrl(provider string) string {
 }
 
 type Provider interface {
-	Authenticate(token string) GoogleProviderResp
+	Authenticate(token string) (GoogleProviderResp, bool)
 }
 
 // GoogleProvider implements the Provider interface for Google.
 type GoogleProvider struct{}
 
-func (g *GoogleProvider) Authenticate(token string) GoogleProviderResp {
+func (g *GoogleProvider) Authenticate(token string) (GoogleProviderResp, bool) {
 	// Google-specific authentication logic.
 	fmt.Println("Authenticating using Google Provider")
 	req, err := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
 	if err != nil {
-		log.Fatalf("Failed to create request: %v", err)
+		log.Println("Failed to create request: %v", err)
+		return GoogleProviderResp{}, false
 	}
 	req.Header.Add("Authorization", "Bearer "+token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalf("Failed to do request: %v", err)
+		log.Println("Failed to do request: %v", err)
+		return GoogleProviderResp{}, false
 	}
 	//todo: learn more about defer
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		log.Fatalf("Failed to get user info from Google provider: %v, %v", resp.StatusCode, string(bodyBytes))
+		//log.Fatalf will stop the service
+		log.Println("Failed to get user info from Google provider: %v, %v", resp.StatusCode, string(bodyBytes))
+		return GoogleProviderResp{}, false
 	}
 
 	var OauthResp GoogleProviderResp
 	if err := json.NewDecoder(resp.Body).Decode(&OauthResp); err != nil {
-		log.Fatalf("Failed to decode response: %v", err)
+		log.Println("Failed to decode response: %v", err)
+		return GoogleProviderResp{}, false
 	}
 
-	return OauthResp
+	return OauthResp, true
 }
 
 // ProviderFactory returns an instance of Provider based on the provider name.
