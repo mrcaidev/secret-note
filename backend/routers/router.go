@@ -4,6 +4,7 @@ import (
 	"backend/common"
 	"backend/config"
 	"backend/controllers"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 func InitRouter() *gin.Engine {
 
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	apiV1 := router.Group("api/v1")
 	{
@@ -33,6 +35,10 @@ func InitRouter() *gin.Engine {
 		OauthGroup := apiV1.Group("/oauth")
 		{
 			OauthGroup.POST("/:provider/token", controllers.SignByOauth)
+		}
+		TestGroup := apiV1.Group("/test")
+		{
+			TestGroup.GET("/", controllers.Test)
 		}
 	}
 	return router

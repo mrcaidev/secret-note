@@ -35,6 +35,10 @@ func CreateUser(c *gin.Context) {
 	}
 }
 
+func Test(c *gin.Context) {
+	c.JSON(http.StatusOK, "pong")
+}
+
 func GetUser(c *gin.Context) {
 	if uid, exist := c.Get("uid"); !exist {
 		response := common.Response{
