@@ -4,17 +4,35 @@ import (
 	"backend/common"
 	"backend/config"
 	"backend/controllers"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
 	"strings"
 )
 
+func AlwaysCORS() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 设置你需要的 CORS 响应头
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // 或者指定特定域名
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		// 如果是预检请求，则直接返回204状态码
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func InitRouter() *gin.Engine {
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(AlwaysCORS())
 
 	apiV1 := router.Group("api/v1")
 	{

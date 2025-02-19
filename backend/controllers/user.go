@@ -11,6 +11,7 @@ import (
 // todo: slow sql
 // maybe it's because of cheap aws server
 // when using local database, not slow sql
+// todo: check if the email pass the otp check.
 func CreateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
