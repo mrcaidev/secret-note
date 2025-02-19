@@ -58,7 +58,15 @@ func GetUser(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, response)
 			return
 		}
-		userRes := services.GetUser(uidStr)
+		userRes, err := services.GetUser(uidStr)
+		if err != nil {
+			response := common.Response{
+				Code:    common.Error,
+				Message: err.Error(),
+			}
+			c.JSON(http.StatusUnauthorized, response)
+			return
+		}
 		response := common.Response{
 			Code:    common.Success,
 			Message: "success",
@@ -87,7 +95,8 @@ func DeleteMe(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, response)
 			return
 		}
-		services.DeleteMe(uidStr)
+		tokenString, _ := c.Get("token")
+		services.DeleteMe(uidStr, tokenString.(string))
 		response := common.Response{
 			Code:    common.Success,
 			Message: "success",
