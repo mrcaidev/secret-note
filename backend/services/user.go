@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"time"
 )
 
 func CreateUser(user *models.User) (userRes models.UserResponse, existUser bool) {
@@ -57,11 +58,17 @@ func GetUser(uid string) (models.UserResponse, error) {
 	return ret, err
 }
 
+var DELEATED = "DELETED_AT"
+
 func DeleteMe(uid string, token string) {
 	var user models.User
 	config.DB.First(&user, "uid = ?", uid)
 	// 如果user为空，会尝试删除所有，但是因为安全检查所以不会删
-	config.DB.Delete(&user)
+	config.DB.Model(&user).Updates(map[string]interface{}{
+		"email":      user.Email + DELEATED + time.Now().String(), // 你想更新的字段
+		"deleted_at": time.Now(),                                  // 软删除字段（注意：确保你的模型 DeletedAt 字段类型为 gorm.DeletedAt）
+	})
+
 	//不同于ThreadLocal，c的上下文必须显式传递
 	config.SetInvalidToken(token)
 }
