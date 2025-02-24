@@ -106,3 +106,15 @@ func DeleteMe(c *gin.Context) {
 		return
 	}
 }
+
+func UpdateNickName(c *gin.Context) {
+	var newName models.UpdateNicknameRequest
+	if err := c.ShouldBindJSON(&newName); err == nil {
+		c.JSON(http.StatusBadRequest,
+			common.Response{
+				Code:    common.BadReq,
+				Message: common.ErrCodeToString(common.BadReq),
+			})
+	}
+
+}

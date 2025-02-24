@@ -59,6 +59,13 @@ func InitRouter() *gin.Engine {
 		{
 			TestGroup.GET("/", controllers.Test)
 		}
+		NoteGroup := apiV1.Group("/notes")
+		{
+			NoteGroup.POST("/", authMiddleware(), controllers.CreateNote)
+			NoteGroup.GET("/:id", authMiddleware(), controllers.GetNote)
+			NoteGroup.DELETE("/:id", authMiddleware(), controllers.DeleteNote)
+			NoteGroup.GET("/", authMiddleware(), controllers.GetAllNotes)
+		}
 	}
 	return router
 }
@@ -98,8 +105,8 @@ func authMiddleware() gin.HandlerFunc {
 
 		// 如果需要，可以将用户信息写入上下文
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			c.Set("uid", claims["uid"].(string))
-			c.Set("token", tokenString)
+			c.Set(config.UID, claims["uid"].(string))
+			c.Set(config.TOKEN, tokenString)
 		} else if !ok {
 			c.JSON(http.StatusUnauthorized, response)
 		}

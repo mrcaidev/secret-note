@@ -49,3 +49,8 @@ type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+// 用于接收请求的结构体
+type UpdateNicknameRequest struct {
+	Nickname string `json:"nickname" binding:"required"`
+}

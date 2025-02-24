@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+const UID = "UID"
+const TOKEN = "TOKEN"
+
 var DB *gorm.DB
 
 var Cache *cache.Cache
