@@ -8,18 +8,14 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+	"time"
 )
 
 const URL_PREFIX = "http://100.24.244.186:8080/api/v1/notes"
 
 func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(note.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return models.CreateNoteResp{}, err
-	}
-	note.Password = string(hashedPassword)
+
 	note.Nid = uuid.New().String()
 	note.Link = URL_PREFIX + note.Nid
 
@@ -29,8 +25,11 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 		log.Println(result.Error)
 		var mysqlError *mysql.MySQLError
 		if errors.As(result.Error, &mysqlError) && mysqlError.Number == 1062 {
-			return models.CreateNoteResp{}, err
+			return models.CreateNoteResp{}, result.Error
 		}
+	}
+	if note.TTL != 0 {
+		config.Cache.Set(note.Nid, config.VALID, time.Hour*24*time.Duration(note.TTL))
 	}
 
 	var ret models.CreateNoteResp

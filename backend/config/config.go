@@ -12,6 +12,7 @@ import (
 
 const UID = "UID"
 const TOKEN = "TOKEN"
+const VALID = "VALID"
 
 var DB *gorm.DB
 
