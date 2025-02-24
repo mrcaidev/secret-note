@@ -38,3 +38,7 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 	}
 	return ret, nil
 }
+
+func getNote(nid string, uid string) (models.GetNoteResp, error) {
+	return models.GetNoteResp{}, nil
+}

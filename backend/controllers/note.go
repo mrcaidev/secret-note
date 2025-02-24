@@ -9,7 +9,40 @@ import (
 	"net/http"
 )
 
-func GetNote(c *gin.Context) {}
+func GetNote(c *gin.Context) {
+
+	nid := c.Param("id")
+
+	services.
+
+	if uid, exist := c.Get(config.UID); !exist {
+		response := common.Response{
+			Code:    common.NotExistUser,
+			Message: common.ErrCodeToString(common.NotExistUser),
+		}
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	} else {
+		uidStr, ok := uid.(string)
+		if !ok {
+			response := common.Response{
+				Code:    common.InvalidUid,
+				Message: "invalid uid",
+			}
+			c.JSON(http.StatusUnauthorized, response)
+			return
+		}
+		tokenString, _ := c.Get("token")
+		services.DeleteMe(uidStr, tokenString.(string))
+		response := common.Response{
+			Code:    common.Success,
+			Message: "success",
+			Data:    0,
+		}
+		c.JSON(http.StatusOK, response)
+		return
+	}
+}
 
 func GetAllNotes(c *gin.Context) {
 
