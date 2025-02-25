@@ -13,7 +13,7 @@ type MfaState = {
   fallback: () => void;
 };
 
-export const useMfaState = create<MfaState>((set, get) => ({
+export const useMfaState = create<MfaState>()((set, get) => ({
   passed: false,
   method: MFA_METHODS[0],
   pass: () => {
