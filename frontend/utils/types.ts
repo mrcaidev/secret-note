@@ -1,5 +1,6 @@
 export type User = {
   id: string;
+  provider: "email" | "google";
   email: string;
   nickname: string;
   avatarUrl: string;
@@ -18,7 +19,7 @@ export type Note = {
   password: string;
   burn: boolean;
   ttl: number;
-  receivers: string[] | null;
+  receivers: string[];
   createdAt: string;
   deletedAt: string | null;
 };
