@@ -8,7 +8,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "build:web": "expo export -p web"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.2",
