@@ -22,7 +22,7 @@ export default {
     [
       "expo-font",
       {
-        fonts: ["assets/fonts/Inter-Regular.ttf"],
+        fonts: ["assets/fonts/InterVariable.ttf"],
       },
     ],
     "expo-router",

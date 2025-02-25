@@ -13,10 +13,23 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noUncheckedSideEffectImports": true,
-    "paths": { "@/*": ["./*"] },
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
     "verbatimModuleSyntax": true,
     "incremental": true
   },
-  "include": ["**/*", ".expo/types/**/*.ts", "expo-env.d.ts"],
-  "exclude": ["android", "dist", "ios"]
+  "include": [
+    "**/*",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "android",
+    "dist",
+    "ios"
+  ]
 }
