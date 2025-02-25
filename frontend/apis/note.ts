@@ -1,10 +1,10 @@
 import type { Note, PublicNote } from "@/utils/types";
 import {
+  type InfiniteData,
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-  type InfiniteData,
 } from "@tanstack/react-query";
 import { request } from "./request";
 

@@ -8,9 +8,9 @@ import { Text } from "@/components/ui/text";
 import { Link } from "expo-router";
 import {
   CodeXmlIcon,
+  type LucideIcon,
   SettingsIcon,
   ShieldIcon,
-  type LucideIcon,
 } from "lucide-react-native";
 import type { ComponentProps } from "react";
 import { View } from "react-native";

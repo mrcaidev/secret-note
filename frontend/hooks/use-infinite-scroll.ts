@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 
 export function useInfiniteScroll(
   bottomRef: RefObject<HTMLElement>,
