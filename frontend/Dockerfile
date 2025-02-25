@@ -12,5 +12,5 @@ RUN npm run build:web
 
 FROM nginx:alpine
 COPY --from=build /code/dist /usr/share/nginx/html
-COPY --from=build /code/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /code/nginx/default.conf /etc/nginx/conf.d/default.conf
 CMD ["nginx", "-g", "daemon off;"]
