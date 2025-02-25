@@ -24,6 +24,9 @@ export function useInfiniteScroll(
     );
 
     observer.observe(bottom);
-    return () => observer.unobserve(bottom);
+
+    return () => {
+      observer.unobserve(bottom);
+    };
   }, [bottomRef]);
 }
