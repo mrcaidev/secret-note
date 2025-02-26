@@ -6,14 +6,18 @@ import (
 	"backend/models"
 	"backend/services"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
 func GetNote(c *gin.Context) {
 
 	nid := c.Param("id")
-
-	services.
+	password := c.Query("password")
+	var req models.GetNoteReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println("no password input")
+	}
 
 	if uid, exist := c.Get(config.UID); !exist {
 		response := common.Response{
@@ -23,6 +27,7 @@ func GetNote(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	} else {
+
 		uidStr, ok := uid.(string)
 		if !ok {
 			response := common.Response{
@@ -32,15 +37,19 @@ func GetNote(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, response)
 			return
 		}
-		tokenString, _ := c.Get("token")
-		services.DeleteMe(uidStr, tokenString.(string))
+		//if req is nil?
+		ret, code := services.GetNote(nid, uidStr, password)
+
 		response := common.Response{
-			Code:    common.Success,
-			Message: "success",
-			Data:    0,
+			Code:    code,
+			Message: common.ErrCodeToString(code),
+			Data:    ret,
 		}
-		c.JSON(http.StatusOK, response)
-		return
+		if code == 0 {
+			c.JSON(http.StatusOK, response)
+		} else {
+			c.JSON(http.StatusInternalServerError, response)
+		}
 	}
 }
 

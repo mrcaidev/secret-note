@@ -25,11 +25,29 @@ type Note struct {
 	Receivers datatypes.JSON `gorm:"type:json" json:"receivers"`
 }
 
+func (u *Note) BeforeCreate(_ *gorm.DB) (err error) {
+	if u.Nid == "" {
+		u.Nid = uuid.New().String()
+	}
+	return
+}
+
 type Author struct {
 	// 被Note的Author关联
 	UID       string `json:"uid"`
-	NickName  string `json:"nickName"`
-	AvatarUrl string `json:"avatarUrl"`
+	NickName  string `json:"nickname" gorm:"column:nickname"`
+	AvatarUrl string `json:"avatarUrl" gorm:"column:avatar_url"`
+}
+
+// related to users table
+func (Author) TableName() string {
+	return "users"
+}
+
+type BurnRecord struct {
+	NID       string    `json:"nid"`
+	UID       string    `json:"uid"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type CreateNoteReq struct {
@@ -58,6 +76,10 @@ type CreateNoteResp struct {
 	Receivers []string `gorm:"type:json" json:"receivers"`
 }
 
+type GetNoteReq struct {
+	Password string `json:"password"`
+}
+
 type GetNoteResp struct {
 	Nid      string    `json:"nid"`
 	Title    string    `json:"title"`
@@ -65,11 +87,4 @@ type GetNoteResp struct {
 	Author   Author    `json:"author"`
 	Link     string    `json:"link"`
 	CreateAt time.Time `json:"create_at"`
-}
-
-func (u *Note) BeforeCreate(_ *gorm.DB) (err error) {
-	if u.Nid == "" {
-		u.Nid = uuid.New().String()
-	}
-	return
 }

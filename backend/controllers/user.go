@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/common"
+	"backend/config"
 	"backend/models"
 	"backend/services"
 	"github.com/gin-gonic/gin"
@@ -41,7 +42,7 @@ func Test(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	if uid, exist := c.Get("uid"); !exist {
+	if uid, exist := c.Get(config.UID); !exist {
 		response := common.Response{
 			Code:    common.NotExistUser,
 			Message: common.ErrCodeToString(common.NotExistUser),
