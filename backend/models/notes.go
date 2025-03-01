@@ -45,9 +45,9 @@ func (Author) TableName() string {
 }
 
 type BurnRecord struct {
-	NID       string    `json:"nid"`
-	UID       string    `json:"uid"`
-	CreatedAt time.Time `json:"created_at"`
+	UID       string    `gorm:"column:uid" json:"uid"`
+	NID       string    `gorm:"column:nid" json:"nid"`
+	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
 }
 
 type CreateNoteReq struct {

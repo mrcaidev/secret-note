@@ -58,9 +58,15 @@ func GetNote(nid string, uid string, password string) (ret models.GetNoteResp, c
 	if err != nil {
 		return models.GetNoteResp{}, common.WrongReceivers
 	}
-	if len(receivers) != 0 && !slices.Contains(receivers, uid) && note.AuthorID != uid {
+	var user models.User
+	err = config.DB.Where("uid = ?", uid).First(&user).Error
+	if err != nil {
+		log.Printf("wrong uid: %s: %v", uid, err.Error())
+	}
+	if len(receivers) != 0 && !slices.Contains(receivers, user.Email) && note.AuthorID != uid {
 		return models.GetNoteResp{}, common.NotTargetReceiver
 	}
+
 	//Password
 	if len(note.Password) != 0 && note.Password != password {
 		return models.GetNoteResp{}, common.WrongPassword
@@ -76,11 +82,15 @@ func GetNote(nid string, uid string, password string) (ret models.GetNoteResp, c
 	//burn
 	if note.Burn {
 		var burnRecord models.BurnRecord
-		err = config.DB.Where("uid = ? & nid = ?", uid, nid).First(&burnRecord).Error
+		// 不能写 & 得用AND
+		err = config.DB.Where("uid = ? AND nid = ?", uid, nid).First(&burnRecord).Error
 		//如果没有找到，burnRecord是什么，是nil吗?
 		//burnRecord 是一个结构体的实例，不是指针，所以即使没有找到记录，它也不会是 nil，而是会保持其零值状态
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			//not burned, ok
+			//not burned, then burn
+			config.DB.Create(models.BurnRecord{
+				NID: nid, UID: uid, CreatedAt: time.Now(),
+			})
 		} else if err != nil {
 			log.Println(err.Error())
 			return models.GetNoteResp{}, common.Error
