@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-const URL_PREFIX = "http://100.24.244.186:8080/api/v1/notes"
+const URL_PREFIX = "http://localhost:8081/"
 
 func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 

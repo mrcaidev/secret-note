@@ -12,7 +12,7 @@ import (
 
 func AlwaysCORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 设置你需要的 CORS 响应头
+		// CORS Header
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // 或者指定特定域名
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")

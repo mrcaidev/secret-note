@@ -66,6 +66,9 @@ func CreateNote(c *gin.Context) {
 	}
 	note.AuthorID = c.GetString(config.UID)
 	notesResp, err := services.CreateNotes(note)
+	if notesResp.Receivers == nil {
+		notesResp.Receivers = []string{}
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.Response{
 			Code:    common.Error,

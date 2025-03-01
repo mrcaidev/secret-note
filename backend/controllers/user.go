@@ -79,7 +79,7 @@ func GetUser(c *gin.Context) {
 }
 
 func DeleteMe(c *gin.Context) {
-	if uid, exist := c.Get("uid"); !exist {
+	if uid, exist := c.Get(config.UID); !exist {
 		response := common.Response{
 			Code:    common.NotExistUser,
 			Message: common.ErrCodeToString(common.NotExistUser),
@@ -96,7 +96,7 @@ func DeleteMe(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, response)
 			return
 		}
-		tokenString, _ := c.Get("token")
+		tokenString, _ := c.Get(config.TOKEN)
 		services.DeleteMe(uidStr, tokenString.(string))
 		response := common.Response{
 			Code:    common.Success,
