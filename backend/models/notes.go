@@ -8,7 +8,7 @@ import (
 )
 
 type Note struct {
-	Nid     string `json:"nid"`
+	Nid     string `gorm:"column:nid" json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 
@@ -34,7 +34,7 @@ func (u *Note) BeforeCreate(_ *gorm.DB) (err error) {
 
 type Author struct {
 	// 被Note的Author关联
-	UID       string `json:"uid"`
+	UID       string `gorm:"column:uid" json:"id"`
 	NickName  string `json:"nickname" gorm:"column:nickname"`
 	AvatarUrl string `json:"avatarUrl" gorm:"column:avatar_url"`
 }
@@ -60,7 +60,7 @@ type CreateNoteReq struct {
 }
 
 type CreateNoteResp struct {
-	Nid     string `json:"nid"`
+	Nid     string `json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 
@@ -81,10 +81,10 @@ type GetNoteReq struct {
 }
 
 type GetNoteResp struct {
-	Nid      string    `json:"nid"`
+	Nid      string    `json:"id"`
 	Title    string    `json:"title"`
 	Content  string    `json:"content"`
 	Author   Author    `json:"author"`
 	Link     string    `json:"link"`
-	CreateAt time.Time `json:"create_at"`
+	CreateAt time.Time `gorm:"create_at" json:"createdAt"`
 }
