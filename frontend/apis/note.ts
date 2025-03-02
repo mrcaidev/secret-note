@@ -49,9 +49,7 @@ export function useCreateNoteMutation() {
     },
     onSuccess: (note) => {
       queryClient.setQueryData<Note>(["note", note.id], note);
-      queryClient.setQueryData<Omit<Note, "content">[]>(["notes"], (old) =>
-        old ? [note, ...old] : [note],
-      );
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
   });
 }
