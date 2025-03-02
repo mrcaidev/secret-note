@@ -10,7 +10,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "build:web": "expo export -p web",
-    "check": "tsc && biome ci"
+    "check": "tsc && biome ci",
+    "clean": "rimraf .expo android dist ios *.tsbuildinfo"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.2",
@@ -69,6 +70,7 @@
     "@biomejs/biome": "^1.9.4",
     "@types/react": "~18.3.12",
     "eas-cli": "^15.0.12",
+    "rimraf": "^6.0.1",
     "typescript": "^5.7.3"
   }
 }
