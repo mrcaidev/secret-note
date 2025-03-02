@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
-	"time"
 )
 
 type EmailRequest struct {
@@ -108,7 +107,7 @@ func SignOut(c *gin.Context) {
 
 	// 去掉前面的 "Bearer " 前缀，并去除可能的首尾空格
 	token := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
-	config.Cache.Set(config.INVALID_TOKEN+token, "invalid token", time.Hour*72)
+	config.SetInvalidToken(token)
 	response := common.Response{
 		Code:    common.Success,
 		Message: common.ErrCodeToString(common.Success),
