@@ -3,7 +3,7 @@ export type KvStorageOptions = {
   session?: boolean;
 };
 
-export abstract class BaseKvStorage<T = string> {
+export abstract class BaseKvStorage<T> {
   protected readonly key: string;
   protected readonly secure: boolean;
   protected readonly session: boolean;
@@ -14,25 +14,25 @@ export abstract class BaseKvStorage<T = string> {
     this.session = options.session ?? false;
   }
 
+  protected abstract _get(): Promise<string | null>;
+
   public async get() {
     const text = await this._get();
     return text ? this.deserialize(text) : null;
   }
 
-  protected abstract _get(): Promise<string | null>;
+  protected abstract _set(value: string): Promise<void>;
 
   public async set(value: T) {
     const text = this.serialize(value);
     await this._set(text);
   }
 
-  protected abstract _set(value: string): Promise<void>;
+  protected abstract _remove(): Promise<void>;
 
   public async remove() {
     await this._remove();
   }
-
-  protected abstract _remove(): Promise<void>;
 
   private serialize(value: T) {
     if (value === undefined) {

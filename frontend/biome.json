@@ -21,6 +21,6 @@
     "useEditorconfig": true
   },
   "organizeImports": {
-    "enabled": false
+    "enabled": true
   }
 }

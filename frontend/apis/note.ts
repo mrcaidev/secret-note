@@ -1,10 +1,10 @@
 import type { Note, PublicNote } from "@/utils/types";
 import {
+  type InfiniteData,
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-  type InfiniteData,
 } from "@tanstack/react-query";
 import { request } from "./request";
 
@@ -49,9 +49,7 @@ export function useCreateNoteMutation() {
     },
     onSuccess: (note) => {
       queryClient.setQueryData<Note>(["note", note.id], note);
-      queryClient.setQueryData<Omit<Note, "content">[]>(["notes"], (old) =>
-        old ? [note, ...old] : [note],
-      );
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
   });
 }
