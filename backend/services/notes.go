@@ -113,3 +113,5 @@ func GetReceiversArr(jsonData datatypes.JSON) (receivers []string, err error) {
 	}
 	return receivers, nil
 }
+
+// GetNotesByAuthor 根据指定 uid 获取 Note 列表

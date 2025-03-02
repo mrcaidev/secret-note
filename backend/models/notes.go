@@ -90,3 +90,15 @@ type GetNoteResp struct {
 	Link     string    `json:"link"`
 	CreateAt time.Time `gorm:"create_at" json:"createdAt"`
 }
+
+type GetAllNoteResp struct {
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Author    Author    `json:"author"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type GetAllNoteListResp struct {
+	Notes      []GetAllNoteResp `json:"notes"`
+	NextCursor string           `json:"nextCursor"`
+}
