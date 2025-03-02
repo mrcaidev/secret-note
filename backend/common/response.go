@@ -23,6 +23,11 @@ const (
 	StatusUnauthorized          = 1009
 	BadReq                      = 1010
 	FailedToRequestFromProvider = 1011
+	NoteNotFound                = 1012
+	NoteWasBurned               = 1013
+	WrongReceivers              = 1014
+	NotTargetReceiver           = 1015
+	ExpiredNote                 = 1016
 )
 
 func BadRequest() Response {
@@ -61,7 +66,14 @@ func ErrCodeToString(code int) string {
 		return "BadReq"
 	case FailedToRequestFromProvider:
 		return "FailedToRequestFromProvider"
-
+	case NoteNotFound:
+		return "NoteNotFound"
+	case NoteWasBurned:
+		return "NoteWasBurned"
+	case WrongReceivers:
+		return "WrongReceivers"
+	case NotTargetReceiver:
+		return "NotTargetReceiver"
 	default:
 		return strconv.Itoa(code)
 	}

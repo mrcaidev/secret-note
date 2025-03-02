@@ -4,17 +4,35 @@ import (
 	"backend/common"
 	"backend/config"
 	"backend/controllers"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
 	"strings"
 )
 
+func AlwaysCORS() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// CORS Header
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // 或者指定特定域名
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		// 如果是预检请求，则直接返回204状态码
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func InitRouter() *gin.Engine {
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(AlwaysCORS())
 
 	apiV1 := router.Group("api/v1")
 	{
@@ -31,6 +49,7 @@ func InitRouter() *gin.Engine {
 		{
 			UserGroup.POST("/users", controllers.CreateUser)
 			UserGroup.GET("/me", authMiddleware(), controllers.GetUser)
+			UserGroup.DELETE("/me", authMiddleware(), controllers.DeleteMe)
 		}
 		OauthGroup := apiV1.Group("/oauth")
 		{
@@ -39,6 +58,13 @@ func InitRouter() *gin.Engine {
 		TestGroup := apiV1.Group("/test")
 		{
 			TestGroup.GET("/", controllers.Test)
+		}
+		NoteGroup := apiV1.Group("/notes")
+		{
+			NoteGroup.POST("/", authMiddleware(), controllers.CreateNote)
+			NoteGroup.GET("/:id", authMiddleware(), controllers.GetNote)
+			NoteGroup.DELETE("/:id", authMiddleware(), controllers.DeleteNote)
+			NoteGroup.GET("/", authMiddleware(), controllers.GetAllNotes)
 		}
 	}
 	return router
@@ -70,7 +96,7 @@ func authMiddleware() gin.HandlerFunc {
 			}
 			return config.JwtSecret, nil
 		})
-		var _, invalidToken = config.Cache.Get(config.INVALID_TOKEN + tokenString)
+		var invalidToken = config.JudgeTokenInvalid(tokenString)
 		if err != nil || !token.Valid || invalidToken {
 			c.JSON(http.StatusUnauthorized, response)
 			c.Abort()
@@ -79,7 +105,8 @@ func authMiddleware() gin.HandlerFunc {
 
 		// 如果需要，可以将用户信息写入上下文
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			c.Set("uid", claims["uid"].(string))
+			c.Set(config.UID, claims["uid"].(string))
+			c.Set(config.TOKEN, tokenString)
 		} else if !ok {
 			c.JSON(http.StatusUnauthorized, response)
 		}

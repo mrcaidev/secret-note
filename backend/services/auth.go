@@ -137,6 +137,7 @@ func SignByOauth(accessToken string, providerName string) (models.UserResponse, 
 	// not found, then create
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		user = models.TransferFromGoogleRespToUser(providerResp)
+		user.Provider = providerName
 		userResponse, existUser = CreateUser(&user)
 		if existUser {
 			return models.UserResponse{}, common.Error
