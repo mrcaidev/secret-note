@@ -3,7 +3,6 @@ import { create } from "zustand";
 
 const MFA_METHODS = Platform.select({
   native: ["biometric", "email"] as const,
-  web: ["email"] as const,
   default: ["email"] as const,
 });
 

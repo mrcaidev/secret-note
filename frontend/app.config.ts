@@ -5,18 +5,24 @@ export default {
   description: "A modern, neat and secure way to paste and share.",
   slug: "secret-note",
   owner: "mrcaidev",
+  sdkVersion: "52.0.0",
   version: "0.1.0",
-  platforms: ["ios", "android", "web"],
+  platforms: ["web", "android", "ios"],
   githubUrl: "https://github.com/mrcaidev/secret-note",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
-  icon: "./assets/images/icon.png",
+  icon: "assets/images/favicon.png",
   scheme: "secret-note",
+  extra: {
+    eas: {
+      projectId: "226c083a-771c-4e3e-b718-d23e5390d947",
+    },
+  },
   plugins: [
     [
       "expo-font",
       {
-        fonts: ["./assets/fonts/Inter-Regular.ttf"],
+        fonts: ["assets/fonts/Inter-Regular.ttf"],
       },
     ],
     "expo-router",
@@ -24,29 +30,45 @@ export default {
     [
       "expo-splash-screen",
       {
-        backgroundColor: "#ffffff",
-        image: "./assets/images/icon.png",
-        dark: {
-          backgroundColor: "#0c0a09",
-          image: "./assets/images/icon.png",
-        },
+        backgroundColor: "#00a63e",
+        image: "assets/images/splash.png",
+        imageWidth: 200,
       },
     ],
     "expo-sqlite",
   ],
+  jsEngine: "hermes",
   newArchEnabled: true,
   ios: {
     bundleIdentifier: "dev.mrcai.secretnote",
     config: {
       usesNonExemptEncryption: false,
     },
+    infoPlist: {
+      CFBundleURLTypes: [
+        {
+          CFBundleURLSchemes: [
+            "com.googleusercontent.apps.1041111204276-a0ae9633f1ltonn0hsdlg0lo4bd99h3q",
+          ],
+        },
+      ],
+    },
   },
   android: {
     package: "dev.mrcai.secretnote",
+    adaptiveIcon: {
+      foregroundImage: "assets/images/adaptive-icon.png",
+      backgroundColor: "#00a63e",
+    },
   },
   web: {
     output: "static",
-    favicon: "./assets/images/icon.png",
+    favicon: "assets/images/favicon.png",
+    name: "Secret Note",
+    shortName: "Secret Note",
+    lang: "en",
+    description: "A modern, neat and secure way to paste and share.",
+    bundler: "metro",
   },
   experiments: {
     typedRoutes: true,

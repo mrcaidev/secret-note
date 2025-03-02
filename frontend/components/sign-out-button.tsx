@@ -1,12 +1,13 @@
-import { useSignOut } from "@/apis/auth";
+import { useSignOutMutation } from "@/apis/auth";
 import { useRouter } from "expo-router";
 import { LogOutIcon } from "lucide-react-native";
-import { Pressable } from "react-native";
+import { Spinner } from "./spinner";
+import { Button } from "./ui/button";
 import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 export function SignOutButton() {
-  const { mutate } = useSignOut();
+  const { mutate, isPending } = useSignOutMutation();
 
   const router = useRouter();
 
@@ -19,18 +20,14 @@ export function SignOutButton() {
   };
 
   return (
-    <Pressable
+    <Button
+      variant="ghost"
       onPress={signOut}
-      className="group flex flex-row justify-start items-center gap-3 px-6 py-3 web:hover:bg-accent web:hover:text-accent-foreground active:bg-accent web:transition-colors"
+      disabled={isPending}
+      className="justify-start gap-3"
     >
-      <Icon
-        as={LogOutIcon}
-        size={18}
-        className="text-foreground group-active:text-accent-foreground web:transition-colors"
-      />
-      <Text className="group-active:text-accent-foreground web:transition-colors">
-        Sign Out
-      </Text>
-    </Pressable>
+      {isPending ? <Spinner size={18} /> : <Icon as={LogOutIcon} size={18} />}
+      <Text>Sign Out</Text>
+    </Button>
   );
 }

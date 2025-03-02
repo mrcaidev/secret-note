@@ -2,9 +2,9 @@ import type { PublicNote } from "@/utils/types";
 import { Link } from "expo-router";
 import { ClockIcon } from "lucide-react-native";
 import { View } from "react-native";
+import { Avatar } from "./avatar";
 import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
-import { Avatar } from "./avatar";
 
 type Props = {
   note: Omit<PublicNote, "content">;
@@ -12,12 +12,12 @@ type Props = {
 
 export function NoteCard({ note }: Props) {
   return (
-    <View className="relative px-6 py-4">
-      <Text className="mb-2.5 line-clamp-2">{note.title}</Text>
+    <View className="relative px-2 py-4">
+      <Text className="mb-3 line-clamp-2">{note.title}</Text>
       <View className="flex-row justify-between items-center">
-        <View className="flex-row items-center gap-2.5">
-          <Avatar user={note.author} className="size-7" />
-          <Text className="text-sm text-muted-foreground">
+        <View className="flex-row items-center gap-2">
+          <Avatar user={note.author} className="size-6" />
+          <Text className="text-muted-foreground text-sm">
             {note.author.nickname}
           </Text>
         </View>
@@ -31,13 +31,14 @@ export function NoteCard({ note }: Props) {
       <Link
         href={{ pathname: "/notes/[id]", params: { id: note.id } }}
         aria-label="Read note"
-        className="absolute inset-0"
+        className="absolute inset-0 rounded-md web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2 web:ring-offset-background"
       />
     </View>
   );
 }
 
-function daysAgo(timestamp: number) {
+function daysAgo(iso: string) {
+  const timestamp = new Date(iso).getTime();
   const days = (Date.now() - timestamp) / (24 * 60 * 60 * 1000);
 
   if (days < 1) {

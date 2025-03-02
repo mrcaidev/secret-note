@@ -23,5 +23,5 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts"
   ],
-  "exclude": ["dist"]
+  "exclude": ["android", "dist", "ios"]
 }

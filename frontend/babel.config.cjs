@@ -1,4 +1,4 @@
-export default function config(api) {
+module.exports = (api) => {
   api.cache(true);
   return {
     presets: [
@@ -6,4 +6,4 @@ export default function config(api) {
       "nativewind/babel",
     ],
   };
-}
+};

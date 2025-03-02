@@ -1,5 +1,6 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { Icon } from "@/components/ui/icon";
 import { Tabs } from "expo-router";
+import { HouseIcon, SquarePenIcon, UserRoundIcon } from "lucide-react-native";
 
 export default function TabsLayout() {
   return (
@@ -8,12 +9,8 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home" : "home-outline"}
-              color={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Icon as={HouseIcon} color={color} size={size} />
           ),
         }}
       />
@@ -21,12 +18,8 @@ export default function TabsLayout() {
         name="new"
         options={{
           title: "New",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "create" : "create-outline"}
-              color={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Icon as={SquarePenIcon} color={color} size={size} />
           ),
         }}
       />
@@ -34,12 +27,8 @@ export default function TabsLayout() {
         name="me"
         options={{
           title: "Me",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "person" : "person-outline"}
-              color={color}
-              size={24}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Icon as={UserRoundIcon} color={color} size={size} />
           ),
         }}
       />

@@ -1,34 +1,38 @@
-import { useVerifyOtp } from "@/apis/auth";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useVerifyOtpMutation } from "@/apis/auth";
 import { Text } from "@/components/ui/text";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { View } from "react-native";
+import { FormError } from "./form-error";
 import { OtpInput } from "./ui/otp-input";
 
 export function SignUpVerifyOtpScreen() {
-  const { mutate, error, isPending } = useVerifyOtp();
+  const { mutate, error, isPending } = useVerifyOtpMutation();
+
+  const otpFlowId = useOtpFlow((state) => state.id)!;
+  const email = useOtpFlow((state) => state.email)!;
+  const completeOtpFlow = useOtpFlow((state) => state.complete);
 
   const verifyOtp = (otp: string) => {
-    mutate({ otp });
+    mutate(
+      { otpFlowId, otp },
+      {
+        onSuccess: () => {
+          completeOtpFlow();
+        },
+      },
+    );
   };
-
-  const email = useOtpFlow((state) => state.email);
 
   return (
     <View className="grow justify-center px-12 bg-background">
       <Text className="mb-3 text-3xl font-bold">OTP Verification</Text>
       <Text className="mb-6 text-muted-foreground">
         We have sent a 6-digit One-Time Password to&nbsp;
-        <Text>{email ?? "your email"}</Text>&nbsp;to verify your identity.
-        Please enter it below.
+        <Text>{email}</Text>&nbsp;to verify your identity. Please enter it
+        below.
       </Text>
-      <OtpInput disabled={isPending} onFilled={verifyOtp} />
-      {error && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      <OtpInput onFilled={verifyOtp} disabled={isPending} />
+      <FormError error={error} className="mt-4" />
     </View>
   );
 }

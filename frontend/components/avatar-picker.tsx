@@ -6,7 +6,7 @@ import { Icon } from "./ui/icon";
 import { Text } from "./ui/text";
 
 type Props = {
-  currentAvatarUrl: string | null;
+  currentAvatarUrl: string;
 };
 
 export function AvatarPicker({ currentAvatarUrl }: Props) {
