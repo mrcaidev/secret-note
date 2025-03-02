@@ -76,7 +76,7 @@ func CreateNote(c *gin.Context) {
 			Data:    err.Error(),
 		})
 	}
-	c.JSON(http.StatusOK, common.Response{
+	c.JSON(http.StatusCreated, common.Response{
 		Code:    common.Success,
 		Message: common.ErrCodeToString(common.Success),
 		Data:    notesResp,

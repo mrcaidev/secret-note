@@ -69,7 +69,9 @@ type CreateNoteResp struct {
 	// 指定关联关系，foreignKey 表示当前结构体的外键字段，references 表示关联的 User 表的主键
 	Author    Author    `gorm:"foreignKey:AuthorID;references:UID" json:"author"`
 	Link      string    `json:"link"`
-	CreatedAt time.Time `json:"created_at"`
+	CreatedAt time.Time `gorm:"created_at"  json:"createdAt"`
+	DeletedAt time.Time `gorm:"deleted_at"  json:"deletedAt"`
+	Password  string    `json:"password"`
 	Burn      bool      `json:"burn"`
 	// Number of days before auto-deletion, 1-365. 0 means never expiring.
 	TTL       int      `json:"ttl"`
