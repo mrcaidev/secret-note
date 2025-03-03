@@ -29,7 +29,7 @@ export function useNotesInfiniteQuery() {
         ? undefined
         : {
             pages: [{ notes: noteDb.findAll(), nextCursor: "" }],
-            pageParams: [],
+            pageParams: [""],
           },
   });
 }
