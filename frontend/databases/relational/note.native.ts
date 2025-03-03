@@ -14,7 +14,9 @@ type DbNote = {
 };
 
 export function findAll() {
-  const dbNotes = rdb.getAllSync<DbNote>("select * from notes");
+  const dbNotes = rdb.getAllSync<DbNote>(
+    "select * from notes order by created_at desc",
+  );
 
   devLog(`noteDb: ${dbNotes.length} notes found`);
 
