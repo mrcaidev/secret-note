@@ -1,3 +1,4 @@
+import { devLog } from "@/utils/dev";
 import type { KvDbOptions } from "./types";
 
 export abstract class BaseKvDb<T> {
@@ -14,21 +15,34 @@ export abstract class BaseKvDb<T> {
   protected abstract _get(): Promise<string | null>;
 
   public async get() {
-    const text = await this._get();
-    return text ? BaseKvDb.deserialize<T>(text) : null;
+    try {
+      const text = await this._get();
+      return text ? BaseKvDb.deserialize<T>(text) : null;
+    } catch (error) {
+      devLog(`failed to get ${this.key}: ${error}`);
+      return null;
+    }
   }
 
   protected abstract _set(value: string): Promise<void>;
 
   public async set(value: T) {
-    const text = BaseKvDb.serialize<T>(value);
-    await this._set(text);
+    try {
+      const text = BaseKvDb.serialize<T>(value);
+      await this._set(text);
+    } catch (error) {
+      devLog(`failed to set ${this.key}: ${error}`);
+    }
   }
 
   protected abstract _remove(): Promise<void>;
 
   public async remove() {
-    await this._remove();
+    try {
+      await this._remove();
+    } catch (error) {
+      devLog(`failed to remove ${this.key}: ${error}`);
+    }
   }
 
   private static serialize<T>(value: T) {
