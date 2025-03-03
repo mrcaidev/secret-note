@@ -1,4 +1,4 @@
-import { tokenStorage } from "@/utils/storage";
+import { tokenDb } from "@/databases/kv";
 
 export class RequestError extends Error {
   public readonly code: number;
@@ -16,7 +16,7 @@ type ResponseJson<T> = {
 };
 
 async function wrappedFetch<T>(pathname: string, options: RequestInit) {
-  const token = await tokenStorage.get();
+  const token = await tokenDb.get();
 
   const res = await fetch(process.env.EXPO_PUBLIC_API_BASE_URL + pathname, {
     ...options,

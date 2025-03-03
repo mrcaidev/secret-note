@@ -1,14 +1,11 @@
-export type KvStorageOptions = {
-  secure?: boolean;
-  session?: boolean;
-};
+import type { KvDbOptions } from "./types";
 
-export abstract class BaseKvStorage<T> {
+export abstract class BaseKvDb<T> {
   protected readonly key: string;
   protected readonly secure: boolean;
   protected readonly session: boolean;
 
-  protected constructor(key: string, options: KvStorageOptions) {
+  protected constructor(key: string, options: KvDbOptions) {
     this.key = key;
     this.secure = options.secure ?? false;
     this.session = options.session ?? false;
@@ -18,13 +15,13 @@ export abstract class BaseKvStorage<T> {
 
   public async get() {
     const text = await this._get();
-    return text ? this.deserialize(text) : null;
+    return text ? BaseKvDb.deserialize<T>(text) : null;
   }
 
   protected abstract _set(value: string): Promise<void>;
 
   public async set(value: T) {
-    const text = this.serialize(value);
+    const text = BaseKvDb.serialize<T>(value);
     await this._set(text);
   }
 
@@ -34,14 +31,14 @@ export abstract class BaseKvStorage<T> {
     await this._remove();
   }
 
-  private serialize(value: T) {
+  private static serialize<T>(value: T) {
     if (value === undefined) {
       return "undefined";
     }
     return JSON.stringify(value);
   }
 
-  private deserialize(value: string) {
+  private static deserialize<T>(value: string) {
     if (value === "undefined") {
       return undefined as T;
     }

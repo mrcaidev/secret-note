@@ -1,4 +1,4 @@
-import { tokenStorage } from "@/utils/storage";
+import { tokenDb } from "@/databases/kv";
 import type { User } from "@/utils/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
@@ -38,7 +38,7 @@ export function useDeleteMe() {
       return await request.delete("/me");
     },
     onSuccess: async () => {
-      await tokenStorage.remove();
+      await tokenDb.remove();
 
       queryClient.cancelQueries({ queryKey: ["me"] });
       queryClient.setQueryData(["me"], null);
