@@ -1,4 +1,4 @@
-import { useDeleteMe } from "@/apis/me";
+import { useDeleteMeMutation } from "@/apis/me";
 import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { MfaGuard } from "@/components/mfa-guard";
@@ -34,7 +34,7 @@ export default function DeleteAccountSettingPage() {
     resolver: valibotResolver(schema),
   });
 
-  const { mutate, error, isPending } = useDeleteMe();
+  const { mutate, error, isPending } = useDeleteMeMutation();
 
   const router = useRouter();
 

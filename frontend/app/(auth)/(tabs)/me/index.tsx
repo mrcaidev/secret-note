@@ -1,4 +1,4 @@
-import { useMe } from "@/apis/me";
+import { useMeQuery } from "@/apis/me";
 import { Avatar } from "@/components/avatar";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import type { ComponentProps } from "react";
 import { View } from "react-native";
 
 export default function MePage() {
-  const { data: me } = useMe();
+  const { data: me } = useMeQuery();
 
   if (!me) {
     return null;
@@ -28,9 +28,7 @@ export default function MePage() {
         <Avatar user={me} className="size-16" />
         <View className="gap-1">
           <Text className="text-xl font-bold line-clamp-1">{me.nickname}</Text>
-          <Text className="text-muted-foreground text-sm line-clamp-1">
-            {me.email}
-          </Text>
+          <Text className="text-muted-foreground line-clamp-1">{me.email}</Text>
         </View>
       </View>
       <Separator className="my-3" />

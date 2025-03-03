@@ -1,7 +1,8 @@
-import { BaseKvStorage, type KvStorageOptions } from "./kv.base";
+import { BaseKvDb } from "./db.base";
+import type { KvDbOptions } from "./types";
 
-export class KvStorage<T = string> extends BaseKvStorage<T> {
-  public constructor(key: string, options: KvStorageOptions = {}) {
+export class KvDb<T = string> extends BaseKvDb<T> {
+  public constructor(key: string, options: KvDbOptions = {}) {
     super(key, options);
   }
 

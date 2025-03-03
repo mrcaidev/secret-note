@@ -1,4 +1,4 @@
-import { tokenStorage } from "@/utils/storage";
+import { tokenDb } from "@/databases/kv";
 import type { User } from "@/utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
@@ -31,7 +31,7 @@ export function useSignUpMutation() {
       return await request.post("/users", data);
     },
     onSuccess: async ({ token, ...me }) => {
-      await tokenStorage.set(token);
+      await tokenDb.set(token);
 
       queryClient.cancelQueries({ queryKey: ["me"] });
       queryClient.setQueryData(["me"], me);
@@ -51,7 +51,7 @@ export function useSignInWithEmailMutation() {
       return await request.post("/auth/token", data);
     },
     onSuccess: async ({ token, ...me }) => {
-      await tokenStorage.set(token);
+      await tokenDb.set(token);
 
       queryClient.cancelQueries({ queryKey: ["me"] });
       queryClient.setQueryData(["me"], me);
@@ -67,7 +67,7 @@ export function useSignInWithOauthMutation(provider: string) {
       return await request.post(`/oauth/${provider}/token`, data);
     },
     onSuccess: async ({ token, ...me }) => {
-      await tokenStorage.set(token);
+      await tokenDb.set(token);
 
       queryClient.cancelQueries({ queryKey: ["me"] });
       queryClient.setQueryData(["me"], me);
@@ -83,7 +83,7 @@ export function useSignOutMutation() {
       return await request.delete("/auth/token");
     },
     onSuccess: async () => {
-      await tokenStorage.remove();
+      await tokenDb.remove();
 
       queryClient.cancelQueries({ queryKey: ["me"] });
       queryClient.setQueryData(["me"], null);

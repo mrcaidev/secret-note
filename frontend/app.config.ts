@@ -35,7 +35,12 @@ export default {
         imageWidth: 200,
       },
     ],
-    "expo-sqlite",
+    [
+      "expo-sqlite",
+      {
+        useSQLCipher: true,
+      },
+    ],
   ],
   jsEngine: "hermes",
   newArchEnabled: true,

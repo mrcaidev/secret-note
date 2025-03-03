@@ -13,7 +13,9 @@ export default function Root({ children }: PropsWithChildren) {
         />
         <ScrollViewStyleReset />
       </head>
-      <body className="bg-background">{children}</body>
+      <body className="bg-background text-foreground font-sans antialiased">
+        {children}
+      </body>
     </html>
   );
 }

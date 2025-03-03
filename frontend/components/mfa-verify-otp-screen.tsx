@@ -1,5 +1,5 @@
 import { useSendOtpMutation, useVerifyOtpMutation } from "@/apis/auth";
-import { useMe } from "@/apis/me";
+import { useMeQuery } from "@/apis/me";
 import { useMfaState } from "@/hooks/use-mfa-state";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 import { useEffect } from "react";
@@ -9,7 +9,7 @@ import { OtpInput } from "./ui/otp-input";
 import { Text } from "./ui/text";
 
 export function MfaVerifyOtpScreen() {
-  const { data: me } = useMe();
+  const { data: me } = useMeQuery();
   const email = me!.email;
 
   const otpFlowId = useOtpFlow((state) => state.id);
