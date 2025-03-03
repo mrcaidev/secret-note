@@ -19,7 +19,7 @@ export abstract class BaseKvDb<T> {
       const text = await this._get();
       return text ? BaseKvDb.deserialize<T>(text) : null;
     } catch (error) {
-      devLog(`failed to get ${this.key}: ${error}`);
+      devLog(`KvDb: failed to get ${this.key}: ${error}`);
       return null;
     }
   }
@@ -31,7 +31,7 @@ export abstract class BaseKvDb<T> {
       const text = BaseKvDb.serialize<T>(value);
       await this._set(text);
     } catch (error) {
-      devLog(`failed to set ${this.key}: ${error}`);
+      devLog(`KvDb: failed to set ${this.key}: ${error}`);
     }
   }
 
@@ -41,7 +41,7 @@ export abstract class BaseKvDb<T> {
     try {
       await this._remove();
     } catch (error) {
-      devLog(`failed to remove ${this.key}: ${error}`);
+      devLog(`KvDb: failed to remove ${this.key}: ${error}`);
     }
   }
 
