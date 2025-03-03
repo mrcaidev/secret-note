@@ -28,9 +28,7 @@ export default function MePage() {
         <Avatar user={me} className="size-16" />
         <View className="gap-1">
           <Text className="text-xl font-bold line-clamp-1">{me.nickname}</Text>
-          <Text className="text-muted-foreground text-sm line-clamp-1">
-            {me.email}
-          </Text>
+          <Text className="text-muted-foreground line-clamp-1">{me.email}</Text>
         </View>
       </View>
       <Separator className="my-3" />

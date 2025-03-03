@@ -12,7 +12,7 @@ export function Avatar({ user, alt = "Avatar", ...props }: Props) {
     <BaseAvatar alt={alt} {...props}>
       <AvatarImage source={{ uri: user.avatarUrl }} />
       <AvatarFallback>
-        <Text>{user.nickname[0]}</Text>
+        <Text className="uppercase">{user.nickname[0]}</Text>
       </AvatarFallback>
     </BaseAvatar>
   );
