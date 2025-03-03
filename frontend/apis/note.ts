@@ -1,4 +1,4 @@
-import * as NoteDb from "@/databases/relational/note";
+import * as noteDb from "@/databases/relational/note";
 import type { Note, PublicNote } from "@/utils/types";
 import {
   type InfiniteData,
@@ -28,7 +28,7 @@ export function useNotesInfiniteQuery() {
       Platform.OS === "web"
         ? undefined
         : {
-            pages: [{ notes: NoteDb.findAll(), nextCursor: "" }],
+            pages: [{ notes: noteDb.findAll(), nextCursor: "" }],
             pageParams: [],
           },
   });
@@ -43,7 +43,7 @@ export function useNoteQuery(id: string, password?: string) {
       );
     },
     placeholderData:
-      Platform.OS === "web" ? undefined : (NoteDb.findOneById(id) ?? undefined),
+      Platform.OS === "web" ? undefined : (noteDb.findOneById(id) ?? undefined),
   });
 }
 
@@ -60,9 +60,11 @@ export function useCreateNoteMutation() {
     },
     onSuccess: (note) => {
       queryClient.setQueryData<Note>(["note", note.id], note);
+
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+
       if (Platform.OS !== "web") {
-        NoteDb.insertOne(note);
+        noteDb.insertOne(note);
       }
     },
   });
