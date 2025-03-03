@@ -1,4 +1,4 @@
-import { useUpdateMe } from "@/apis/me";
+import { useUpdateMeMutation } from "@/apis/me";
 import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
@@ -28,7 +28,7 @@ export default function EmailSettingPage() {
     resolver: valibotResolver(schema),
   });
 
-  const { mutate, error, isPending } = useUpdateMe();
+  const { mutate, error, isPending } = useUpdateMeMutation();
 
   const router = useRouter();
 

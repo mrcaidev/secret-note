@@ -3,7 +3,7 @@ import type { User } from "@/utils/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
 
-export function useMe() {
+export function useMeQuery() {
   return useQuery<User>({
     queryKey: ["me"],
     queryFn: async () => {
@@ -12,7 +12,7 @@ export function useMe() {
   });
 }
 
-export function useUpdateMe() {
+export function useUpdateMeMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -30,7 +30,7 @@ export function useUpdateMe() {
   });
 }
 
-export function useDeleteMe() {
+export function useDeleteMeMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({

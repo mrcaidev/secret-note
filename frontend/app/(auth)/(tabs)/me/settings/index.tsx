@@ -1,4 +1,4 @@
-import { useMe } from "@/apis/me";
+import { useMeQuery } from "@/apis/me";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
@@ -8,7 +8,7 @@ import type { ComponentProps } from "react";
 import { Pressable, View } from "react-native";
 
 export default function SettingPage() {
-  const { data: me } = useMe();
+  const { data: me } = useMeQuery();
 
   if (!me) {
     return null;

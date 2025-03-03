@@ -1,4 +1,4 @@
-import { useMe } from "@/apis/me";
+import { useMeQuery } from "@/apis/me";
 import { Avatar } from "@/components/avatar";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import type { ComponentProps } from "react";
 import { View } from "react-native";
 
 export default function MePage() {
-  const { data: me } = useMe();
+  const { data: me } = useMeQuery();
 
   if (!me) {
     return null;
