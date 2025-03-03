@@ -1,7 +1,3 @@
-import { devLog } from "@/utils/dev";
-
-devLog(
-  "`db` not implemented for web. this file should not have been imported in any situation",
+throw new Error(
+  "rdb: web not supported. this file should not have been imported in the first place",
 );
-
-export const db = null;

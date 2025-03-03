@@ -1,6 +1,6 @@
 import { devLog } from "@/utils/dev";
 import type { PublicNote } from "@/utils/types";
-import { db } from "./db";
+import { rdb } from "./db";
 
 type DbNote = {
   id: string;
@@ -14,26 +14,26 @@ type DbNote = {
 };
 
 export function findAll() {
-  const dbNotes = db.getAllSync<DbNote>("select * from notes");
+  const dbNotes = rdb.getAllSync<DbNote>("select * from notes");
 
-  devLog(`${dbNotes.length} notes found`);
+  devLog(`noteDb: ${dbNotes.length} notes found`);
 
   return dbNotes.map(normalize);
 }
 
 export function findOneById(id: string) {
-  const dbNote = db.getFirstSync<DbNote>(
+  const dbNote = rdb.getFirstSync<DbNote>(
     "select * from notes where id = ?",
     id,
   );
 
-  devLog(dbNote ? `note ${id} found` : `note ${id} not found`);
+  devLog(dbNote ? `noteDb: note ${id} found` : `noteDb: note ${id} not found`);
 
   return dbNote ? normalize(dbNote) : null;
 }
 
 export async function insertOne(note: PublicNote) {
-  const { changes, lastInsertRowId } = await db.runAsync(
+  const { changes, lastInsertRowId } = await rdb.runAsync(
     "insert into notes values (?,?,?,?,?,?,?,?)",
     note.id,
     note.title,
@@ -45,7 +45,9 @@ export async function insertOne(note: PublicNote) {
     note.createdAt,
   );
 
-  devLog(`${changes} note(s) inserted, last inserted row: ${lastInsertRowId}`);
+  devLog(
+    `noteDb: ${changes} note(s) inserted, last inserted row: ${lastInsertRowId}`,
+  );
 }
 
 function normalize(dbNote: DbNote) {

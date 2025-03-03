@@ -1,13 +1,13 @@
 import { devLog } from "@/utils/dev";
 import * as Sqlite from "expo-sqlite";
 
-devLog("sqlite initializing");
+devLog("rdb: sqlite initializing");
 
-export const db = Sqlite.openDatabaseSync("secretNote");
+export const rdb = Sqlite.openDatabaseSync("secretNote");
 
-devLog("sqlite initialized, bootstrapping");
+devLog("rdb: sqlite initialized, bootstrapping");
 
-db.runSync(
+rdb.runSync(
   `create table if not exists notes (
     id text primary key,
     title text not null,
@@ -20,4 +20,4 @@ db.runSync(
   )`,
 );
 
-devLog("sqlite bootstrapped");
+devLog("rdb: sqlite bootstrapped");
