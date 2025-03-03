@@ -1,4 +1,4 @@
-import * as NoteDb from "@/databases/rdbms/note";
+import * as NoteDb from "@/databases/relational/note";
 import type { Note, PublicNote } from "@/utils/types";
 import {
   type InfiniteData,
