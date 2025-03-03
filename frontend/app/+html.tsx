@@ -13,7 +13,7 @@ export default function Root({ children }: PropsWithChildren) {
         />
         <ScrollViewStyleReset />
       </head>
-      <body className="max-w-2xl mx-auto bg-background text-foreground font-sans antialiased">
+      <body className="bg-background text-foreground font-sans antialiased">
         {children}
       </body>
     </html>
