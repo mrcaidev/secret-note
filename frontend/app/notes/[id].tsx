@@ -1,6 +1,8 @@
 import { useMeQuery } from "@/apis/me";
-import { useNoteQuery } from "@/apis/note";
+import { useDeleteNoteMutation, useNoteQuery } from "@/apis/note";
 import { Avatar } from "@/components/avatar";
+import { FormError } from "@/components/form-error";
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,7 +27,7 @@ import { Text } from "@/components/ui/text";
 import { H1, Muted, P } from "@/components/ui/typography";
 import type { PublicNote } from "@/utils/types";
 import * as Clipboard from "expo-clipboard";
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -237,9 +239,21 @@ function DeleteDialog() {
   const { data: note } = useThisNote();
   const { data: me } = useMeQuery();
 
+  const { mutate, isPending, error } = useDeleteNoteMutation();
+
+  const router = useRouter();
+
   if (!me || !note || me.id !== note.author.id) {
     return null;
   }
+
+  const deleteNote = () => {
+    mutate(note.id, {
+      onSuccess: () => {
+        router.push("/");
+      },
+    });
+  };
 
   return (
     <Dialog>
@@ -262,6 +276,7 @@ function DeleteDialog() {
             and no one will be able to access it again.
           </DialogDescription>
         </DialogHeader>
+        <FormError error={error} />
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="secondary">
@@ -269,8 +284,12 @@ function DeleteDialog() {
               <Text>Cancel</Text>
             </Button>
           </DialogClose>
-          <Button variant="destructive">
-            <Icon as={TrashIcon} />
+          <Button
+            variant="destructive"
+            onPress={deleteNote}
+            disabled={isPending}
+          >
+            {isPending ? <Spinner /> : <Icon as={TrashIcon} />}
             <Text>Delete</Text>
           </Button>
         </DialogFooter>
