@@ -129,7 +129,7 @@ func GetAllNotes(c *gin.Context) {
 	//}
 
 	// 构造返回数据，只保留需要的字段
-	var list []models.GetAllNoteResp
+	list := make([]models.GetAllNoteResp, 0)
 	for _, note := range notes {
 		list = append(list, models.GetAllNoteResp{
 			ID:        note.Nid,
