@@ -87,6 +87,8 @@ export function useSignOutMutation() {
 
       queryClient.cancelQueries({ queryKey: ["me"] });
       queryClient.setQueryData(["me"], null);
+
+      queryClient.removeQueries({ queryKey: ["notes"] });
     },
   });
 }
