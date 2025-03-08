@@ -80,10 +80,12 @@ func GetNote(nid string, uid string, password string) (ret models.GetNoteResp, c
 		return models.GetNoteResp{}, common.WrongPassword
 	}
 
-	//TTL
-	expirationTime := note.CreatedAt.AddDate(0, 0, note.TTL)
-	if time.Now().After(expirationTime) {
-		return models.GetNoteResp{}, common.ExpiredNote
+	if note.TTL != 0 {
+		//TTL
+		expirationTime := note.CreatedAt.AddDate(0, 0, note.TTL)
+		if time.Now().After(expirationTime) {
+			return models.GetNoteResp{}, common.ExpiredNote
+		}
 	}
 
 	//judge if has permission
