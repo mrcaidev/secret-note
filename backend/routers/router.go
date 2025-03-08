@@ -61,10 +61,10 @@ func InitRouter() *gin.Engine {
 		}
 		NoteGroup := apiV1.Group("/notes")
 		{
-			NoteGroup.POST("/", authMiddleware(), controllers.CreateNote)
+			NoteGroup.POST("", authMiddleware(), controllers.CreateNote)
 			NoteGroup.GET("/:id", authMiddleware(), controllers.GetNote)
 			NoteGroup.DELETE("/:id", authMiddleware(), controllers.DeleteNote)
-			NoteGroup.GET("/", authMiddleware(), controllers.GetAllNotes)
+			NoteGroup.GET("", authMiddleware(), controllers.GetAllNotes)
 		}
 	}
 	return router
