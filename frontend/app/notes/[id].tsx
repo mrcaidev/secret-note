@@ -1,43 +1,62 @@
+import { useMeQuery } from "@/apis/me";
 import { useNoteQuery } from "@/apis/note";
 import { Avatar } from "@/components/avatar";
-import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { H1, Muted, P } from "@/components/ui/typography";
+import type { PublicNote } from "@/utils/types";
 import * as Clipboard from "expo-clipboard";
 import { Link, useLocalSearchParams } from "expo-router";
 import {
   ArrowLeftIcon,
   CheckIcon,
   ClipboardIcon,
+  EllipsisVerticalIcon,
   HouseIcon,
   PenLineIcon,
   RotateCwIcon,
   Share2Icon,
+  TrashIcon,
+  XIcon,
 } from "lucide-react-native";
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 const dateTimeFormat = new Intl.DateTimeFormat("en", {
   dateStyle: "medium",
   timeStyle: "medium",
 });
 
-export default function NotePage() {
+function useThisNote() {
   const { id, password } = useLocalSearchParams<{
     id: string;
     password?: string;
   }>();
 
-  const { data: note, error, isPending } = useNoteQuery(id, password);
+  return useNoteQuery(id, password);
+}
+
+export default function NotePage() {
+  const { data: note, error, isPending } = useThisNote();
 
   if (isPending) {
     return <LoadingScreen />;
@@ -48,18 +67,13 @@ export default function NotePage() {
   }
 
   return (
-    <View className="grow px-8 pt-16 bg-background">
+    <View className="grow px-8 py-16 bg-background">
       <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
-        <SharePopover link={note.link} />
+        <Menu />
       </View>
       <H1 className="mb-6">{note.title}</H1>
-      <View className="flex-row items-center gap-3 mb-6">
-        <Avatar user={note.author} className="size-8" />
-        <Text className="text-muted-foreground">
-          {note.author.nickname} shared with me
-        </Text>
-      </View>
+      <Author author={note.author} />
       {note.content.split("\n").map((paragraph, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: immutable
         <P key={index} className="mb-4">
@@ -78,12 +92,11 @@ export default function NotePage() {
 
 function LoadingScreen() {
   return (
-    <View className="grow px-8 pt-16 bg-background">
+    <View className="grow px-8 py-16 bg-background">
       <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
-        <Button disabled>
-          <Spinner />
-          <Text>Share</Text>
+        <Button variant="ghost" size="icon" aria-label="Open menu" disabled>
+          <Icon as={EllipsisVerticalIcon} />
         </Button>
       </View>
       <Skeleton className="h-10 mb-6" />
@@ -115,50 +128,88 @@ function NotFoundScreen() {
   );
 }
 
+function Author({ author }: Pick<PublicNote, "author">) {
+  const { data: me } = useMeQuery();
+
+  return (
+    <View className="flex-row items-center gap-3 mb-6">
+      <Avatar user={author} className="size-8" />
+      <Text className="text-muted-foreground">
+        Created by {me?.id === author.id ? "me" : author.nickname}
+      </Text>
+    </View>
+  );
+}
+
 function HomeLink() {
   return (
     <Link href="/" asChild>
-      <Button variant="outline">
-        <Icon as={ArrowLeftIcon} />
-        <Text>Home</Text>
-      </Button>
+      <Pressable className="flex-row items-center gap-2 py-2">
+        <Icon as={ArrowLeftIcon} className="text-muted-foreground" />
+        <Text className="text-muted-foreground">Home</Text>
+      </Pressable>
     </Link>
   );
 }
 
-type HasLinkProps = {
-  link: string;
-};
-
-function SharePopover({ link }: HasLinkProps) {
+function Menu() {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button>
-          <Icon as={Share2Icon} />
-          <Text>Share</Text>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="Open menu">
+          <Icon as={EllipsisVerticalIcon} />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end">
-        <Text className="mb-2 font-medium">Share this note</Text>
-        <CopyLinkButton link={link} />
-      </PopoverContent>
-    </Popover>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <ShareDialog />
+        <DeleteDialog />
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
-function CopyLinkButton({ link }: HasLinkProps) {
+function ShareDialog() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <DropdownMenuItem closeOnPress={false}>
+          <Icon as={Share2Icon} />
+          <Text>Share</Text>
+        </DropdownMenuItem>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Share this note</DialogTitle>
+          <DialogDescription>
+            Copy the link below and share it with your friends!
+          </DialogDescription>
+        </DialogHeader>
+        <View>
+          <CopyLinkBar />
+        </View>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function CopyLinkBar() {
+  const { data: note } = useThisNote();
+
   const [success, setSuccess] = useState<boolean | null>(null);
 
-  const copyToClipboard = async () => {
-    const success = await Clipboard.setStringAsync(link);
+  const copy = async () => {
+    if (!note) {
+      return;
+    }
+
+    const success = await Clipboard.setStringAsync(note.link);
     setSuccess(success);
   };
 
   return (
     <View className="flex-row items-center">
       <Input
-        value={link}
+        value={note?.link}
         editable={false}
         readOnly
         className="rounded-r-none"
@@ -166,9 +217,9 @@ function CopyLinkButton({ link }: HasLinkProps) {
       <Button
         variant="outline"
         size="icon"
-        onPress={copyToClipboard}
+        onPress={copy}
         aria-label="Copy link to clipboard"
-        className="rounded-l-none"
+        className="native:size-12 rounded-l-none"
       >
         {success === null ? (
           <Icon as={ClipboardIcon} />
@@ -179,5 +230,51 @@ function CopyLinkButton({ link }: HasLinkProps) {
         )}
       </Button>
     </View>
+  );
+}
+
+function DeleteDialog() {
+  const { data: note } = useThisNote();
+  const { data: me } = useMeQuery();
+
+  if (!me || !note || me.id !== note.author.id) {
+    return null;
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <DropdownMenuItem closeOnPress={false}>
+          <Icon
+            as={TrashIcon}
+            className="text-destructive hover:text-destructive"
+          />
+          <Text className="text-destructive hover:text-destructive">
+            Delete
+          </Text>
+        </DropdownMenuItem>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="mb-2">Delete this note</DialogTitle>
+          <DialogDescription>
+            This action is irreversible. The note will be permanently deleted,
+            and no one will be able to access it again.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="secondary">
+              <Icon as={XIcon} />
+              <Text>Cancel</Text>
+            </Button>
+          </DialogClose>
+          <Button variant="destructive">
+            <Icon as={TrashIcon} />
+            <Text>Delete</Text>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

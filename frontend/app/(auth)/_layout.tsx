@@ -1,9 +1,9 @@
-import { useMe } from "@/apis/me";
+import { useMeQuery } from "@/apis/me";
 import { FullscreenLoading } from "@/components/fullscreen-loading";
 import { Redirect, Stack } from "expo-router";
 
 export default function AuthGuard() {
-  const { data, isPending } = useMe();
+  const { data, isPending } = useMeQuery();
 
   if (isPending) {
     return <FullscreenLoading />;

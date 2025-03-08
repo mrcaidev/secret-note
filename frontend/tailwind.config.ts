@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: "Inter-Regular",
+        sans: "InterVariable",
       },
       colors: {
         border: "hsl(var(--border))",

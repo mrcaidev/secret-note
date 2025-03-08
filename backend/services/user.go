@@ -21,7 +21,6 @@ func CreateUser(user *models.User) (userRes models.UserResponse, existUser bool)
 	user.Password = string(hashedPassword)
 	user.Provider = "email"
 	fmt.Println("Inserted User: %d", user)
-
 	result := config.DB.Create(&user)
 	if result.Error != nil {
 		log.Println(result.Error)

@@ -1,9 +1,10 @@
 import * as SecureStore from "expo-secure-store";
-import Sqlite from "expo-sqlite/kv-store";
-import { BaseKvStorage, type KvStorageOptions } from "./kv.base";
+import SqliteStore from "expo-sqlite/kv-store";
+import { BaseKvDb } from "./db.base";
+import type { KvDbOptions } from "./types";
 
-export class KvStorage<T = string> extends BaseKvStorage<T> {
-  public constructor(key: string, options: KvStorageOptions = {}) {
+export class KvDb<T = string> extends BaseKvDb<T> {
+  public constructor(key: string, options: KvDbOptions = {}) {
     super(key, options);
 
     if (this.session) {
@@ -16,7 +17,7 @@ export class KvStorage<T = string> extends BaseKvStorage<T> {
       return await SecureStore.getItemAsync(this.key);
     }
 
-    return await Sqlite.getItemAsync(this.key);
+    return await SqliteStore.getItemAsync(this.key);
   }
 
   protected override async _set(value: string) {
@@ -25,7 +26,7 @@ export class KvStorage<T = string> extends BaseKvStorage<T> {
       return;
     }
 
-    await Sqlite.setItemAsync(this.key, value);
+    await SqliteStore.setItemAsync(this.key, value);
   }
 
   protected override async _remove() {
@@ -34,6 +35,6 @@ export class KvStorage<T = string> extends BaseKvStorage<T> {
       return;
     }
 
-    await Sqlite.removeItemAsync(this.key);
+    await SqliteStore.removeItemAsync(this.key);
   }
 }

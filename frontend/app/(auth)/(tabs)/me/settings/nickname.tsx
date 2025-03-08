@@ -1,4 +1,4 @@
-import { useMe, useUpdateMe } from "@/apis/me";
+import { useMeQuery, useUpdateMeMutation } from "@/apis/me";
 import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { Spinner } from "@/components/spinner";
@@ -25,7 +25,7 @@ const schema = v.object({
 type Schema = v.InferOutput<typeof schema>;
 
 export default function NicknameSettingPage() {
-  const { data: me } = useMe();
+  const { data: me } = useMeQuery();
 
   const { control, handleSubmit } = useForm<Schema>({
     defaultValues: {
@@ -34,7 +34,7 @@ export default function NicknameSettingPage() {
     resolver: valibotResolver(schema),
   });
 
-  const { mutate, error, isPending } = useUpdateMe();
+  const { mutate, error, isPending } = useUpdateMeMutation();
 
   const router = useRouter();
 

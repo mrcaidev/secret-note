@@ -7,19 +7,19 @@ import type { PropsWithChildren } from "react";
 
 const fonts: Theme["fonts"] = {
   regular: {
-    fontFamily: "Inter-Regular",
+    fontFamily: "InterVariable",
     fontWeight: "400",
   },
   medium: {
-    fontFamily: "Inter-Regular",
+    fontFamily: "InterVariable",
     fontWeight: "500",
   },
   bold: {
-    fontFamily: "Inter-Regular",
+    fontFamily: "InterVariable",
     fontWeight: "700",
   },
   heavy: {
-    fontFamily: "Inter-Regular",
+    fontFamily: "InterVariable",
     fontWeight: "900",
   },
 };

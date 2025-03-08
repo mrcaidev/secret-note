@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 
 export function useInfiniteScroll(
   bottomRef: RefObject<HTMLElement>,
@@ -24,6 +24,9 @@ export function useInfiniteScroll(
     );
 
     observer.observe(bottom);
-    return () => observer.unobserve(bottom);
+
+    return () => {
+      observer.unobserve(bottom);
+    };
   }, [bottomRef]);
 }

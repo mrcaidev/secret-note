@@ -1,11 +1,13 @@
+import * as noteDb from "@/databases/relational/note";
 import type { Note, PublicNote } from "@/utils/types";
 import {
+  type InfiniteData,
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-  type InfiniteData,
 } from "@tanstack/react-query";
+import { Platform } from "react-native";
 import { request } from "./request";
 
 export function useNotesInfiniteQuery() {
@@ -22,6 +24,13 @@ export function useNotesInfiniteQuery() {
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor || null,
+    placeholderData:
+      Platform.OS === "web"
+        ? undefined
+        : {
+            pages: [{ notes: noteDb.findAll(), nextCursor: "" }],
+            pageParams: [""],
+          },
   });
 }
 
@@ -33,6 +42,8 @@ export function useNoteQuery(id: string, password?: string) {
         `/notes/${id}${password ? `?password=${password}` : ""}`,
       );
     },
+    placeholderData:
+      Platform.OS === "web" ? undefined : (noteDb.findOneById(id) ?? undefined),
   });
 }
 
@@ -49,9 +60,12 @@ export function useCreateNoteMutation() {
     },
     onSuccess: (note) => {
       queryClient.setQueryData<Note>(["note", note.id], note);
-      queryClient.setQueryData<Omit<Note, "content">[]>(["notes"], (old) =>
-        old ? [note, ...old] : [note],
-      );
+
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+
+      if (Platform.OS !== "web") {
+        noteDb.insertOne(note);
+      }
     },
   });
 }
