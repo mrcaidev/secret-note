@@ -1,13 +1,14 @@
 package config
 
 import (
+	"log"
+	"os"
+	"time"
+
 	"github.com/joho/godotenv"
 	"github.com/patrickmn/go-cache"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"os"
-	"time"
 )
 
 const UID = "UID"
@@ -31,6 +32,16 @@ func connectDatabase() {
 		log.Fatal(err)
 	}
 	log.Println("Connected to database")
+}
+
+func InitTestDatabase() {
+	dsn := "root:200158@tcp(127.0.0.1:3306)/testdb?charset=utf8mb4&parseTime=True&loc=Local" // 测试数据库
+	var err error
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+	log.Println("Connected to the test database")
 }
 
 func setupCache() {
@@ -58,5 +69,6 @@ func JudgeTokenInvalid(tokenString string) bool {
 func Init() {
 	loadEnv()
 	connectDatabase()
+	InitTestDatabase()
 	setupCache()
 }
