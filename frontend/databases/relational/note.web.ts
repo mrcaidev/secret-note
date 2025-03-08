@@ -15,3 +15,9 @@ export function insertOne() {
     "noteDb: web not supported. this file should have been imported in the first place",
   );
 }
+
+export function deleteOneById() {
+  throw new Error(
+    "noteDb: web not supported. this file should have been imported in the first place",
+  );
+}

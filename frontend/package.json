@@ -6,9 +6,11 @@
   "type": "module",
   "main": "expo-router/entry",
   "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "dev:android": "expo run:android",
+    "dev:ios": "expo run:ios",
+    "dev:web": "expo start",
+    "build:android": "expo run:android --variant release",
+    "build:ios": "expo run:ios --configuration Release",
     "build:web": "expo export -p web",
     "check": "tsc && biome ci",
     "clean": "rimraf .expo android dist ios *.tsbuildinfo"

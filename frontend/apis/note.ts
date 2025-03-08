@@ -69,3 +69,22 @@ export function useCreateNoteMutation() {
     },
   });
 }
+
+export function useDeleteNoteMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return await request.delete(`/notes/${id}`);
+    },
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: ["note", id] });
+
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+
+      if (Platform.OS !== "web") {
+        noteDb.deleteOneById(id);
+      }
+    },
+  });
+}
