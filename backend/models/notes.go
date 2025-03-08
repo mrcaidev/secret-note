@@ -89,12 +89,12 @@ type GetNoteReq struct {
 }
 
 type GetNoteResp struct {
-	Nid      string    `json:"id"`
-	Title    string    `json:"title"`
-	Content  string    `json:"content"`
-	Author   Author    `json:"author"`
-	Link     string    `json:"link"`
-	CreateAt time.Time `gorm:"create_at" json:"createdAt"`
+	Nid       string    `json:"id"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	Author    Author    `json:"author"`
+	Link      string    `json:"link"`
+	CreatedAt time.Time `gorm:"create_at" json:"createdAt"`
 }
 
 type GetAllNoteResp struct {
