@@ -62,14 +62,6 @@ func JudgeTokenInvalid(tokenString string) bool {
 	return invalidToken
 }
 
-func SetInvalidToken(token string) {
-	Cache.Set(INVALID_TOKEN+token, "invalid token", time.Hour*72)
-}
-func JudgeTokenInvalid(tokenString string) bool {
-	var _, invalidToken = Cache.Get(INVALID_TOKEN + tokenString)
-	return invalidToken
-}
-
 func Init() {
 	loadEnv()
 	connectDatabase()
