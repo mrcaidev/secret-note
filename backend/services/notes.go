@@ -23,7 +23,7 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 
 	note.Nid = uuid.New().String()
 	note.Link = URL_PREFIX + note.Nid
-
+	content := note.Content
 	fmt.Println("Inserted Note: %d", note)
 	result := config.DB.Create(&note)
 	if result.Error != nil {
@@ -38,9 +38,17 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 	}
 
 	var ret models.CreateNoteResp
+
 	if err := copier.Copy(&ret, note); err != nil {
 		return models.CreateNoteResp{}, err
 	}
+	var author models.Author
+	err := config.DB.Where("uid = ?", note.AuthorID).First(&author).Error
+	if err != nil {
+		return ret, err
+	}
+	ret.Content = content
+	ret.Author = author
 	return ret, nil
 }
 
