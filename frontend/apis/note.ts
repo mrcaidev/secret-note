@@ -9,7 +9,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Platform } from "react-native";
 import { request } from "./request";
 
 export function useNotesInfiniteQuery() {
@@ -34,17 +33,14 @@ export function useNotesInfiniteQuery() {
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor || null,
-    placeholderData:
-      Platform.OS === "web"
-        ? undefined
-        : {
-            pages: [{ notes: new NoteDb(db).findAll(), nextCursor: "" }],
-            pageParams: [""],
-          },
+    placeholderData: {
+      pages: [{ notes: new NoteDb(db).findAll(), nextCursor: "" }],
+      pageParams: [""],
+    },
   });
 
   useEffect(() => {
-    if (Platform.OS !== "web" && result.data) {
+    if (result.data) {
       new NoteDb(db).upsertMany(
         result.data.pages.flatMap((page) =>
           page.notes.map((note) => ({ ...note, content: "", link: "" })),
@@ -66,14 +62,11 @@ export function useNoteQuery(id: string, password?: string) {
         `/notes/${id}${password ? `?password=${password}` : ""}`,
       );
     },
-    placeholderData:
-      Platform.OS === "web"
-        ? undefined
-        : (new NoteDb(db).findOneById(id) ?? undefined),
+    placeholderData: new NoteDb(db).findOneById(id) ?? undefined,
   });
 
   useEffect(() => {
-    if (Platform.OS !== "web" && result.data) {
+    if (result.data) {
       new NoteDb(db).upsertOne(result.data);
     }
   }, [db, result.data]);
@@ -97,9 +90,7 @@ export function useCreateNoteMutation() {
       queryClient.setQueryData<Note>(["note", note.id], note);
       queryClient.invalidateQueries({ queryKey: ["notes"] });
 
-      if (Platform.OS !== "web") {
-        await new NoteDb(db).upsertOne(note);
-      }
+      await new NoteDb(db).upsertOne(note);
     },
   });
 }
@@ -116,9 +107,7 @@ export function useDeleteNoteMutation() {
       queryClient.removeQueries({ queryKey: ["note", id] });
       queryClient.invalidateQueries({ queryKey: ["notes"] });
 
-      if (Platform.OS !== "web") {
-        await new NoteDb(db).deleteOneById(id);
-      }
+      await new NoteDb(db).deleteOneById(id);
     },
   });
 }

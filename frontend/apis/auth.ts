@@ -3,7 +3,6 @@ import { NoteDb } from "@/databases/relational/note";
 import { useSqlite } from "@/providers/sqlite-provider";
 import type { User } from "@/utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Platform } from "react-native";
 import { request } from "./request";
 
 export function useSendOtpMutation() {
@@ -94,9 +93,7 @@ export function useSignOutMutation() {
 
       queryClient.removeQueries({ queryKey: ["notes"] });
 
-      if (Platform.OS !== "web") {
-        await new NoteDb(db).deleteAll();
-      }
+      await new NoteDb(db).deleteAll();
     },
   });
 }
