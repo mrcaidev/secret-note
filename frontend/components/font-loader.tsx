@@ -1,17 +1,23 @@
 import InterVariable from "@/assets/fonts/InterVariable.ttf";
 import { useFonts } from "expo-font";
-import { Fragment, type PropsWithChildren } from "react";
-import { Platform } from "react-native";
-import { FullscreenLoading } from "./fullscreen-loading";
+import * as SplashScreen from "expo-splash-screen";
+import { type PropsWithChildren, useEffect } from "react";
 
-function WebFontLoader({ children }: PropsWithChildren) {
-  const [fontsLoaded] = useFonts({ InterVariable });
+SplashScreen.preventAutoHideAsync();
 
-  if (!fontsLoaded) {
-    return <FullscreenLoading />;
+export function FontLoader({ children }: PropsWithChildren) {
+  const [loaded, error] = useFonts({ InterVariable });
+  const ready = loaded || error;
+
+  useEffect(() => {
+    if (ready) {
+      SplashScreen.hideAsync();
+    }
+  }, [ready]);
+
+  if (!ready) {
+    return null;
   }
 
   return children;
 }
-
-export const FontLoader = Platform.OS === "web" ? WebFontLoader : Fragment;
