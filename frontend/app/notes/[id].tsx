@@ -69,8 +69,8 @@ export default function NotePage() {
   }
 
   return (
-    <View className="grow px-6 pt-12 bg-background">
-      <View className="flex-row justify-between items-center mb-4">
+    <View className="grow px-6 pt-16 bg-background">
+      <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <Menu />
       </View>
@@ -96,8 +96,8 @@ export default function NotePage() {
 
 function LoadingScreen() {
   return (
-    <View className="grow px-6 pt-12 bg-background">
-      <View className="flex-row justify-between items-center mb-4">
+    <View className="grow px-6 pt-16 bg-background">
+      <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <Button variant="ghost" size="icon" aria-label="Open menu" disabled>
           <Icon as={EllipsisVerticalIcon} />
