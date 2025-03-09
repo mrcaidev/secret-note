@@ -36,7 +36,7 @@ func connectDatabase() {
 }
 
 func setupCache() {
-	Cache = cache.New(5*time.Minute, 10*time.Minute)
+	Cache = cache.New(5*time.Minute, 720*time.Hour)
 }
 
 func loadEnv() {

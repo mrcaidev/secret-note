@@ -28,6 +28,7 @@ const (
 	WrongReceivers              = 1014
 	NotTargetReceiver           = 1015
 	ExpiredNote                 = 1016
+	InvalidPassword             = 1017
 )
 
 func BadRequest() Response {
@@ -74,6 +75,10 @@ func ErrCodeToString(code int) string {
 		return "WrongReceivers"
 	case NotTargetReceiver:
 		return "NotTargetReceiver"
+	case ExpiredNote:
+		return "ExpiredNote"
+	case InvalidPassword:
+		return "InvalidPassword"
 	default:
 		return strconv.Itoa(code)
 	}

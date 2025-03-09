@@ -90,7 +90,7 @@ func GetNote(nid string, uid string, password string) (ret models.GetNoteResp, c
 
 	//judge if has permission
 	//burn
-	if note.Burn {
+	if note.Burn && note.AuthorID != uid {
 		var burnRecord models.BurnRecord
 		// 不能写 & 得用AND
 		err = config.DB.Where("uid = ? AND nid = ?", uid, nid).First(&burnRecord).Error
