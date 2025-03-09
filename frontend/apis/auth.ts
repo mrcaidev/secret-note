@@ -2,6 +2,9 @@ import { tokenDb } from "@/databases/kv";
 import type { User } from "@/utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
+import { Platform } from "react-native";
+import { NoteDb } from "@/databases/relational/note";
+import { useSqlite } from "@/providers/sqlite-provider";
 
 export function useSendOtpMutation() {
   return useMutation<string, Error, { email: string }>({
@@ -76,6 +79,7 @@ export function useSignInWithOauthMutation(provider: string) {
 }
 
 export function useSignOutMutation() {
+  const db = useSqlite();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -89,6 +93,10 @@ export function useSignOutMutation() {
       queryClient.setQueryData(["me"], null);
 
       queryClient.removeQueries({ queryKey: ["notes"] });
+
+      if (Platform.OS !== "web") {
+        await new NoteDb(db).deleteAll();
+      }
     },
   });
 }

@@ -1,3 +1,5 @@
+import { NoteDb } from "@/databases/relational/note";
+import { useSqlite } from "@/providers/sqlite-provider";
 import type { Note, PublicNote } from "@/utils/types";
 import {
   type InfiniteData,
@@ -6,6 +8,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { Platform } from "react-native";
 import { request } from "./request";
 
 export function useNotesInfiniteQuery() {
@@ -13,6 +16,8 @@ export function useNotesInfiniteQuery() {
     notes: Omit<PublicNote, "content">[];
     nextCursor: string;
   };
+
+  const db = useSqlite();
 
   return useInfiniteQuery<Data, Error, InfiniteData<Data>, string[], string>({
     queryKey: ["notes"],
@@ -22,10 +27,19 @@ export function useNotesInfiniteQuery() {
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor || null,
+    placeholderData:
+      Platform.OS === "web"
+        ? undefined
+        : {
+            pages: [{ notes: new NoteDb(db).findAll(), nextCursor: "" }],
+            pageParams: [""],
+          },
   });
 }
 
 export function useNoteQuery(id: string, password?: string) {
+  const db = useSqlite();
+
   return useQuery<PublicNote>({
     queryKey: ["note", id],
     queryFn: async () => {
@@ -33,10 +47,15 @@ export function useNoteQuery(id: string, password?: string) {
         `/notes/${id}${password ? `?password=${password}` : ""}`,
       );
     },
+    placeholderData:
+      Platform.OS === "web"
+        ? undefined
+        : (new NoteDb(db).findOneById(id) ?? undefined),
   });
 }
 
 export function useCreateNoteMutation() {
+  const db = useSqlite();
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -47,25 +66,32 @@ export function useCreateNoteMutation() {
     mutationFn: async (data) => {
       return await request.post("/notes", data);
     },
-    onSuccess: (note) => {
+    onSuccess: async (note) => {
       queryClient.setQueryData<Note>(["note", note.id], note);
-
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+
+      if (Platform.OS !== "web") {
+        await new NoteDb(db).insertOne(note);
+      }
     },
   });
 }
 
 export function useDeleteNoteMutation() {
+  const db = useSqlite();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: string) => {
       return await request.delete(`/notes/${id}`);
     },
-    onSuccess: (_, id) => {
+    onSuccess: async (_, id) => {
       queryClient.removeQueries({ queryKey: ["note", id] });
-
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+
+      if (Platform.OS !== "web") {
+        await new NoteDb(db).deleteOneById(id);
+      }
     },
   });
 }
