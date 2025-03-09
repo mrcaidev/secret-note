@@ -7,6 +7,7 @@ import (
 	"backend/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"unicode"
 )
 
 // todo: slow sql
@@ -17,6 +18,15 @@ func CreateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, common.BadRequest())
+		return
+	}
+
+	validPass := isValidPassword(user.Password)
+	if !validPass {
+		c.JSON(http.StatusBadRequest, common.Response{
+			Code:    common.InvalidPassword,
+			Message: common.ErrCodeToString(common.InvalidPassword),
+		})
 		return
 	}
 
@@ -118,4 +128,30 @@ func UpdateNickName(c *gin.Context) {
 			})
 	}
 
+}
+
+func isValidPassword(password string) bool {
+
+	if len(password) < 8 || len(password) > 20 {
+		return false
+	}
+
+	var hasUpper, hasLower, hasDigit bool
+
+	for _, char := range password {
+		switch {
+		case unicode.IsUpper(char):
+			hasUpper = true
+		case unicode.IsLower(char):
+			hasLower = true
+		case unicode.IsDigit(char):
+			hasDigit = true
+		}
+		// Early exit if all conditions are met
+		if hasUpper && hasLower && hasDigit {
+			return true
+		}
+	}
+
+	return hasUpper && hasLower && hasDigit
 }

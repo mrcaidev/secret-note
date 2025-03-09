@@ -94,7 +94,7 @@ func GetAllNotes(c *gin.Context) {
 	uid, _ := c.Get(config.UID)
 
 	var notes []models.Note
-	query := config.DB.Preload("Author").Where("author_id = ?", uid).Limit(limit).Order("nid ASC")
+	query := config.DB.Preload("Author").Where("author_id = ?", uid).Limit(limit).Order("created_at DESC")
 	if cursor != "" {
 		query = query.Where("nid >= ?", cursor)
 	}
