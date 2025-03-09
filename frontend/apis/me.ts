@@ -15,24 +15,6 @@ export function useMeQuery() {
   });
 }
 
-export function useUpdateMeMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation<
-    User,
-    Error,
-    Partial<Omit<User, "id"> & { password: string }>
-  >({
-    mutationFn: async (data) => {
-      return await request.patch("/me", data);
-    },
-    onSuccess: (me) => {
-      queryClient.cancelQueries({ queryKey: ["me"] });
-      queryClient.setQueryData<User>(["me"], me);
-    },
-  });
-}
-
 export function useDeleteMeMutation() {
   const db = useSqlite();
   const queryClient = useQueryClient();
@@ -45,7 +27,9 @@ export function useDeleteMeMutation() {
       await tokenDb.remove();
 
       queryClient.cancelQueries({ queryKey: ["me"] });
-      queryClient.setQueryData(["me"], null);
+      queryClient.removeQueries({ queryKey: ["me"] });
+
+      queryClient.removeQueries({ queryKey: ["notes"] });
 
       if (Platform.OS !== "web") {
         await new NoteDb(db).deleteAll();

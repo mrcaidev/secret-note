@@ -1,10 +1,10 @@
 import { tokenDb } from "@/databases/kv";
-import type { User } from "@/utils/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { request } from "./request";
-import { Platform } from "react-native";
 import { NoteDb } from "@/databases/relational/note";
 import { useSqlite } from "@/providers/sqlite-provider";
+import type { User } from "@/utils/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Platform } from "react-native";
+import { request } from "./request";
 
 export function useSendOtpMutation() {
   return useMutation<string, Error, { email: string }>({
@@ -90,7 +90,7 @@ export function useSignOutMutation() {
       await tokenDb.remove();
 
       queryClient.cancelQueries({ queryKey: ["me"] });
-      queryClient.setQueryData(["me"], null);
+      queryClient.removeQueries({ queryKey: ["me"] });
 
       queryClient.removeQueries({ queryKey: ["notes"] });
 
