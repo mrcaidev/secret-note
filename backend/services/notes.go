@@ -23,7 +23,7 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 
 	note.Nid = uuid.New().String()
 	note.Link = URL_PREFIX + note.Nid
-
+	content := note.Content
 	fmt.Println("Inserted Note: %d", note)
 	result := config.DB.Create(&note)
 	if result.Error != nil {
@@ -38,9 +38,17 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 	}
 
 	var ret models.CreateNoteResp
+
 	if err := copier.Copy(&ret, note); err != nil {
 		return models.CreateNoteResp{}, err
 	}
+	var author models.Author
+	err := config.DB.Where("uid = ?", note.AuthorID).First(&author).Error
+	if err != nil {
+		return ret, err
+	}
+	ret.Content = content
+	ret.Author = author
 	return ret, nil
 }
 
@@ -72,10 +80,12 @@ func GetNote(nid string, uid string, password string) (ret models.GetNoteResp, c
 		return models.GetNoteResp{}, common.WrongPassword
 	}
 
-	//TTL
-	expirationTime := note.CreatedAt.AddDate(0, 0, note.TTL)
-	if time.Now().After(expirationTime) {
-		return models.GetNoteResp{}, common.ExpiredNote
+	if note.TTL != 0 {
+		//TTL
+		expirationTime := note.CreatedAt.AddDate(0, 0, note.TTL)
+		if time.Now().After(expirationTime) {
+			return models.GetNoteResp{}, common.ExpiredNote
+		}
 	}
 
 	//judge if has permission
@@ -113,3 +123,5 @@ func GetReceiversArr(jsonData datatypes.JSON) (receivers []string, err error) {
 	}
 	return receivers, nil
 }
+
+// GetNotesByAuthor 根据指定 uid 获取 Note 列表

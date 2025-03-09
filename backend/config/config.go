@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"encoding/base64"
+
 	"github.com/joho/godotenv"
 	"github.com/patrickmn/go-cache"
 	"gorm.io/driver/mysql"
@@ -21,6 +23,7 @@ var Cache *cache.Cache
 var JwtSecret []byte
 var GmailPassword string
 var dsn string
+var EncryptionKey []byte
 
 const INVALID_TOKEN = "INVALID_TOKEN"
 
@@ -56,6 +59,11 @@ func loadEnv() {
 	GmailPassword = os.Getenv("GMAIL_PASSWORD")
 	dsn = os.Getenv("DSN")
 	JwtSecret = []byte(os.Getenv("JWT_SECRET"))
+	EncodedEncryptionKey := os.Getenv("ENCRYPTION_KEY")
+	EncryptionKey, err = base64.StdEncoding.DecodeString(EncodedEncryptionKey)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func SetInvalidToken(token string) {

@@ -99,7 +99,7 @@ export function SignUpCompleteScreen() {
               onChangeText={field.onChange}
               secureTextEntry
               placeholder="8-20 characters"
-              autoComplete="password-new"
+              autoComplete="off"
               aria-labelledby="password"
             />
             <FormFieldError error={fieldState.error} />

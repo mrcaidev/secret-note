@@ -1,3 +1,6 @@
 .idea/
 .env
 secret-note
+
+app
+../docker-compose.yml

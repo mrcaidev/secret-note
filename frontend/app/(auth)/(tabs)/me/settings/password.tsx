@@ -1,4 +1,4 @@
-import { useUpdateMe } from "@/apis/me";
+import { useUpdateMeMutation } from "@/apis/me";
 import { FormError } from "@/components/form-error";
 import { FormFieldError } from "@/components/form-field-error";
 import { MfaGuard } from "@/components/mfa-guard";
@@ -48,7 +48,7 @@ export default function PasswordSettingPage() {
     resolver: valibotResolver(schema),
   });
 
-  const { mutate, error, isPending } = useUpdateMe();
+  const { mutate, error, isPending } = useUpdateMeMutation();
 
   const router = useRouter();
 
