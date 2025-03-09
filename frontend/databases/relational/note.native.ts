@@ -14,54 +14,79 @@ type DbNote = {
 };
 
 export function findAll() {
-  const dbNotes = rdb.getAllSync<DbNote>(
-    "select * from notes order by created_at desc",
-  );
+  try {
+    const dbNotes = rdb.getAllSync<DbNote>(
+      "select * from notes order by created_at desc",
+    );
 
-  devLog(`noteDb: ${dbNotes.length} notes found`);
+    devLog(`noteDb: ${dbNotes.length} notes found`);
 
-  return dbNotes.map(normalize);
+    return dbNotes.map(normalize);
+  } catch {
+    return [];
+  }
 }
 
 export function findOneById(id: string) {
-  const dbNote = rdb.getFirstSync<DbNote>(
-    "select * from notes where id = ?",
-    id,
-  );
+  try {
+    const dbNote = rdb.getFirstSync<DbNote>(
+      "select * from notes where id = ?",
+      id,
+    );
 
-  devLog(dbNote ? `noteDb: note ${id} found` : `noteDb: note ${id} not found`);
+    devLog(
+      dbNote ? `noteDb: note ${id} found` : `noteDb: note ${id} not found`,
+    );
 
-  return dbNote ? normalize(dbNote) : null;
+    return dbNote ? normalize(dbNote) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function insertOne(note: PublicNote) {
-  const { changes, lastInsertRowId } = await rdb.runAsync(
-    "insert into notes values (?,?,?,?,?,?,?,?)",
-    note.id,
-    note.title,
-    note.content,
-    note.author.id,
-    note.author.nickname,
-    note.author.avatarUrl,
-    note.link,
-    note.createdAt,
-  );
+  try {
+    const { changes, lastInsertRowId } = await rdb.runAsync(
+      "insert into notes values (?,?,?,?,?,?,?,?)",
+      note.id,
+      note.title,
+      note.content,
+      note.author.id,
+      note.author.nickname,
+      note.author.avatarUrl,
+      note.link,
+      note.createdAt,
+    );
 
-  devLog(
-    `noteDb: ${changes} note(s) inserted, last inserted row: ${lastInsertRowId}`,
-  );
+    devLog(
+      `noteDb: ${changes} note(s) inserted, last inserted row: ${lastInsertRowId}`,
+    );
+  } catch {
+    return;
+  }
 }
 
 export async function deleteOneById(id: string) {
-  const { changes } = await rdb.runAsync("delete from notes where id = ?", id);
+  try {
+    const { changes } = await rdb.runAsync(
+      "delete from notes where id = ?",
+      id,
+    );
 
-  devLog(`noteDb: ${changes} note(s) deleted`);
+    devLog(`noteDb: ${changes} note(s) deleted`);
+  } catch {
+    return;
+  }
 }
 
 export async function deleteAll() {
-  const { changes } = await rdb.runAsync("delete from notes");
+  try {
+    const { changes } = await rdb.runAsync("delete from notes");
 
-  devLog(`noteDb: ${changes} note(s) deleted`);
+    devLog(`noteDb: ${changes} note(s) deleted`);
+  } catch {
+    return;
+  }
 }
 
 function normalize(dbNote: DbNote) {

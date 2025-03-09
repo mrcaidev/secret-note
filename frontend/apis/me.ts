@@ -2,8 +2,6 @@ import { tokenDb } from "@/databases/kv";
 import type { User } from "@/utils/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
-import { Platform } from "react-native";
-import * as noteDb from "@/databases/relational/note";
 
 export function useMeQuery() {
   return useQuery<User>({
@@ -44,10 +42,6 @@ export function useDeleteMeMutation() {
 
       queryClient.cancelQueries({ queryKey: ["me"] });
       queryClient.setQueryData(["me"], null);
-
-      if (Platform.OS !== "web") {
-        noteDb.deleteAll();
-      }
     },
   });
 }
