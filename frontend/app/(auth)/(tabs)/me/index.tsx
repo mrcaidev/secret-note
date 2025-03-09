@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
+import { cn } from "@/components/ui/utils";
 import { Link } from "expo-router";
 import {
   CodeXmlIcon,
   type LucideIcon,
-  SettingsIcon,
   ShieldIcon,
+  TrashIcon,
 } from "lucide-react-native";
 import type { ComponentProps } from "react";
 import { View } from "react-native";
@@ -32,10 +33,10 @@ export default function MePage() {
         </View>
       </View>
       <Separator className="my-3" />
-      <SubpageLink href="/me/settings" icon={SettingsIcon}>
-        Settings
-      </SubpageLink>
       <SignOutButton />
+      <SubpageLink href="/me/delete" icon={TrashIcon} destructive>
+        Delete Account
+      </SubpageLink>
       <Separator className="my-3" />
       <SubpageLink href="/privacy" icon={ShieldIcon}>
         Privacy Policy
@@ -52,14 +53,26 @@ export default function MePage() {
 
 type SubpageLinkProps = ComponentProps<typeof Link> & {
   icon: LucideIcon;
+  destructive?: boolean;
 };
 
-function SubpageLink({ icon, children, ...props }: SubpageLinkProps) {
+function SubpageLink({
+  icon,
+  destructive = false,
+  children,
+  ...props
+}: SubpageLinkProps) {
   return (
     <Link {...props} asChild>
       <Button variant="ghost" className="justify-start gap-3">
-        <Icon as={icon} size={18} />
-        <Text>{children}</Text>
+        <Icon
+          as={icon}
+          size={18}
+          className={cn(destructive && "text-destructive")}
+        />
+        <Text className={cn(destructive && "text-destructive")}>
+          {children}
+        </Text>
       </Button>
     </Link>
   );
