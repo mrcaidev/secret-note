@@ -49,25 +49,35 @@ export class NoteDb {
     }
   }
 
-  public async insertOne(note: PublicNote) {
+  public async upsertOne(note: PublicNote) {
     try {
-      const { changes, lastInsertRowId } = await this.db.runAsync(
-        "insert into notes values (?,?,?,?,?,?,?,?)",
-        note.id,
-        note.title,
-        note.content,
-        note.author.id,
-        note.author.nickname,
-        note.author.avatarUrl,
-        note.link,
-        note.createdAt,
+      const { changes } = await this.db.runAsync(
+        `
+        insert into notes values (?,?,?,?,?,?,?,?)
+        on conflict(id) do update set
+        title = excluded.title,
+        content = excluded.content,
+        author_id = excluded.author_id,
+        author_nickname = excluded.author_nickname,
+        author_avatar_url = excluded.author_avatar_url,
+        link = excluded.link,
+        created_at = excluded.created_at
+        `,
+        [
+          note.id,
+          note.title,
+          note.content,
+          note.author.id,
+          note.author.nickname,
+          note.author.avatarUrl,
+          note.link,
+          note.createdAt,
+        ],
       );
 
-      devLog(
-        `NoteDb.insertOne: ${changes} note(s) inserted, last inserted row: ${lastInsertRowId}`,
-      );
+      devLog(`NoteDb.upsertOne: ${changes} note(s) upserted`);
     } catch (error) {
-      devLog(`NoteDb.insertOne: ${error}`);
+      devLog(`NoteDb.upsertOne: ${error}`);
       return;
     }
   }

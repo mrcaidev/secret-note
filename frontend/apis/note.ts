@@ -8,6 +8,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Platform } from "react-native";
 import { request } from "./request";
 
@@ -40,7 +41,7 @@ export function useNotesInfiniteQuery() {
 export function useNoteQuery(id: string, password?: string) {
   const db = useSqlite();
 
-  return useQuery<PublicNote>({
+  const result = useQuery<PublicNote>({
     queryKey: ["note", id],
     queryFn: async () => {
       return await request.get(
@@ -52,6 +53,14 @@ export function useNoteQuery(id: string, password?: string) {
         ? undefined
         : (new NoteDb(db).findOneById(id) ?? undefined),
   });
+
+  useEffect(() => {
+    if (result.data) {
+      new NoteDb(db).upsertOne(result.data);
+    }
+  }, [db, result.data]);
+
+  return result;
 }
 
 export function useCreateNoteMutation() {
@@ -71,7 +80,7 @@ export function useCreateNoteMutation() {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
 
       if (Platform.OS !== "web") {
-        await new NoteDb(db).insertOne(note);
+        await new NoteDb(db).upsertOne(note);
       }
     },
   });
