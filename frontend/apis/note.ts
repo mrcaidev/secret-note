@@ -20,7 +20,13 @@ export function useNotesInfiniteQuery() {
 
   const db = useSqlite();
 
-  return useInfiniteQuery<Data, Error, InfiniteData<Data>, string[], string>({
+  const result = useInfiniteQuery<
+    Data,
+    Error,
+    InfiniteData<Data>,
+    string[],
+    string
+  >({
     queryKey: ["notes"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({ limit: "10", cursor });
@@ -36,6 +42,18 @@ export function useNotesInfiniteQuery() {
             pageParams: [""],
           },
   });
+
+  useEffect(() => {
+    if (Platform.OS !== "web" && result.data) {
+      new NoteDb(db).upsertMany(
+        result.data.pages.flatMap((page) =>
+          page.notes.map((note) => ({ ...note, content: "", link: "" })),
+        ),
+      );
+    }
+  }, [db, result.data]);
+
+  return result;
 }
 
 export function useNoteQuery(id: string, password?: string) {
@@ -55,7 +73,7 @@ export function useNoteQuery(id: string, password?: string) {
   });
 
   useEffect(() => {
-    if (result.data) {
+    if (Platform.OS !== "web" && result.data) {
       new NoteDb(db).upsertOne(result.data);
     }
   }, [db, result.data]);

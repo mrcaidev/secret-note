@@ -82,6 +82,39 @@ export class NoteDb {
     }
   }
 
+  public async upsertMany(notes: PublicNote[]) {
+    try {
+      const { changes } = await this.db.runAsync(
+        `
+        insert into notes values ${Array(notes.length).fill("(?,?,?,?,?,?,?,?)").join(",")}
+        on conflict(id) do update set
+        title = excluded.title,
+        content = excluded.content,
+        author_id = excluded.author_id,
+        author_nickname = excluded.author_nickname,
+        author_avatar_url = excluded.author_avatar_url,
+        link = excluded.link,
+        created_at = excluded.created_at
+        `,
+        notes.flatMap((note) => [
+          note.id,
+          note.title,
+          note.content,
+          note.author.id,
+          note.author.nickname,
+          note.author.avatarUrl,
+          note.link,
+          note.createdAt,
+        ]),
+      );
+
+      devLog(`NoteDb.upsertMany: ${changes} note(s) upserted`);
+    } catch (error) {
+      devLog(`NoteDb.upsertMany: ${error}`);
+      return;
+    }
+  }
+
   public async deleteAll() {
     try {
       const { changes } = await this.db.runAsync("delete from notes");
