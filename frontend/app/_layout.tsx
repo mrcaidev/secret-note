@@ -1,24 +1,24 @@
-import { FontLoader } from "@/components/font-loader";
-import { QueryProvider } from "@/components/query-provider";
-import { ThemeProvider } from "@/components/theme-provider";
 import "@/global.css";
+import { FontProvider } from "@/providers/font-provider";
+import { QueryProvider } from "@/providers/query-provider";
+import { SqliteProvider } from "@/providers/sqlite-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import { PortalHost } from "@rn-primitives/portal";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Platform } from "react-native";
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
       <StatusBar />
-      <FontLoader>
-        <QueryProvider>
-          <Slot />
-          <PortalHost />
-          {Platform.OS === "web" && <ReactQueryDevtools />}
-        </QueryProvider>
-      </FontLoader>
+      <FontProvider>
+        <SqliteProvider>
+          <QueryProvider>
+            <Slot />
+            <PortalHost />
+          </QueryProvider>
+        </SqliteProvider>
+      </FontProvider>
     </ThemeProvider>
   );
 }

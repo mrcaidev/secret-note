@@ -19,12 +19,6 @@ export default {
     },
   },
   plugins: [
-    [
-      "expo-font",
-      {
-        fonts: ["assets/fonts/InterVariable.ttf"],
-      },
-    ],
     "expo-router",
     "expo-secure-store",
     [

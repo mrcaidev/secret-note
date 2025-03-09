@@ -41,7 +41,7 @@ import {
   XIcon,
 } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 const dateTimeFormat = new Intl.DateTimeFormat("en", {
   dateStyle: "medium",
@@ -69,32 +69,34 @@ export default function NotePage() {
   }
 
   return (
-    <View className="grow px-8 py-16 bg-background">
+    <View className="grow px-6 pt-16 bg-background">
       <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <Menu />
       </View>
-      <H1 className="mb-6">{note.title}</H1>
-      <Author author={note.author} />
-      {note.content.split("\n").map((paragraph, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: immutable
-        <P key={index} className="mb-4">
-          {paragraph}
-        </P>
-      ))}
-      <View className="flex-row items-center gap-2 mt-2">
-        <Icon as={PenLineIcon} className="text-muted-foreground" />
-        <Muted>
-          Created on {dateTimeFormat.format(new Date(note.createdAt))}
-        </Muted>
-      </View>
+      <ScrollView>
+        <H1 className="mb-6">{note.title}</H1>
+        <Author author={note.author} />
+        {note.content.split("\n").map((paragraph, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: immutable
+          <P key={index} className="mb-4">
+            {paragraph}
+          </P>
+        ))}
+        <View className="flex-row items-center gap-2 mt-2 mb-24">
+          <Icon as={PenLineIcon} className="text-muted-foreground" />
+          <Muted>
+            Created on {dateTimeFormat.format(new Date(note.createdAt))}
+          </Muted>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 function LoadingScreen() {
   return (
-    <View className="grow px-8 py-16 bg-background">
+    <View className="grow px-6 pt-16 bg-background">
       <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <Button variant="ghost" size="icon" aria-label="Open menu" disabled>
