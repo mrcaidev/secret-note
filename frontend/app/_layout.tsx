@@ -1,6 +1,7 @@
 import "@/global.css";
 import { FontProvider } from "@/providers/font-provider";
 import { QueryProvider } from "@/providers/query-provider";
+import { SqliteProvider } from "@/providers/sqlite-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { PortalHost } from "@rn-primitives/portal";
 import { Slot } from "expo-router";
@@ -11,10 +12,12 @@ export default function RootLayout() {
     <ThemeProvider>
       <StatusBar />
       <FontProvider>
-        <QueryProvider>
-          <Slot />
-          <PortalHost />
-        </QueryProvider>
+        <SqliteProvider>
+          <QueryProvider>
+            <Slot />
+            <PortalHost />
+          </QueryProvider>
+        </SqliteProvider>
       </FontProvider>
     </ThemeProvider>
   );
