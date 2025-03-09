@@ -83,6 +83,10 @@ export class NoteDb {
   }
 
   public async upsertMany(notes: PublicNote[]) {
+    if (notes.length === 0) {
+      return;
+    }
+
     try {
       const { changes } = await this.db.runAsync(
         `
