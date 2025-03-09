@@ -1,6 +1,8 @@
 import { RequestError } from "@/apis/request";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { PropsWithChildren } from "react";
+import { Platform } from "react-native";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,6 +19,9 @@ const queryClient = new QueryClient({
 
 export function QueryProvider({ children }: PropsWithChildren) {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      {children}
+      {Platform.OS === "web" && <ReactQueryDevtools />}
+    </QueryClientProvider>
   );
 }
