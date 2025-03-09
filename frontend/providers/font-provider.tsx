@@ -5,7 +5,7 @@ import { type PropsWithChildren, useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
 
-export function FontLoader({ children }: PropsWithChildren) {
+export function FontProvider({ children }: PropsWithChildren) {
   const [loaded, error] = useFonts({ InterVariable });
   const ready = loaded || error;
 
