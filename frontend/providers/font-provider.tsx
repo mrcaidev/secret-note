@@ -1,4 +1,5 @@
 import InterVariable from "@/assets/fonts/InterVariable.ttf";
+import { devLog } from "@/utils/dev";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { type PropsWithChildren, useEffect } from "react";
@@ -14,6 +15,12 @@ export function FontProvider({ children }: PropsWithChildren) {
       SplashScreen.hideAsync();
     }
   }, [ready]);
+
+  useEffect(() => {
+    if (error) {
+      devLog(`FontProvider: ${error}`);
+    }
+  }, [error]);
 
   if (!ready) {
     return null;
