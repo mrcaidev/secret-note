@@ -27,7 +27,16 @@ func genCode() string {
 
 var c = config.Cache
 
+const otpInterval = 58
+const sendOtpInterval = "SendOtpInterval"
+
 func SendOtp(toEmail string) (string, error) {
+
+	//check otp interval
+	if _, shortInterval := config.Cache.Get(toEmail + sendOtpInterval); shortInterval {
+		return "Short Otp Interval", errors.New("wait for the sendOtp Interval")
+	}
+
 	//config setup
 	from := "yongwenzhou2022@gmail.com"
 	password := config.GmailPassword
@@ -45,10 +54,11 @@ func SendOtp(toEmail string) (string, error) {
 
 	// 发送邮件
 	// 只负责发送给SMTP服务器，目标邮箱是否合法不是这个代码的负责内容，是SMTP服务器负责的
-	//todo: sending time interval
+
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{toEmail}, message)
 	if err != nil {
 		log.Fatal("send email failed:", err)
+		return "", err
 	}
 	fmt.Println("send email success")
 
@@ -61,6 +71,8 @@ func SendOtp(toEmail string) (string, error) {
 
 	var otpFlowId = uuid.New().String()
 	config.Cache.Set(otpFlowId, verificationCode, cache.DefaultExpiration)
+	//sending time interval
+	config.Cache.Set(toEmail+sendOtpInterval, "", otpInterval*time.Second)
 	return otpFlowId, err
 }
 
