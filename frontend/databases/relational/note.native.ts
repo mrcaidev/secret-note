@@ -52,6 +52,12 @@ export async function insertOne(note: PublicNote) {
   );
 }
 
+export async function deleteOneById(id: string) {
+  const { changes } = await rdb.runAsync("delete from notes where id = ?", id);
+
+  devLog(`noteDb: ${changes} note(s) deleted`);
+}
+
 function normalize(dbNote: DbNote) {
   return {
     id: dbNote.id,
