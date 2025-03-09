@@ -21,6 +21,9 @@ const schema = v.pipe(
       v.string(),
       v.minLength(8, "Password should be 8-20 characters long"),
       v.maxLength(20, "Password should be 8-20 characters long"),
+      v.regex(/a-z/, "Password should contain at least one lowercase letter"),
+      v.regex(/A-Z/, "Password should contain at least one uppercase letter"),
+      v.regex(/\d/, "Password should contain at least one digit"),
     ),
     confirmPassword: v.pipe(
       v.string(),
