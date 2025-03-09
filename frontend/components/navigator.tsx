@@ -6,6 +6,7 @@ import { View } from "react-native";
 import * as v from "valibot";
 import { FormFieldError } from "./form-field-error";
 import { Button } from "./ui/button";
+import { Icon } from "./ui/icon";
 import { Input } from "./ui/input";
 
 const schema = v.object({
@@ -52,8 +53,13 @@ export function Navigator() {
           </View>
         )}
       />
-      <Button variant="ghost" size="icon" onPress={navigate}>
-        <ArrowRightIcon />
+      <Button
+        variant="ghost"
+        size="icon"
+        onPress={navigate}
+        className="native:size-12"
+      >
+        <Icon as={ArrowRightIcon} />
       </Button>
     </View>
   );
