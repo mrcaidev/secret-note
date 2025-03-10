@@ -1,5 +1,4 @@
-import { NoteDb } from "@/databases/relational/note";
-import { useSqlite } from "@/providers/sqlite-provider";
+import { useNoteDb } from "@/databases/relational/note";
 import type { Note, PublicNote } from "@/utils/types";
 import {
   type InfiniteData,
@@ -9,7 +8,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Platform } from "react-native";
 import { request } from "./request";
 
 export function useNotesInfiniteQuery() {
@@ -18,7 +16,7 @@ export function useNotesInfiniteQuery() {
     nextCursor: string;
   };
 
-  const db = useSqlite();
+  const noteDb = useNoteDb();
 
   const result = useInfiniteQuery<
     Data,
@@ -34,30 +32,27 @@ export function useNotesInfiniteQuery() {
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor || null,
-    placeholderData:
-      Platform.OS === "web"
-        ? undefined
-        : {
-            pages: [{ notes: new NoteDb(db).findAll(), nextCursor: "" }],
-            pageParams: [""],
-          },
+    placeholderData: {
+      pages: [{ notes: noteDb.findAll(), nextCursor: "" }],
+      pageParams: [""],
+    },
   });
 
   useEffect(() => {
-    if (Platform.OS !== "web" && result.data) {
-      new NoteDb(db).upsertMany(
+    if (result.data) {
+      noteDb.upsertMany(
         result.data.pages.flatMap((page) =>
           page.notes.map((note) => ({ ...note, content: "", link: "" })),
         ),
       );
     }
-  }, [db, result.data]);
+  }, [noteDb, result.data]);
 
   return result;
 }
 
 export function useNoteQuery(id: string, password?: string) {
-  const db = useSqlite();
+  const noteDb = useNoteDb();
 
   const result = useQuery<PublicNote>({
     queryKey: ["note", id],
@@ -66,23 +61,20 @@ export function useNoteQuery(id: string, password?: string) {
         `/notes/${id}${password ? `?password=${password}` : ""}`,
       );
     },
-    placeholderData:
-      Platform.OS === "web"
-        ? undefined
-        : (new NoteDb(db).findOneById(id) ?? undefined),
+    placeholderData: noteDb.findOneById(id) ?? undefined,
   });
 
   useEffect(() => {
-    if (Platform.OS !== "web" && result.data) {
-      new NoteDb(db).upsertOne(result.data);
+    if (result.data) {
+      noteDb.upsertOne(result.data);
     }
-  }, [db, result.data]);
+  }, [noteDb, result.data]);
 
   return result;
 }
 
 export function useCreateNoteMutation() {
-  const db = useSqlite();
+  const noteDb = useNoteDb();
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -97,15 +89,13 @@ export function useCreateNoteMutation() {
       queryClient.setQueryData<Note>(["note", note.id], note);
       queryClient.invalidateQueries({ queryKey: ["notes"] });
 
-      if (Platform.OS !== "web") {
-        await new NoteDb(db).upsertOne(note);
-      }
+      await noteDb.upsertOne(note);
     },
   });
 }
 
 export function useDeleteNoteMutation() {
-  const db = useSqlite();
+  const noteDb = useNoteDb();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -116,9 +106,7 @@ export function useDeleteNoteMutation() {
       queryClient.removeQueries({ queryKey: ["note", id] });
       queryClient.invalidateQueries({ queryKey: ["notes"] });
 
-      if (Platform.OS !== "web") {
-        await new NoteDb(db).deleteOneById(id);
-      }
+      await noteDb.deleteOneById(id);
     },
   });
 }

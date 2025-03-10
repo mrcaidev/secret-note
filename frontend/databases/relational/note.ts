@@ -1,3 +1,4 @@
+import { useSqlite } from "@/providers/sqlite-provider";
 import { devLog } from "@/utils/dev";
 import type { PublicNote } from "@/utils/types";
 import type { SQLiteDatabase } from "expo-sqlite";
@@ -13,7 +14,12 @@ type DbNote = {
   created_at: string;
 };
 
-export class NoteDb {
+export function useNoteDb() {
+  const db = useSqlite();
+  return new NoteDb(db);
+}
+
+class NoteDb {
   public constructor(private readonly db: SQLiteDatabase) {}
 
   public findAll() {
