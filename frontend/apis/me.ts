@@ -1,6 +1,5 @@
 import { tokenDb } from "@/databases/kv";
-import { NoteDb } from "@/databases/relational/note";
-import { useSqlite } from "@/providers/sqlite-provider";
+import { useNoteDb } from "@/databases/relational/note";
 import type { User } from "@/utils/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
@@ -15,7 +14,7 @@ export function useMeQuery() {
 }
 
 export function useDeleteMeMutation() {
-  const db = useSqlite();
+  const noteDb = useNoteDb();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -30,7 +29,7 @@ export function useDeleteMeMutation() {
 
       queryClient.removeQueries({ queryKey: ["notes"] });
 
-      await new NoteDb(db).deleteAll();
+      await noteDb.deleteAll();
     },
   });
 }

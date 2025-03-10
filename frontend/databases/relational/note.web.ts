@@ -1,6 +1,10 @@
 import { devLog } from "@/utils/dev";
 
-export class NoteDb {
+export function useNoteDb() {
+  return new NoteDb();
+}
+
+class NoteDb {
   public findAll() {
     devLog("NoteDb.findAll: not implemented for web");
     return [];
