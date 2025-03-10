@@ -42,43 +42,43 @@ func BadRequest() Response {
 func ErrCodeToString(code int) string {
 	switch code {
 	case EmailExists:
-		return "EmailExists"
+		return "This email has already been registered"
 	case WrongOtp:
-		return "WrongOtp"
+		return "Incorrect OTP"
 	case WrongOtpFlowIdOrExpired:
-		return "WrongOtpFlowIdOrExpired"
+		return "OTP has expired"
 	case SendMailFailed:
-		return "SendMailFailed"
+		return "Failed to send email"
 	case Success:
 		return "Success"
 	case Error:
-		return "Error"
+		return "Unknown error. Please try again later"
 	case WrongEmail:
-		return "WrongEmail"
+		return "This email has not yet been registered"
 	case WrongPassword:
-		return "WrongPassword"
+		return "Incorrect password"
 	case NotExistUser:
-		return "NotExistUser"
+		return "This user does not exist"
 	case InvalidUid:
-		return "InvalidUid"
+		return "Invalid UID"
 	case StatusUnauthorized:
-		return "StatusUnauthorized"
+		return "Please sign in first"
 	case BadReq:
-		return "BadReq"
+		return "Bad Request"
 	case FailedToRequestFromProvider:
-		return "FailedToRequestFromProvider"
+		return "Oops! We had some issues communicating with the OAuth provider"
 	case NoteNotFound:
-		return "NoteNotFound"
+		return "This note does not exist"
 	case NoteWasBurned:
-		return "NoteWasBurned"
+		return "This note does not exist"
 	case WrongReceivers:
-		return "WrongReceivers"
+		return "This note does not exist"
 	case NotTargetReceiver:
-		return "NotTargetReceiver"
+		return "This note does not exist"
 	case ExpiredNote:
-		return "ExpiredNote"
+		return "This note does not exist"
 	case InvalidPassword:
-		return "InvalidPassword"
+		return "This note does not exist"
 	default:
 		return strconv.Itoa(code)
 	}
