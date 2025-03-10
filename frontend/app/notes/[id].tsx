@@ -1,6 +1,8 @@
 import { useMeQuery } from "@/apis/me";
-import { useNoteQuery } from "@/apis/note";
+import { useDeleteNoteMutation, useNoteQuery } from "@/apis/note";
 import { Avatar } from "@/components/avatar";
+import { FormError } from "@/components/form-error";
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,7 +27,7 @@ import { Text } from "@/components/ui/text";
 import { H1, Muted, P } from "@/components/ui/typography";
 import type { PublicNote } from "@/utils/types";
 import * as Clipboard from "expo-clipboard";
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -39,7 +41,7 @@ import {
   XIcon,
 } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 const dateTimeFormat = new Intl.DateTimeFormat("en", {
   dateStyle: "medium",
@@ -67,32 +69,34 @@ export default function NotePage() {
   }
 
   return (
-    <View className="grow px-8 py-16 bg-background">
+    <View className="grow px-6 pt-16 bg-background">
       <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <Menu />
       </View>
-      <H1 className="mb-6">{note.title}</H1>
-      <Author author={note.author} />
-      {note.content.split("\n").map((paragraph, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: immutable
-        <P key={index} className="mb-4">
-          {paragraph}
-        </P>
-      ))}
-      <View className="flex-row items-center gap-2 mt-2">
-        <Icon as={PenLineIcon} className="text-muted-foreground" />
-        <Muted>
-          Created on {dateTimeFormat.format(new Date(note.createdAt))}
-        </Muted>
-      </View>
+      <ScrollView>
+        <H1 className="mb-6">{note.title}</H1>
+        <Author author={note.author} />
+        {note.content.split("\n").map((paragraph, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: immutable
+          <P key={index} className="mb-4">
+            {paragraph}
+          </P>
+        ))}
+        <View className="flex-row items-center gap-2 mt-2 mb-24">
+          <Icon as={PenLineIcon} className="text-muted-foreground" />
+          <Muted>
+            Created on {dateTimeFormat.format(new Date(note.createdAt))}
+          </Muted>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 function LoadingScreen() {
   return (
-    <View className="grow px-8 py-16 bg-background">
+    <View className="grow px-6 pt-16 bg-background">
       <View className="flex-row justify-between items-center mb-6">
         <HomeLink />
         <Button variant="ghost" size="icon" aria-label="Open menu" disabled>
@@ -237,9 +241,21 @@ function DeleteDialog() {
   const { data: note } = useThisNote();
   const { data: me } = useMeQuery();
 
+  const { mutate, isPending, error } = useDeleteNoteMutation();
+
+  const router = useRouter();
+
   if (!me || !note || me.id !== note.author.id) {
     return null;
   }
+
+  const deleteNote = () => {
+    mutate(note.id, {
+      onSuccess: () => {
+        router.push("/");
+      },
+    });
+  };
 
   return (
     <Dialog>
@@ -262,6 +278,7 @@ function DeleteDialog() {
             and no one will be able to access it again.
           </DialogDescription>
         </DialogHeader>
+        <FormError error={error} />
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="secondary">
@@ -269,8 +286,12 @@ function DeleteDialog() {
               <Text>Cancel</Text>
             </Button>
           </DialogClose>
-          <Button variant="destructive">
-            <Icon as={TrashIcon} />
+          <Button
+            variant="destructive"
+            onPress={deleteNote}
+            disabled={isPending}
+          >
+            {isPending ? <Spinner /> : <Icon as={TrashIcon} />}
             <Text>Delete</Text>
           </Button>
         </DialogFooter>

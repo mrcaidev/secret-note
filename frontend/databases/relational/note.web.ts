@@ -1,17 +1,33 @@
-export function findAll() {
-  throw new Error(
-    "noteDb: web not supported. this file should have been imported in the first place",
-  );
+import { devLog } from "@/utils/dev";
+
+export function useNoteDb() {
+  return new NoteDb();
 }
 
-export function findOneById() {
-  throw new Error(
-    "noteDb: web not supported. this file should have been imported in the first place",
-  );
-}
+class NoteDb {
+  public findAll() {
+    devLog("NoteDb.findAll: not implemented for web");
+    return [];
+  }
 
-export function insertOne() {
-  throw new Error(
-    "noteDb: web not supported. this file should have been imported in the first place",
-  );
+  public findOneById() {
+    devLog("NoteDb.findOneById: not implemented for web");
+    return null;
+  }
+
+  public async upsertOne() {
+    devLog("NoteDb.upsertOne: not implemented for web");
+  }
+
+  public async upsertMany() {
+    devLog("NoteDb.upsertMany: not implemented for web");
+  }
+
+  public async deleteAll() {
+    devLog("NoteDb.deleteAll: not implemented for web");
+  }
+
+  public async deleteOneById() {
+    devLog("NoteDb.deleteOneById: not implemented for web");
+  }
 }

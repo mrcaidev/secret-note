@@ -629,7 +629,9 @@ function CreateNoteButton({ setFormError }: CreateNoteButtonProps) {
           reset();
           setFormError(null);
           onOpenChange(false);
-          router.push(`/notes/${note.id}`);
+          router.push(
+            `/notes/${note.id}${password ? `?password=${password}` : ""}`,
+          );
         },
         onError: setFormError,
       });

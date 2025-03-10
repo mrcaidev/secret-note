@@ -1,4 +1,5 @@
 import { tokenDb } from "@/databases/kv";
+import { useNoteDb } from "@/databases/relational/note";
 import type { User } from "@/utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
@@ -76,6 +77,7 @@ export function useSignInWithOauthMutation(provider: string) {
 }
 
 export function useSignOutMutation() {
+  const noteDb = useNoteDb();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -86,7 +88,11 @@ export function useSignOutMutation() {
       await tokenDb.remove();
 
       queryClient.cancelQueries({ queryKey: ["me"] });
-      queryClient.setQueryData(["me"], null);
+      queryClient.removeQueries({ queryKey: ["me"] });
+
+      queryClient.removeQueries({ queryKey: ["notes"] });
+
+      await noteDb.deleteAll();
     },
   });
 }

@@ -1,4 +1,5 @@
 import { tokenDb } from "@/databases/kv";
+import { useNoteDb } from "@/databases/relational/note";
 import type { User } from "@/utils/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "./request";
@@ -12,25 +13,8 @@ export function useMeQuery() {
   });
 }
 
-export function useUpdateMeMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation<
-    User,
-    Error,
-    Partial<Omit<User, "id"> & { password: string }>
-  >({
-    mutationFn: async (data) => {
-      return await request.patch("/me", data);
-    },
-    onSuccess: (me) => {
-      queryClient.cancelQueries({ queryKey: ["me"] });
-      queryClient.setQueryData<User>(["me"], me);
-    },
-  });
-}
-
 export function useDeleteMeMutation() {
+  const noteDb = useNoteDb();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -41,7 +25,11 @@ export function useDeleteMeMutation() {
       await tokenDb.remove();
 
       queryClient.cancelQueries({ queryKey: ["me"] });
-      queryClient.setQueryData(["me"], null);
+      queryClient.removeQueries({ queryKey: ["me"] });
+
+      queryClient.removeQueries({ queryKey: ["notes"] });
+
+      await noteDb.deleteAll();
     },
   });
 }

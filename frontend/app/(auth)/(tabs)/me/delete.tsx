@@ -19,14 +19,13 @@ const schema = v.object({
   prompt: v.pipe(
     v.string(),
     v.trim(),
-    v.toLowerCase(),
-    v.check((input) => input === "delete my account", "Incorrectly typed"),
+    v.check((input) => input === "delete my account", "Incorrect input"),
   ),
 });
 
 type Schema = v.InferOutput<typeof schema>;
 
-export default function DeleteAccountSettingPage() {
+export default function DeleteAccountPage() {
   const { control, handleSubmit } = useForm<Schema>({
     defaultValues: {
       prompt: "",
@@ -48,11 +47,10 @@ export default function DeleteAccountSettingPage() {
 
   return (
     <MfaGuard>
-      <View className="px-6 pt-28">
+      <View className="px-6 pt-6">
         <Text className="mb-6 text-muted-foreground">
-          Caution! This action is irreversible. All your data will be deleted
-          from both local and remote storage, including your profile, articles,
-          etc.
+          This action is irreversible. Your account and notes will be deleted,
+          and other users will no longer have access to your shared notes.
         </Text>
         <Controller
           control={control}

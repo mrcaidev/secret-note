@@ -1,60 +1,101 @@
+import { useSignOutMutation } from "@/apis/auth";
 import { useMeQuery } from "@/apis/me";
 import { Avatar } from "@/components/avatar";
-import { SignOutButton } from "@/components/sign-out-button";
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
-import { Link } from "expo-router";
+import { Link, Redirect, useRouter } from "expo-router";
 import {
   CodeXmlIcon,
+  LifeBuoyIcon,
+  LogOutIcon,
   type LucideIcon,
-  SettingsIcon,
   ShieldIcon,
+  TrashIcon,
 } from "lucide-react-native";
 import type { ComponentProps } from "react";
 import { View } from "react-native";
 
 export default function MePage() {
-  const { data: me } = useMeQuery();
-
-  if (!me) {
-    return null;
-  }
-
   return (
     <View className="px-4 pt-24">
-      <View className="flex-row items-center gap-4 px-4 py-3">
-        <Avatar user={me} className="size-16" />
-        <View className="gap-1">
-          <Text className="text-xl font-bold line-clamp-1">{me.nickname}</Text>
-          <Text className="text-muted-foreground line-clamp-1">{me.email}</Text>
-        </View>
-      </View>
+      <Profile />
       <Separator className="my-3" />
-      <SubpageLink href="/me/settings" icon={SettingsIcon}>
-        Settings
-      </SubpageLink>
       <SignOutButton />
+      <ButtonLink href="/me/delete" icon={TrashIcon}>
+        Delete Account
+      </ButtonLink>
       <Separator className="my-3" />
-      <SubpageLink href="/privacy" icon={ShieldIcon}>
+      <ButtonLink
+        href="https://github.com/mrcaidev/secret-note/issues"
+        icon={LifeBuoyIcon}
+      >
+        Support
+      </ButtonLink>
+      <ButtonLink href="/privacy" icon={ShieldIcon}>
         Privacy Policy
-      </SubpageLink>
-      <SubpageLink
+      </ButtonLink>
+      <ButtonLink
         href="https://github.com/mrcaidev/secret-note"
         icon={CodeXmlIcon}
       >
         Source Code
-      </SubpageLink>
+      </ButtonLink>
     </View>
   );
 }
 
-type SubpageLinkProps = ComponentProps<typeof Link> & {
+function Profile() {
+  const { data: me } = useMeQuery();
+
+  if (!me) {
+    return <Redirect href="/sign-in" />;
+  }
+
+  return (
+    <View className="flex-row items-center gap-4 px-4 py-3">
+      <Avatar user={me} className="size-16" />
+      <View className="gap-1">
+        <Text className="text-xl font-bold line-clamp-1">{me.nickname}</Text>
+        <Text className="text-muted-foreground line-clamp-1">{me.email}</Text>
+      </View>
+    </View>
+  );
+}
+
+function SignOutButton() {
+  const { mutate, isPending } = useSignOutMutation();
+
+  const router = useRouter();
+
+  const signOut = () => {
+    mutate(undefined, {
+      onSuccess: () => {
+        router.push("/sign-in");
+      },
+    });
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      onPress={signOut}
+      disabled={isPending}
+      className="justify-start gap-3"
+    >
+      {isPending ? <Spinner size={18} /> : <Icon as={LogOutIcon} size={18} />}
+      <Text>Sign Out</Text>
+    </Button>
+  );
+}
+
+type ButtonLinkProps = ComponentProps<typeof Link> & {
   icon: LucideIcon;
 };
 
-function SubpageLink({ icon, children, ...props }: SubpageLinkProps) {
+function ButtonLink({ icon, children, ...props }: ButtonLinkProps) {
   return (
     <Link {...props} asChild>
       <Button variant="ghost" className="justify-start gap-3">

@@ -13,9 +13,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noUncheckedSideEffectImports": true,
-    "paths": {
-      "@/*": ["./*"]
-    },
+    "paths": { "@/*": ["./*"] },
     "verbatimModuleSyntax": true,
     "incremental": true
   },
