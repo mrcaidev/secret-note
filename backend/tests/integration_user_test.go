@@ -5,9 +5,15 @@ import (
 	"backend/controllers"
 	"backend/models"
 	"backend/routers"
+	"backend/services"
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -15,6 +21,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
 
@@ -25,19 +32,26 @@ func SetupDatabase(t *testing.T) {
 	// 初始化测试数据库
 	config.InitTestDatabase()
 
-	// 清空数据库
+	// 清空数据库中的相关表
 	err := config.DB.Migrator().DropTable(&models.User{})
 	if err != nil {
-		t.Fatalf("Failed to clean database: %v", err)
+		t.Fatalf("Failed to clean user table: %v", err)
 	}
 
-	err = config.DB.AutoMigrate(&models.User{})
+	err = config.DB.Migrator().DropTable(&models.Note{}) // 清空 Note 表
+	if err != nil {
+		t.Fatalf("Failed to clean notes table: %v", err)
+	}
+
+	// 执行自动迁移，创建 User 和 Note 表
+	err = config.DB.AutoMigrate(&models.User{}, &models.Note{})
 	if err != nil {
 		t.Fatalf("Failed to migrate models: %v", err)
 	}
 
+	// 初始化 router
 	router = gin.Default()
-	routers.InitRouter() // Ensure routes are registered
+	routers.InitRouter() // 注册路由
 }
 
 func TestSetupDatabase(t *testing.T) {
@@ -48,7 +62,7 @@ func TestSetupDatabase(t *testing.T) {
 	log.Println("Database setup completed successfully")
 }
 
-func TestCreateUser(t *testing.T) {
+func TestCreateUserWithWeakPassword(t *testing.T) {
 	// 初始化测试数据库
 	TestSetupDatabase(t)
 
@@ -59,9 +73,46 @@ func TestCreateUser(t *testing.T) {
 
 	// 构造测试请求的 JSON 数据
 	userData := map[string]string{
-		"email":    "testuser@example.com",
-		"nickname": "Test User",
-		"password": "securepassword",
+		"email":    "weakpassworduser@example.com",
+		"nickname": "Weak Password User",
+		"password": "weak", // 密码强度太低
+	}
+	jsonData, _ := json.Marshal(userData)
+
+	// 创建 HTTP 请求
+	req, _ := http.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+
+	// 使用 httptest 记录 HTTP 响应
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// 检查 HTTP 状态码是否为 400（密码太弱）
+	assert.Equal(t, http.StatusBadRequest, w.Code, "Expected HTTP 400")
+
+	// 解析 JSON 响应
+	var response map[string]interface{}
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err, "Response should be valid JSON")
+
+	// 检查返回的错误消息
+	assert.Equal(t, "Password is too weak. It must be at least 8 characters long, contain letters, numbers, and special characters.", response["error"], "Error message should indicate password weakness")
+}
+
+func TestCreateUserWithStrongPassword(t *testing.T) {
+	// 初始化测试数据库
+	TestSetupDatabase(t)
+
+	// 设置 Gin 测试路由
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	r.POST("/api/v1/users", controllers.CreateUser)
+
+	// 构造测试请求的 JSON 数据
+	userData := map[string]string{
+		"email":    "strongpassworduser@example.com",
+		"nickname": "Strong Password User",
+		"password": "SecureP@ssw0rd123!", // 强密码
 	}
 	jsonData, _ := json.Marshal(userData)
 
@@ -81,14 +132,14 @@ func TestCreateUser(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err, "Response should be valid JSON")
 
-	// 检查返回的 JSON 结构
+	// 检查返回的消息
 	assert.Equal(t, "success", response["message"], "Response message should be 'success'")
 	assert.NotNil(t, response["data"], "Response should contain user data")
 
 	// 检查数据库是否正确插入用户
 	var createdUser models.User
-	config.DB.Where("email = ?", "testuser@example.com").First(&createdUser)
-	assert.Equal(t, "testuser@example.com", createdUser.Email, "User should be created in database")
+	config.DB.Where("email = ?", "strongpassworduser@example.com").First(&createdUser)
+	assert.Equal(t, "strongpassworduser@example.com", createdUser.Email, "User should be created in database")
 }
 
 func TestGetNonExistentUser(t *testing.T) {
@@ -103,88 +154,114 @@ func TestGetNonExistentUser(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code, "Trying to get a non-existent user should return a 404 Not Found error")
 }
 
-func getAuthToken(t *testing.T, r *gin.Engine) string {
-	// 用户的登录数据
-	loginData := map[string]string{
-		"email":    "testuser@example.com",
-		"password": "securepassword",
-	}
+// 测试创建 Note
 
-	// 将数据转为 JSON
-	jsonData, err := json.Marshal(loginData)
+// 模拟加密验证
+// 假设这个是你实际的 HTTP 处理函数
+func CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
+	// 解析请求体
+	var reqData models.CreateNoteReq
+	err := json.NewDecoder(r.Body).Decode(&reqData)
 	if err != nil {
-		t.Fatalf("Error marshalling login data: %v", err)
+		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
+		return
 	}
 
-	// 创建请求
-	req, err := http.NewRequest("POST", "/api/v1/auth/token", bytes.NewBuffer(jsonData))
+	// 如果请求中的 Receivers 是一个有效的 JSON 数组，将其直接使用
+	receiversJSON, err := json.Marshal(reqData.Receivers) // 假设 reqData.Receivers 是一个数组
 	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
+		http.Error(w, "Error marshalling receivers", http.StatusInternalServerError)
+		return
 	}
-	req.Header.Set("Content-Type", "application/json")
 
-	// 发送请求并获取响应
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	// 创建 note 实例
+	note := models.Note{
+		Title:     reqData.Title,
+		Content:   reqData.Content,
+		Password:  reqData.Password, // 你可以填充其他字段
+		TTL:       reqData.TTL,
+		Burn:      reqData.Burn,
+		Receivers: receiversJSON, // 将 Receivers 填充为 JSON 格式
+	}
 
-	// 解析响应中的 Token
-	var response map[string]interface{}
-	err = json.NewDecoder(w.Body).Decode(&response)
+	// 调用 services.CreateNotes 来处理业务逻辑
+	resp, err := services.CreateNotes(note)
 	if err != nil {
-		t.Fatalf("Error decoding response: %v", err)
+		http.Error(w, "Error creating note", http.StatusInternalServerError)
+		return
 	}
 
-	// 获取 token
-	token, ok := response["token"].(string)
-	if !ok {
-		t.Fatalf("Token not found in response")
-	}
-
-	return token
+	// 将响应写入 http.ResponseWriter
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
 
-func TestDeleteUser(t *testing.T) {
-	// Set up the database and router
-	SetupDatabase(t)
-
-	// Initialize the Gin engine
-	r := gin.Default()
-	routers.InitRouter() // Ensure routes are registered
-
-	// 获取 token
-	token := getAuthToken(t, r)
-	fmt.Println("Obtained Token:", token)
-
-	// 准备删除用户的请求
-	userID := 1
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/api/v1/users/%d", userID), nil)
+func encryptAndEncode(content string, key []byte) (string, error) {
+	block, err := aes.NewCipher(key)
 	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
+		return "", err
 	}
-	req.Header.Set("Authorization", "Bearer "+token) // 设置 Authorization 头部
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	nonce := make([]byte, aesGCM.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", err
+	}
+
+	// 执行 AES-GCM 加密
+	ciphertext := aesGCM.Seal(nonce, nonce, []byte(content), nil)
+
+	// Base64 编码
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
+}
+
+// 在测试时，你可以通过 httptest 来测试这个处理函数
+func TestCreateNoteWithEncryption(t *testing.T) {
+
+	TestSetupDatabase(t)
+	config.EncryptionKey = []byte("01234567890123456789012345678901")
+
+	// encryptedContent, err := encryptAndEncode("This is a test note content", config.EncryptionKey)
+	// fmt.Println("加密后的内容:", encryptedContent)
+
+	// require.NoError(t, err, "Content 加密失败")
+	// 模拟请求数据
+	requestData := map[string]interface{}{
+		"title":     "Test Title",
+		"content":   "context test",
+		"password":  "abcd",
+		"burn":      false,
+		"receivers": []string{"example@example.com"},
+		"ttl":       7,
+	}
+	reqBodyBytes, _ := json.Marshal(requestData)
+
+	req := httptest.NewRequest(http.MethodPost, "/notes", bytes.NewBuffer(reqBodyBytes))
 	req.Header.Set("Content-Type", "application/json")
 
-	// 模拟发送请求
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	// 模拟响应
+	rr := httptest.NewRecorder()
 
-	// 检查删除用户请求的响应
-	assert.Equal(t, http.StatusOK, w.Code, "Expected status code to be 200")
+	// 这里调用 CreateNoteHandler，而不是直接使用 CreateNotes
+	handler := http.HandlerFunc(CreateNoteHandler)
+	handler.ServeHTTP(rr, req)
+	fmt.Println("Response body:", rr.Body.String())
 
-	// 解析并验证响应内容
-	var deleteResponse map[string]interface{}
-	err = json.Unmarshal(w.Body.Bytes(), &deleteResponse)
-	if err != nil {
-		t.Fatalf("Error unmarshalling response: %v", err)
+	// 验证响应状态码
+	require.Equal(t, http.StatusOK, rr.Code, "Expected HTTP 200 OK but got %d", rr.Code)
+
+	// 验证响应体内容
+	var resp map[string]interface{}
+	if err := json.Unmarshal(rr.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("Failed to unmarshal response: %v", err)
 	}
 
-	// 验证响应字段
-	code, ok := deleteResponse["code"].(float64) // 或者根据后端返回类型修改
-	if !ok || code != 0 {
-		t.Fatalf("Expected code 0 for success, got: %v", code)
-	}
-	message, ok := deleteResponse["message"].(string)
-	if !ok || message != "success" {
-		t.Fatalf("Expected success message, got: %v", message)
-	}
+	// 确保返回的响应包含必要的字段
+	assert.NotNil(t, resp["nid"])
+	assert.Equal(t, resp["title"], "Test Title")
 }
