@@ -17,12 +17,12 @@ import (
 	"time"
 )
 
-const URL_PREFIX = "http://localhost:8081/"
+const LINK_PREFIX = "https://domain-for-se.com/notes/"
 
 func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 
 	note.Nid = uuid.New().String()
-	note.Link = URL_PREFIX + note.Nid
+	note.Link = LINK_PREFIX + note.Nid
 	content := note.Content
 	fmt.Println("Inserted Note: %d", note)
 	result := config.DB.Create(&note)
