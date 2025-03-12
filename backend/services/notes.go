@@ -27,7 +27,7 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 		note.Link += "?password=" + note.Password
 	}
 	content := note.Content
-	fmt.Println("Inserted Note: %d", note)
+	fmt.Println("Inserted Note: %s", note.Nid)
 	result := config.DB.Create(&note)
 	if result.Error != nil {
 		log.Println(result.Error)
