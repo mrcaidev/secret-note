@@ -23,8 +23,11 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 
 	note.Nid = uuid.New().String()
 	note.Link = LINK_PREFIX + note.Nid
+	if note.Password != "" {
+		note.Link += "?password=" + note.Password
+	}
 	content := note.Content
-	fmt.Println("Inserted Note: %d", note)
+	fmt.Println("Inserted Note: %s", note.Nid)
 	result := config.DB.Create(&note)
 	if result.Error != nil {
 		log.Println(result.Error)
@@ -76,7 +79,7 @@ func GetNote(nid string, uid string, password string) (ret models.GetNoteResp, c
 	}
 
 	//Password
-	if len(note.Password) != 0 && note.Password != password {
+	if len(note.Password) != 0 && note.Password != password && note.AuthorID != uid {
 		return models.GetNoteResp{}, common.WrongPassword
 	}
 

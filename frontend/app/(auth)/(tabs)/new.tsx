@@ -27,7 +27,6 @@ import {
   ClipboardIcon,
   EraserIcon,
   PlusIcon,
-  RefreshCwIcon,
   Share2Icon,
   XIcon,
 } from "lucide-react-native";
@@ -53,19 +52,6 @@ const schema = v.pipe(
       v.minLength(1, "Content is required"),
       v.maxLength(10000, "Content should be less than 10000 characters"),
     ),
-    passwordEnabled: v.boolean(),
-    password: v.union([
-      v.literal(""),
-      v.pipe(
-        v.string(),
-        v.toUpperCase(),
-        v.length(4, "Password should be exactly 4 characters"),
-        v.regex(
-          /^[A-Z0-9]+$/,
-          "Password should contain only letters and digits",
-        ),
-      ),
-    ]),
     burn: v.boolean(),
     ttlEnabled: v.boolean(),
     ttl: v.union([
@@ -80,13 +66,6 @@ const schema = v.pipe(
     receiversEnabled: v.boolean(),
     receivers: v.array(v.pipe(v.string(), v.email("Invalid email"))),
   }),
-  v.forward(
-    v.check(
-      ({ password, passwordEnabled }) => !passwordEnabled || password !== "",
-      "Password is required",
-    ),
-    ["password"],
-  ),
   v.forward(
     v.check(
       ({ ttl, ttlEnabled }) => !ttlEnabled || ttl > 0,
@@ -111,8 +90,6 @@ export default function NewNotePage() {
     defaultValues: {
       title: "",
       content: "",
-      passwordEnabled: false,
-      password: "",
       burn: false,
       ttlEnabled: false,
       ttl: 0,
@@ -148,7 +125,6 @@ export default function NewNotePage() {
             </DialogHeader>
             <View className="gap-4">
               <TitleInput />
-              <PasswordInput />
               <BurnCheckbox />
               <TtlInput />
               <ReceiversInput />
@@ -287,84 +263,6 @@ function TitleInput() {
         </View>
       )}
     />
-  );
-}
-
-function generatePassword() {
-  return Math.random().toString(36).slice(2, 6).toUpperCase();
-}
-
-function PasswordInput() {
-  const { control, formState, watch, getFieldState, setValue } =
-    useFormContext<Schema>();
-  const passwordEnabled = watch("passwordEnabled");
-
-  useEffect(() => {
-    if (!passwordEnabled || getFieldState("password").isDirty) {
-      return;
-    }
-
-    setValue("password", generatePassword(), {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-  }, [passwordEnabled, getFieldState, setValue]);
-
-  return (
-    <View className="gap-2">
-      <View className="flex-row items-center gap-3">
-        <Controller
-          control={control}
-          name="passwordEnabled"
-          render={({ field }) => (
-            <Fragment>
-              <Switch
-                {...field}
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                aria-labelledby="passwordEnabled"
-              />
-              <Label
-                nativeID="passwordEnabled"
-                onPress={() => {
-                  field.onChange(!field.value);
-                }}
-                className={cn(field.value || "text-muted-foreground")}
-              >
-                Password
-              </Label>
-            </Fragment>
-          )}
-        />
-        <Controller
-          control={control}
-          name="password"
-          render={({ field }) => (
-            <View className="flex-row items-center gap-1">
-              <Input
-                {...field}
-                onChangeText={field.onChange}
-                maxLength={4}
-                editable={passwordEnabled}
-                className="w-20 web:w-20 uppercase"
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onPress={() => {
-                  field.onChange(generatePassword());
-                }}
-                disabled={!passwordEnabled}
-                aria-label="Regenerate a random password"
-              >
-                <Icon as={RefreshCwIcon} />
-              </Button>
-            </View>
-          )}
-        />
-      </View>
-      <FormFieldError error={formState.errors.password} />
-    </View>
   );
 }
 
@@ -608,18 +506,9 @@ function CreateNoteButton({ setFormError }: CreateNoteButtonProps) {
   const router = useRouter();
 
   const createNote = handleSubmit(
-    ({
-      password,
-      passwordEnabled,
-      receivers,
-      receiversEnabled,
-      ttl,
-      ttlEnabled,
-      ...rest
-    }) => {
+    ({ receivers, receiversEnabled, ttl, ttlEnabled, ...rest }) => {
       const data = {
         ...rest,
-        password: passwordEnabled ? password : "",
         receivers: receiversEnabled ? receivers : [],
         ttl: ttlEnabled ? ttl : 0,
       };
@@ -629,9 +518,7 @@ function CreateNoteButton({ setFormError }: CreateNoteButtonProps) {
           reset();
           setFormError(null);
           onOpenChange(false);
-          router.push(
-            `/notes/${note.id}${password ? `?password=${password}` : ""}`,
-          );
+          router.push(`/notes/${note.id}`);
         },
         onError: setFormError,
       });

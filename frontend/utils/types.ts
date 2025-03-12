@@ -16,7 +16,6 @@ export type Note = {
   content: string;
   author: PublicUser;
   link: string;
-  password: string;
   burn: boolean;
   ttl: number;
   receivers: string[];
