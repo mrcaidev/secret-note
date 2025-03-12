@@ -51,15 +51,13 @@ export function useNotesInfiniteQuery() {
   return result;
 }
 
-export function useNoteQuery(id: string, password?: string) {
+export function useNoteQuery(id: string) {
   const noteDb = useNoteDb();
 
   const result = useQuery<PublicNote>({
     queryKey: ["note", id],
     queryFn: async () => {
-      return await request.get(
-        `/notes/${id}${password ? `?password=${password}` : ""}`,
-      );
+      return await request.get(`/notes/${id}`);
     },
     placeholderData: noteDb.findOneById(id) ?? undefined,
   });
@@ -80,10 +78,10 @@ export function useCreateNoteMutation() {
   return useMutation<
     Note,
     Error,
-    Pick<Note, "title" | "content" | "password" | "burn" | "ttl" | "receivers">
+    Pick<Note, "title" | "content" | "burn" | "ttl" | "receivers">
   >({
     mutationFn: async (data) => {
-      return await request.post("/notes", data);
+      return await request.post<Note>("/notes", { ...data, password: "" });
     },
     onSuccess: async (note) => {
       queryClient.setQueryData<Note>(["note", note.id], note);

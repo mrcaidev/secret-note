@@ -49,12 +49,9 @@ const dateTimeFormat = new Intl.DateTimeFormat("en", {
 });
 
 function useThisNote() {
-  const { id, password } = useLocalSearchParams<{
-    id: string;
-    password?: string;
-  }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
-  return useNoteQuery(id, password);
+  return useNoteQuery(id);
 }
 
 export default function NotePage() {
