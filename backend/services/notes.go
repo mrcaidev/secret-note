@@ -79,7 +79,7 @@ func GetNote(nid string, uid string, password string) (ret models.GetNoteResp, c
 	}
 
 	//Password
-	if len(note.Password) != 0 && note.Password != password {
+	if len(note.Password) != 0 && note.Password != password && note.AuthorID != uid {
 		return models.GetNoteResp{}, common.WrongPassword
 	}
 
