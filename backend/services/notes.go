@@ -23,6 +23,9 @@ func CreateNotes(note models.Note) (models.CreateNoteResp, error) {
 
 	note.Nid = uuid.New().String()
 	note.Link = LINK_PREFIX + note.Nid
+	if note.Password != "" {
+		note.Link += "?password=" + note.Password
+	}
 	content := note.Content
 	fmt.Println("Inserted Note: %d", note)
 	result := config.DB.Create(&note)
